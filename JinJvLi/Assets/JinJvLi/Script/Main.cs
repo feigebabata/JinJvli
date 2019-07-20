@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System;
+using JinJvLi;
 
 namespace JinJvli
 {   
@@ -10,11 +11,29 @@ namespace JinJvli
     {
         Dictionary<Type,IManager> m_managers = new Dictionary<Type,IManager>();
         Dictionary<Type,IManager>.Enumerator m_mngs;
+
         void Start()
+        {
+            setAppConfig();
+            init();
+        }
+
+        void setAppConfig()
+        {
+            Application.targetFrameRate=30;
+            // Debug.unityLogger.logEnabled=false;
+        }
+
+        void init()
         {
             createAllManager();
             initAllManager();
-            
+            initEnd();
+        }
+
+        void initEnd()
+        {
+            Manager<PanelManager>().Open<LoginPanel>();
         }
 
         void Update()

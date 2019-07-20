@@ -31,7 +31,7 @@ public class Coroutines : MonoSingleton<Coroutines>
         _callBack();
     }
 
-    public void Start(IEnumerator _enumerator)
+    public void Run(IEnumerator _enumerator)
     {
         StartCoroutine(_enumerator);
     }
