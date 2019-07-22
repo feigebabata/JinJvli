@@ -7,298 +7,98 @@ using UnityEngine;
 /// </summary>
 public static class Broadcaster
 {
-    static Dictionary<string, Delegate> m_events = new Dictionary<string, Delegate>(); 
+    static Dictionary<Type, Action<IMessage>> m_events = new Dictionary<Type, Action<IMessage>>(); 
+    static Dictionary<Delegate, Action<IMessage>> m_eventSources = new Dictionary<Delegate, Action<IMessage>>(); 
 
-    public static void Clear(string _key=null)
+    public static void Clear<T>()
     {
-        if(_key==null)
+        Type key = typeof(T);
+        Action<IMessage> evt;
+        if(m_events.TryGetValue(key,out evt))
         {
-            m_events.Clear();
+            var eventSources = m_eventSources.GetEnumerator();
+            List<Delegate> removes = new List<Delegate>();
+            int delegateCount=evt.GetInvocationList().Length;
+            while(eventSources.MoveNext())
+            {
+                evt-=eventSources.Current.Value;
+                if(evt==null)
+                {
+                    removes.Add(eventSources.Current.Key);
+                    break;
+                }
+                else if(evt.GetInvocationList().Length<delegateCount)
+                {
+                    removes.Add(eventSources.Current.Key);
+                }
+                delegateCount=evt.GetInvocationList().Length;
+            }
+            m_events.Remove(key);
+            for (int i = 0; i < removes.Count; i++)
+            {
+                m_eventSources.Remove(removes[i]);
+            }
+        }
+    }
+
+    public static void ClearAll()
+    {
+        m_events.Clear();
+        m_eventSources.Clear();
+    }
+
+    public static void Add<T>(Action<T> _event) where T : struct,IMessage
+    {
+        if(m_eventSources.ContainsKey(_event))
+        {
+            Debug.LogWarning($"[Broadcaster.Add]事件重复监听\n{_event}");
+            return;
+        }
+        Type eventType = typeof(T);
+        Action<IMessage> evt = (_msg)=>{ _event((T)_msg); };
+        m_eventSources[_event] = evt;
+        if(m_events.ContainsKey(eventType))
+        {
+            m_events[eventType] += evt;
         }
         else
         {
-            if(m_events.ContainsKey(_key))
-            {
-                m_events.Remove(_key);
-            }
+            m_events[eventType] = evt;
         }
     }
 
-    public static void Add(string _key,Action _callBack)
+    public static void Remove<T>(Action<T> _event) where T : struct,IMessage
     {
-        if(m_events.ContainsKey(_key))
+        Action<IMessage> evt;
+        if(m_eventSources.TryGetValue(_event,out evt))
         {
-            if(equalsType(m_events[_key],_callBack))
+            Type eventType = typeof(T);
+            Action<IMessage> eventAction = m_events[eventType];
+            eventAction -= evt;
+            if(eventAction==null)
             {
-                Action callBack = m_events[_key] as Action;
-                callBack+=_callBack;
-                m_events[_key] = callBack;
-            }
+                m_events.Remove(eventType);
+            } 
             else
             {
-                addErr(_key);
+                m_events[eventType] = eventAction;
             }
+            m_eventSources.Remove(_event);
         }
-        else
+    }
+
+    public static void Broadcast<T>(T _message) where T : struct,IMessage
+    {
+        Type key = typeof(T);
+        Action<IMessage> evt;
+        if(m_events.TryGetValue(key,out evt))
         {
-            addEvent(_key,_callBack);
+           evt(_message);
         }
     }
 
-    public static void Add<T>(string _key,Action<T> _callBack)
-    {
-        if(m_events.ContainsKey(_key))
-        {
-            if(equalsType(m_events[_key],_callBack))
-            {
-                Action<T> callBack = m_events[_key] as Action<T>;
-                callBack+=_callBack;
-                m_events[_key] = callBack;
-            }
-            else
-            {
-                addErr(_key);
-            }
-        }
-        else
-        {
-            addEvent(_key,_callBack);
-        }
-    }
-
-    public static void Add<T,U>(string _key,Action<T,U> _callBack)
-    {
-        if(m_events.ContainsKey(_key))
-        {
-            if(equalsType(m_events[_key],_callBack))
-            {
-                Action<T,U> callBack = m_events[_key] as Action<T,U>;
-                callBack+=_callBack;
-                m_events[_key] = callBack;
-            }
-            else
-            {
-                addErr(_key);
-            }
-        }
-        else
-        {
-            addEvent(_key,_callBack);
-        }
-    }
-
-    public static void Add<T,U,I>(string _key,Action<T,U,I> _callBack)
-    {
-        if(m_events.ContainsKey(_key))
-        {
-            if(equalsType(m_events[_key],_callBack))
-            {
-                Action<T,U,I> callBack = m_events[_key] as Action<T,U,I>;
-                callBack+=_callBack;
-                m_events[_key] = callBack;
-            }
-            else
-            {
-                addErr(_key);
-            }
-        }
-        else
-        {
-            addEvent(_key,_callBack);
-        }
-    }
-
-    public static void Remove(string _key,Action _callBack)
-    {
-        if(m_events.ContainsKey(_key))
-        {
-            if(equalsType(m_events[_key],_callBack))
-            {
-                Action callBack = m_events[_key] as Action;
-                callBack-=_callBack;
-                if(callBack== null)
-                {
-                    removeEvent(_key);
-                }
-                else
-                {
-                    m_events[_key] = callBack;
-                }
-            }
-            else
-            {
-                removeErr(_key);
-            }
-        }
-    }
-
-    public static void Remove<T>(string _key,Action<T> _callBack)
-    {
-        if(m_events.ContainsKey(_key))
-        {
-            if(equalsType(m_events[_key],_callBack))
-            {
-                Action<T> callBack = m_events[_key] as Action<T>;
-                callBack-=_callBack;
-                if(callBack== null)
-                {
-                    removeEvent(_key);
-                }
-                else
-                {
-                    m_events[_key] = callBack;
-                }
-            }
-            else
-            {
-                removeErr(_key);
-            }
-        }
-    }
-
-    public static void Remove<T,U>(string _key,Action<T,U> _callBack)
-    {
-        if(m_events.ContainsKey(_key))
-        {
-            if(equalsType(m_events[_key],_callBack))
-            {
-                Action<T,U> callBack = m_events[_key] as Action<T,U>;
-                callBack-=_callBack;
-                if(callBack== null)
-                {
-                    removeEvent(_key);
-                }
-                else
-                {
-                    m_events[_key] = callBack;
-                }
-            }
-            else
-            {
-                removeErr(_key);
-            }
-        }
-    }
-
-    public static void Remove<T,U,I>(string _key,Action<T,U,I> _callBack)
-    {
-        if(m_events.ContainsKey(_key))
-        {
-            if(equalsType(m_events[_key],_callBack))
-            {
-                Action<T,U,I> callBack = m_events[_key] as Action<T,U,I>;
-                callBack-=_callBack;
-                if(callBack== null)
-                {
-                    removeEvent(_key);
-                }
-                else
-                {
-                    m_events[_key] = callBack;
-                }
-            }
-            else
-            {
-                removeErr(_key);
-            }
-        }
-    }
-
-    public static void Broadcast(string _key)
-    {
-        if(m_events.ContainsKey(_key))
-        {
-            Action e = m_events[_key] as Action;
-            if(e!= null)
-            {
-                e();
-            }
-            else
-            {
-                broadcastErr(_key);
-            }
-        }
-    }
-
-    public static void Broadcast<T>(string _key,T _t)
-    {
-        if(m_events.ContainsKey(_key))
-        {
-            Action<T> e = m_events[_key] as Action<T>;
-            if(e!= null)
-            {
-                e(_t);
-            }
-            else
-            {
-                broadcastErr(_key);
-            }
-        }
-    }
-
-    public static void Broadcast<T,U>(string _key,T _t,U _u)
-    {
-        
-        if(m_events.ContainsKey(_key))
-        {
-            Action<T,U> e = m_events[_key] as Action<T,U>;
-            if(e!= null)
-            {
-                e(_t,_u);
-            }
-            else
-            {
-                broadcastErr(_key);
-            }
-        }
-    }
-
-    public static void Broadcast<T,U,I>(string _key,T _t,U _u,I _i)
-    {
-        
-        if(m_events.ContainsKey(_key))
-        {
-            Action<T,U,I> e = m_events[_key] as Action<T,U,I>;
-            if(e!= null)
-            {
-                e(_t,_u,_i);
-            }
-            else
-            {
-                broadcastErr(_key);
-            }
-        }
-    }
-
-
-
-    static bool equalsType(Delegate _e1, Delegate _e2)
-    {
-        return _e1.GetType()==_e2.GetType();
-    }
-
-    static void addEvent(string _key,Delegate _callBack)
-    {
-        m_events[_key]=_callBack;
-    }
-
-    static void removeEvent(string _key)
-    {
-        m_events.Remove(_key);
-    }
-
-    static void addErr(string _key)
-    {
-        Debug.LogError($"[Broadcaster.addErr]监听事件冲突:{_key}");
-    }
-
-    static void removeErr(string _key)
-    {
-        Debug.LogError($"[Broadcaster.removeErr]移除事件冲突:{_key}");
-    }
-
-    static void broadcastErr(string _key)
-    {
-        Debug.LogError($"[Broadcaster.broadcastErr]广播事件冲突:{_key}");
-    }
+    /// <summary>
+    /// 表示他是一个可广播的信息
+    /// </summary>
+    public interface IMessage{}
 }
