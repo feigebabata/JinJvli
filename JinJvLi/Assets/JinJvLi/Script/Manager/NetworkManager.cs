@@ -29,7 +29,11 @@ namespace JinJvli
             StartReceveBroadcast();
         }
 
-        public void Clear(){}
+        public void Clear()
+        {
+            m_udpReceveClient.Close();
+            m_udpSendClient.Close();
+        }
 
         public void Update()
         {
