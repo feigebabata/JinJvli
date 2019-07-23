@@ -8,7 +8,7 @@ namespace JinJvli
     public class PanelManager : IManager
     {
         List<PanelBase> m_panels = new List<PanelBase>();
-        Queue<Type> m_panelQueue = new Queue<Type>();
+        Stack<Type> m_panelQueue = new Stack<Type>();
         Dictionary<Type,PanelConfigAttribute> m_panelConfigs = new Dictionary<Type, PanelConfigAttribute>();
         Transform m_panelParent;
 
@@ -54,7 +54,7 @@ namespace JinJvli
         {
             if(m_panelQueue.Count>0)
             {
-                Type panelType = m_panelQueue.Dequeue();
+                Type panelType = m_panelQueue.Pop();
                 PanelBase panel=null;
                 var panelConfig = getPanelConfig(panelType);
                 for (int i = m_panels.Count-1; i >= 0; i--)
@@ -113,7 +113,7 @@ namespace JinJvli
 
         void addPanelQueue(Type _type)
         {
-            m_panelQueue.Enqueue(_type);
+            m_panelQueue.Push(_type);
         }
 
         PanelBase createPanel(string _prefabPath,Type _panelType)
@@ -147,5 +147,40 @@ namespace JinJvli
             }
             return null;
         }
+    }
+    
+    /// <summary>
+    /// 表示这是一个UI界面
+    /// </summary>
+    public class PanelBase : MonoBehaviour
+    {
+        public virtual void Open(object _openData = null){}
+        public virtual void Close(){}
+    }
+
+    public class PanelConfigAttribute : Attribute
+    {
+        /// <summary>
+        /// 界面预制体路径
+        /// </summary>
+        /// <value></value>
+        public string PrefabPath{ get;private set;}
+        /// <summary>
+        /// 关闭后自动销毁
+        /// </summary>
+        /// <value></value>
+        public bool AutoDestroy{ get;private set;}
+        /// <summary>
+        /// 只存在一个
+        /// </summary>
+        /// <value></value>
+        public bool Only{ get;private set;}
+        public PanelConfigAttribute(string _prefabPath,bool _autoDestroy=false,bool _only=true)
+        {
+            PrefabPath = _prefabPath;
+            AutoDestroy = _autoDestroy;
+            Only = _only;
+        }
+        
     }
 }

@@ -7,9 +7,9 @@ using System.Collections;
 /// </summary>
 public class Coroutines : MonoSingleton<Coroutines>
 {
-    public void Delay(float _delay,Action _callBack)
+    public Coroutine Delay(float _delay,Action _callBack)
     {
-        StartCoroutine(delay(_delay,_callBack));
+        return StartCoroutine(delay(_delay,_callBack));
     }
 
     IEnumerator delay(float _delay,Action _callBack)
@@ -17,9 +17,9 @@ public class Coroutines : MonoSingleton<Coroutines>
         yield return new WaitForSeconds(_delay);
         _callBack();
     }
-    public void DelayFrame(int _frameCount,Action _callBack)
+    public Coroutine DelayFrame(int _frameCount,Action _callBack)
     {
-        StartCoroutine(delayFrame(_frameCount,_callBack));
+        return StartCoroutine(delayFrame(_frameCount,_callBack));
     }
 
     IEnumerator delayFrame(int _frameCount,Action _callBack)
@@ -31,9 +31,14 @@ public class Coroutines : MonoSingleton<Coroutines>
         _callBack();
     }
 
-    public void Run(IEnumerator _enumerator)
+    public Coroutine Run(IEnumerator _enumerator)
     {
-        StartCoroutine(_enumerator);
+        return StartCoroutine(_enumerator);
+    }
+
+    public void Stop(Coroutine _enumerator)
+    {
+        StopCoroutine(_enumerator);
     }
 
     public void Clear()

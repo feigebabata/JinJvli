@@ -17,6 +17,11 @@ namespace JinJvli
             setAppConfig();
             init();
         }
+        
+        void OnApplicationQuit()
+        {
+            clearAllManager();
+        }
 
         void setAppConfig()
         {
