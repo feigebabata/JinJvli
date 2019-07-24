@@ -4,6 +4,7 @@ using System;
 using UnityEngine;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace JinJvli
 {
@@ -18,7 +19,7 @@ namespace JinJvli
         
         Dictionary<Type,IClient> m_clients = new Dictionary<Type, IClient>();
 
-        UdpClient m_udpSendClient,m_udpReceveClient;
+        UdpClient m_sendBroadcastClient,m_receveBroadcastClient;
 
         IPEndPoint m_broadcastIPEnd;
 
@@ -26,16 +27,18 @@ namespace JinJvli
 
         public void Init()
         {
-            m_udpSendClient = new UdpClient(Config.UdpClientPort);
-            m_udpReceveClient = new UdpClient(Config.BroadcastPort);
+            m_sendBroadcastClient = new UdpClient(Config.UdpClientPort);
+            m_receveBroadcastClient = new UdpClient(Config.BroadcastPort);
             m_broadcastIPEnd = new IPEndPoint(IPAddress.Parse(Config.BroadcastIP),Config.BroadcastPort);
             StartReceveBroadcast();
         }
 
         public void Clear()
         {
-            m_udpReceveClient.Close();
-            m_udpSendClient.Close();
+            StopReceveBroadcast();
+            m_sendBroadcastClient.Close();
+            m_sendBroadcastClient.Dispose();
+            m_receveBroadcastClient.Dispose();
         }
 
         public void Update()
@@ -59,7 +62,7 @@ namespace JinJvli
             byte[] data = _sendData.Pack();
             try
             {
-                m_udpSendClient.SendAsync(data, data.Length,m_broadcastIPEnd);
+                m_sendBroadcastClient.SendAsync(data, data.Length,m_broadcastIPEnd);
             }
             catch(Exception _ex)
             {
@@ -80,7 +83,7 @@ namespace JinJvli
 
                 try
                 {
-                    data = m_udpReceveClient.Receive(ref m_broadcastIPEnd);
+                    data = m_receveBroadcastClient.Receive(ref m_broadcastIPEnd);
                 }
                 catch (Exception _ex)
                 {
@@ -89,7 +92,6 @@ namespace JinJvli
                 }
             }
         }
-
         public void StartReceveBroadcast()
         {
             m_receveBroadcastID = (int)Time.time;
@@ -99,6 +101,7 @@ namespace JinJvli
         public void StopReceveBroadcast()
         {
             m_receveBroadcastID = (int)Time.time;
+            m_receveBroadcastClient.Close();
         }
         
     }
