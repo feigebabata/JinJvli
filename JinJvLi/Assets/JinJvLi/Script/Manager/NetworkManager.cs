@@ -3,6 +3,7 @@ using System.Net;
 using System;
 using UnityEngine;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace JinJvli
 {
@@ -15,6 +16,8 @@ namespace JinJvli
             public const int UdpClientPort=30002;
         }
         
+        Dictionary<Type,IClient> m_clients = new Dictionary<Type, IClient>();
+
         UdpClient m_udpSendClient,m_udpReceveClient;
 
         IPEndPoint m_broadcastIPEnd;
@@ -38,6 +41,17 @@ namespace JinJvli
         public void Update()
         {
             
+        }
+
+        public T Clients<T>() where T : IClient
+        {
+            Type clientType = typeof(T);
+            if(!m_clients.ContainsKey(clientType))
+            {
+                IClient client = Activator.CreateInstance(clientType) as IClient;
+                m_clients[clientType]=client;
+            }
+            return (T)m_clients[clientType];
         }
 
         public void SendBroadcast(ISendData _sendData)
@@ -97,5 +111,17 @@ namespace JinJvli
     public interface IReceveData
     {
         T Unpack<T>(byte[] _data);
+    }
+
+    public interface IClient
+    {
+        void Connect(string _ip,int _port);
+        void Close();
+    }
+
+    public interface IServer
+    {
+        void Start();
+        void Stop();
     }
 }
