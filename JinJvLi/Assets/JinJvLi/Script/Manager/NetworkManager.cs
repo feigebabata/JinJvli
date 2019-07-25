@@ -57,12 +57,13 @@ namespace JinJvli
             return (T)m_clients[clientType];
         }
 
-        public void SendBroadcast(ISendData _sendData)
+        public async void SendBroadcast(ISendData _sendData)
         {
             byte[] data = _sendData.Pack();
             try
             {
-                m_sendBroadcastClient.SendAsync(data, data.Length,m_broadcastIPEnd);
+                var length = await m_sendBroadcastClient.SendAsync(data, data.Length,m_broadcastIPEnd);
+                Debug.Log(length);
             }
             catch(Exception _ex)
             {
@@ -70,7 +71,7 @@ namespace JinJvli
             }
         }
 
-        void receveBroadcast()
+        async void receveBroadcast()
         {
             byte[] data = null;
             int receveID = m_receveBroadcastID;
@@ -78,12 +79,13 @@ namespace JinJvli
             {
                 if(data!=null)
                 {
-
+                    Debug.Log(System.Text.Encoding.UTF8.GetString(data));
                 }
 
                 try
                 {
-                    data = m_receveBroadcastClient.Receive(ref m_broadcastIPEnd);
+                    var result = await m_receveBroadcastClient.ReceiveAsync();
+                    data = result.Buffer;
                 }
                 catch (Exception _ex)
                 {
@@ -95,7 +97,8 @@ namespace JinJvli
         public void StartReceveBroadcast()
         {
             m_receveBroadcastID = (int)Time.time;
-            Task.Run(receveBroadcast);
+            receveBroadcast();
+            // Task.Run(receveBroadcast);
         }
 
         public void StopReceveBroadcast()
