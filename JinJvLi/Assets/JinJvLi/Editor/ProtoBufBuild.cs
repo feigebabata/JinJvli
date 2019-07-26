@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,7 +10,7 @@ public class ProtoBufBuild : Editor
 {
     const string Extension = ".proto";
 
-    [MenuItem("ProtoBuf/Build Selection")]
+    [MenuItem("Assets/Build Proto")]
     public static void Build()
     {
         Object[] objects = Selection.objects;
@@ -33,23 +34,31 @@ public class ProtoBufBuild : Editor
             }
         }
         UnityEngine.Debug.LogWarning($"[ProtoBufBuild.Build]选择proto文件数{protoFilePaths.Count}");
-        string csharpDir = Application.dataPath+"/JinJvLi/Script/ProtoCsharp";
-        if(!Directory.Exists(csharpDir))
-        {
-            Directory.CreateDirectory(csharpDir);
-        }
-        string cmd,proto_path,csharp_out;
-        csharp_out = csharpDir;
+        string cmd,protoName,csharpDir;
+        string cmdFilepath=Application.dataPath+"/JinJvLi/Editor/build.cmd";
+        string protocPath = Application.dataPath+"/protoc-3.9.0-win64/bin/protoc.exe";
+        List<string> cmds;
         foreach (var path in protoFilePaths)
         {
-            proto_path = path;
-            cmd = $"protoc --proto_path={proto_path} test.proto --csharp_out={csharp_out}";
-            RunCmd(cmd);
+            protoName = Path.GetFileName(path);
+            csharpDir = path.Replace(protoName,"CSharp");
+            if(!Directory.Exists(csharpDir))
+            {
+                Directory.CreateDirectory(csharpDir);
+            }
+            cmds = new List<string>();
+            cmd = $"\n{path.Substring(0,path.IndexOf(":")+1)}";
+            cmds.Add(cmd);
+            cmd = $"\ncd {path.Replace(protoName,"")}";
+            cmds.Add(cmd);
+            cmd = $"\n{protocPath} ./{protoName}  --csharp_out ./CSharp";
+            cmds.Add(cmd);
+            RunCmd(cmds);
         }
         AssetDatabase.Refresh();
     }
 
-    public static string RunCmd(string cmd)
+    public static string RunCmd(List<string> cmds)
     {
         Process proc = new Process();
         proc.StartInfo.CreateNoWindow = true;
@@ -59,7 +68,10 @@ public class ProtoBufBuild : Editor
         proc.StartInfo.RedirectStandardInput = true;
         proc.StartInfo.RedirectStandardOutput = true;
         proc.Start();
-        proc.StandardInput.WriteLine(cmd);
+        foreach(string cmd in cmds)
+        {
+            proc.StandardInput.WriteLine(cmd);
+        }
         proc.StandardInput.WriteLine("exit");
         string outStr = proc.StandardOutput.ReadToEnd();
         proc.Close();
