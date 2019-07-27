@@ -4,5 +4,6 @@ package Lobby;
 
 message GameRoom
 {
-    
+    string GameName= 1;
+    int32 ID=2;
 }

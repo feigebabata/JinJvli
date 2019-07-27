@@ -1,0 +1,26 @@
+syntax = "proto3";
+option java_multiple_files = true;
+
+message PFSenceTimeJsonData {
+    repeated SenceTimeBoneData BoneCustomDataList = 1;
+    SenceTimeAttrSet attributeSet = 2;
+}
+
+message SenceTimeBoneData {
+    string BoneName = 1;
+    JsonVec3 PositionValue = 2;
+    JsonVec3 RotationValue = 3;
+    JsonVec3 ScaleValue = 4;
+}
+
+message JsonVec3 {
+    float x = 1;
+    float y = 2;
+    float z = 3;
+}
+
+message SenceTimeAttrSet {
+    string glasses = 1;
+    string hair = 2;
+    string gender = 3;
+}

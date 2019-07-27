@@ -36,7 +36,7 @@ public class ProtoBufBuild : Editor
         UnityEngine.Debug.LogWarning($"[ProtoBufBuild.Build]选择proto文件数{protoFilePaths.Count}");
         string cmd,protoName,csharpDir;
         string cmdFilepath=Application.dataPath+"/JinJvLi/Editor/build.cmd";
-        string protocPath = Application.dataPath+"/protoc-3.9.0-win64/bin/protoc.exe";
+        string protocPath = Application.dataPath+"/protoc-3.7.1-win64/Output/protoc.exe";
         List<string> cmds;
         foreach (var path in protoFilePaths)
         {
