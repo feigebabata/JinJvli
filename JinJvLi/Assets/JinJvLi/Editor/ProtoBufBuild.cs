@@ -47,7 +47,7 @@ public class ProtoBufBuild : Editor
                 Directory.CreateDirectory(csharpDir);
             }
             cmds = new List<string>();
-            cmd = $"\n{path.Substring(0,path.IndexOf(":")+1)}";
+            cmd = $"\n{Path.GetPathRoot(path)}";
             cmds.Add(cmd);
             cmd = $"\ncd {path.Replace(protoName,"")}";
             cmds.Add(cmd);

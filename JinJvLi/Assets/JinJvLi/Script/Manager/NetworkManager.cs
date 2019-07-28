@@ -12,9 +12,10 @@ namespace JinJvli
     {
         public static class Config
         {
-            public const string BroadcastIP = "192.168.1.255";
-            public const int BroadcastPort = 30001;
-            public const int UdpClientPort=30002;
+            public const string BROADCASR_IP = "192.168.1.255";
+            public const int BROADCASR_PORT = 30001;
+            public const int UDP_CLIENT_PORT=30002;
+            public const int PACK_MAX_LENGTH=1024;
         }
         
         Dictionary<Type,IClient> m_clients = new Dictionary<Type, IClient>();
@@ -27,9 +28,9 @@ namespace JinJvli
 
         public void Init()
         {
-            m_sendBroadcastClient = new UdpClient(Config.UdpClientPort);
-            m_receveBroadcastClient = new UdpClient(Config.BroadcastPort);
-            m_broadcastIPEnd = new IPEndPoint(IPAddress.Parse(Config.BroadcastIP),Config.BroadcastPort);
+            m_sendBroadcastClient = new UdpClient(Config.UDP_CLIENT_PORT);
+            m_receveBroadcastClient = new UdpClient(Config.BROADCASR_PORT);
+            m_broadcastIPEnd = new IPEndPoint(IPAddress.Parse(Config.BROADCASR_IP),Config.BROADCASR_PORT);
             StartReceveBroadcast();
         }
 
@@ -63,7 +64,7 @@ namespace JinJvli
             try
             {
                 var length = await m_sendBroadcastClient.SendAsync(data, data.Length,m_broadcastIPEnd);
-                Debug.Log(length);
+                Debug.Log("send "+length);
             }
             catch(Exception _ex)
             {
@@ -79,7 +80,7 @@ namespace JinJvli
             {
                 if(data!=null)
                 {
-                    Debug.Log(System.Text.Encoding.UTF8.GetString(data));
+                    Debug.Log("receve "+data.Length);
                 }
 
                 try

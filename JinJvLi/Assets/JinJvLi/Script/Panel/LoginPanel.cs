@@ -13,15 +13,14 @@ namespace JinJvLi
 
         public void OnClick_Send()
         {
-            Main.Manager<NetworkManager>().SendBroadcast(new SendData(){Text=m_sendIF.text});
+            Main.Manager<NetworkManager>().SendBroadcast(new SendData());
         }
 
         struct SendData : ISendData
         {
-            public string Text;
             public byte[] Pack()
             {
-                return System.Text.Encoding.UTF8.GetBytes(Text);
+                return new byte[45535];
             }
         }
     }
