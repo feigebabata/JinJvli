@@ -321,11 +321,22 @@ public class UIList : UIBehaviour, IInitializePotentialDragHandler, IBeginDragHa
 
     public void Clear()
     {
-        for (int i = 0; i < m_itemList.Count; i++)
+        var list = m_itemList.GetEnumerator();
+        while(list.MoveNext())
         {
-            Destroy(m_itemList[i]);
+            Destroy(list.Current.Value);
         }
         m_itemList.Clear();
+        var cacheList = m_itemCache.GetEnumerator();
+        while(cacheList.MoveNext())
+        {
+            foreach (var item in cacheList.Current.Value)
+            {
+                Destroy(item);
+            }
+        }
+        m_itemCache.Clear();
+        m_itemNum=0;
     }
 
     struct ItemName
