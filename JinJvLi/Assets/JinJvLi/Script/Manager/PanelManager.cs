@@ -8,7 +8,7 @@ namespace JinJvli
     public class PanelManager : IManager
     {
         List<PanelBase> m_panels = new List<PanelBase>();
-        Stack<Type> m_panelQueue = new Stack<Type>();
+        Stack<Type> m_panelStack = new Stack<Type>();
         Dictionary<Type,PanelConfigAttribute> m_panelConfigs = new Dictionary<Type, PanelConfigAttribute>();
         Transform m_panelParent;
 
@@ -52,9 +52,9 @@ namespace JinJvli
         }
         public void CloseCurPanel()
         {
-            if(m_panelQueue.Count>0)
+            if(m_panelStack.Count>0)
             {
-                Type panelType = m_panelQueue.Pop();
+                Type panelType = m_panelStack.Pop();
                 PanelBase panel=null;
                 var panelConfig = getPanelConfig(panelType);
                 for (int i = m_panels.Count-1; i >= 0; i--)
@@ -81,10 +81,10 @@ namespace JinJvli
                 }
 
                 //显示之前界面
-                if(m_panelQueue.Count>0)
+                if(m_panelStack.Count>0)
                 {
                     panel=null;
-                    panelType = m_panelQueue.Peek();
+                    panelType = m_panelStack.Peek();
                     panelConfig = getPanelConfig(panelType);
                     for (int i = m_panels.Count-1; i >= 0; i--)
                     {
@@ -113,7 +113,7 @@ namespace JinJvli
 
         void addPanelQueue(Type _type)
         {
-            m_panelQueue.Push(_type);
+            m_panelStack.Push(_type);
         }
 
         PanelBase createPanel(string _prefabPath,Type _panelType)
