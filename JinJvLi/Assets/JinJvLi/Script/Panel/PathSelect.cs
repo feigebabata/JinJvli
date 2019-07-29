@@ -40,7 +40,7 @@ namespace JinJvli
         public override void Open(object _openData = null)
         {
             m_openData = _openData as OpenData;
-            m_curDirPath = PlayerPrefs.GetString(Config.SELECT_PATH);
+            // m_curDirPath = PlayerPrefs.GetString(Config.SELECT_PATH);
             if(!Directory.Exists(m_curDirPath))
             {
                 m_curDirPath=null;
@@ -97,8 +97,7 @@ namespace JinJvli
             #else
             for (int i = 0; i < drives.Length; i++)
             {
-                var dirs = Directory.GetDirectories(drives[i].Name);
-                m_pathRoots.AddRange(new List<string>(dirs));
+                m_pathRoots.Add(drives[i].Name);
             }
             #endif
         }
@@ -130,7 +129,7 @@ namespace JinJvli
             }
         }
 
-        public void OnClickBack()
+        public void OnClickClose()
         {
             Main.Manager<PanelManager>().CloseCurPanel();
         }
@@ -140,7 +139,14 @@ namespace JinJvli
             _item.GetComponent<Button>().onClick.RemoveAllListeners();
             if(_index<m_curDirs.Length)
             {
-                _item.GetChild(0).GetComponent<TMP_Text>().text = m_curDirs[_index];
+                if(string.IsNullOrEmpty(m_curDirPath))
+                {
+                    _item.GetChild(0).GetComponent<TMP_Text>().text = m_curDirs[_index];
+                }
+                else
+                {
+                    _item.GetChild(0).GetComponent<TMP_Text>().text = Path.GetFileName(m_curDirs[_index]);
+                }
                 _item.GetComponent<Button>().onClick.AddListener(()=>
                 {
                     nextDir(m_curDirs[_index]);
@@ -148,11 +154,12 @@ namespace JinJvli
             }
             else
             {
-                _item.GetChild(0).GetComponent<TMP_Text>().text = m_curFiles[_index-m_curDirs.Length];
-                _item.GetChild(1).GetComponent<TMP_Text>().text = Path.GetExtension(m_curFiles[_index-m_curDirs.Length]);
+                _item.GetChild(0).GetComponent<TMP_Text>().text = Path.GetFileName(m_curFiles[_index-m_curDirs.Length]);
+                _item.GetChild(1).GetChild(1).GetComponent<TMP_Text>().text = Path.GetExtension(m_curFiles[_index-m_curDirs.Length]);
+                _item.GetChild(1).GetChild(0).gameObject.SetActive(false);
                 _item.GetComponent<Button>().onClick.AddListener(()=>
                 {
-                    selectItem(_index,_item.GetChild(2).gameObject);
+                    selectItem(_index,_item.GetChild(1).GetChild(0).gameObject);
                 });
             }
         }
@@ -166,7 +173,7 @@ namespace JinJvli
             }
             else
             {
-                if(m_select.Count>m_openData.MaxSelectCount)
+                if(m_select.Count>=m_openData.MaxSelectCount)
                 {
                     return;
                 }
@@ -179,11 +186,11 @@ namespace JinJvli
         {
             if(_index<m_curDirs.Length)
             {
-                return 0;
+                return 1;
             }
             else
             {
-                return 1;
+                return 0;
             }
         }
     }

@@ -23,9 +23,26 @@ namespace JinJvli
 
         public void Open<T>(object _openData=null) where T:PanelBase
         {
-            Type panelType = typeof(T);
-            var panelConfig = getPanelConfig(panelType);
+            //隐藏旧界面
             PanelBase panel=null;
+            Type panelType = null;
+            if(m_panelStack.Count>0)
+            {
+                panelType = m_panelStack.Pop();
+            }
+            panel = null;
+            for (int i = m_panels.Count-1; i >= 0 ; i--)
+            {
+                if(m_panels[i].GetType()==panelType)
+                {
+                    m_panels[i].gameObject.SetActive(false);
+                    break;
+                }
+            }
+
+            //打开新界面
+            panelType = typeof(T);
+            var panelConfig = getPanelConfig(panelType);
             for (int i = m_panels.Count-1; i >=0 ; i--)
             {
                 if(m_panels[i].GetType()==panelType)
@@ -49,6 +66,7 @@ namespace JinJvli
 
                 }
             }
+            m_panels.Add(panel);
         }
         public void CloseCurPanel()
         {

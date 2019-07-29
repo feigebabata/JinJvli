@@ -77,12 +77,14 @@ public class UIList : UIBehaviour, IInitializePotentialDragHandler, IBeginDragHa
         {
             m_v_Line=1;
         }
-        ResetUIList();
     }
 
     protected override void Awake()
     {
-        ResetUIList();
+        for (int i = 0; i < m_itemProviders.Length; i++)
+        {
+            m_itemProviders[i].gameObject.SetActive(false);
+        }
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -121,6 +123,8 @@ public class UIList : UIBehaviour, IInitializePotentialDragHandler, IBeginDragHa
             Debug.LogWarning("UIList.Item Providers不能为空!");
             return;
         }
+        m_drag_H=0;
+        m_drag_V=0;
         m_listSize = GetComponent<RectTransform>().sizeDelta;
         m_list_left = transform.localPosition.x-m_listSize.x/2;
         m_list_right = transform.localPosition.x+m_listSize.x/2;
@@ -211,6 +215,7 @@ public class UIList : UIBehaviour, IInitializePotentialDragHandler, IBeginDragHa
     {
         int firstIndex = Mathf.FloorToInt(Mathf.Abs(m_drag_V)/m_itemSize.y)*H_Line;
         int endIndex = Mathf.Min(Mathf.CeilToInt((Mathf.Abs(m_drag_V)+m_listSize.y)/m_itemSize.y)*H_Line,(int)ItemNum);
+        Debug.Log($"firstIndex {firstIndex}  {endIndex}");
         for (int index = firstIndex; index < endIndex; index++)
         {
             int providerIndex = 0;
