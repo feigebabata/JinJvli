@@ -11,6 +11,7 @@ namespace JinJvli
         Stack<Type> m_panelStack = new Stack<Type>();
         Dictionary<Type,PanelConfigAttribute> m_panelConfigs = new Dictionary<Type, PanelConfigAttribute>();
         Transform m_panelParent;
+        PanelBase m_curPanel;
 
         public void Init()
         {
@@ -21,23 +22,19 @@ namespace JinJvli
 
         public void Update(){}
 
+        /// <summary>
+        /// 别在Open里打开新界面 会出Bug
+        /// </summary>
+        /// <param name="_openData"></param>
+        /// <typeparam name="T"></typeparam>
         public void Open<T>(object _openData=null) where T:PanelBase
         {
-            //隐藏旧界面
             PanelBase panel=null;
             Type panelType = null;
-            if(m_panelStack.Count>0)
+            // //隐藏旧界面
+            if(m_curPanel)
             {
-                panelType = m_panelStack.Pop();
-            }
-            panel = null;
-            for (int i = m_panels.Count-1; i >= 0 ; i--)
-            {
-                if(m_panels[i].GetType()==panelType)
-                {
-                    m_panels[i].gameObject.SetActive(false);
-                    break;
-                }
+                m_curPanel.Hide();
             }
 
             //打开新界面
@@ -53,28 +50,39 @@ namespace JinJvli
             }
             if(panel== null)
             {
-                createPanel(panelConfig.PrefabPath,panelType).Open(_openData);
+                panel=createPanel(panelConfig.PrefabPath,panelType);
             }
             else
             {
-                if(panelConfig.Only)
+                if(!panelConfig.Only)
                 {
-                    panel.Open(_openData);
-                }
-                else
-                {
-
+                    // panel =;
                 }
             }
-            m_panels.Add(panel);
+            addPanelStack(panelType);
+            m_curPanel = panel;
+            panel.Open(_openData);
+            panel.Show();
         }
         public void CloseCurPanel()
         {
-            if(m_panelStack.Count>0)
+            if(m_panelStack.Count>1)
             {
-                Type panelType = m_panelStack.Pop();
-                PanelBase panel=null;
+                Type panelType = removePanelStack();
+                PanelBase panel=m_curPanel;
                 var panelConfig = getPanelConfig(panelType);
+                panel.Hide();
+                panel.Close();
+                if (panelConfig.AutoDestroy)
+                {
+                    m_panels.Remove(panel);
+                    GameObject.Destroy(panel.gameObject);
+                }
+
+                //显示之前界面
+                panel=null;
+                panelType = getPanelStack();
+                panelConfig = getPanelConfig(panelType);
                 for (int i = m_panels.Count-1; i >= 0; i--)
                 {
                     if(m_panels[i].GetType()==panelType)
@@ -83,44 +91,17 @@ namespace JinJvli
                         break;
                     }
                 }
-                if(panel != null)
+                if(panel == null)
                 {
-                    panel.Close();
-                    if (panelConfig.AutoDestroy)
-                    {
-                        m_panels.Remove(panel);
-                        panel=null;
-                    }
+                    panel = createPanel(panelConfig.PrefabPath,panelType);
                 }
-                else
-                {
-                    Debug.LogError($"[CloseCurPanel]找不到当前界面{panelType}");
-                    return;
-                }
-
-                //显示之前界面
-                if(m_panelStack.Count>0)
-                {
-                    panel=null;
-                    panelType = m_panelStack.Peek();
-                    panelConfig = getPanelConfig(panelType);
-                    for (int i = m_panels.Count-1; i >= 0; i--)
-                    {
-                        if(m_panels[i].GetType()==panelType)
-                        { 
-                            panel= m_panels[i];
-                            break;
-                        }
-                    }
-                    if(panel != null)
-                    {
-                        panel.Open();
-                    }
-                    else
-                    {
-                        panel = createPanel(panelConfig.PrefabPath,panelType);
-                    }
-                }
+                m_curPanel = panel;
+                panel.Open();
+                panel.Show();
+            }
+            else
+            {
+                Debug.LogWarning($"[CloseCurPanel]最后一个界面了");
             }
         }
 
@@ -129,9 +110,19 @@ namespace JinJvli
             m_panels.Add(_panel);
         }
 
-        void addPanelQueue(Type _type)
+        void addPanelStack(Type _type)
         {
             m_panelStack.Push(_type);
+        }
+
+        Type removePanelStack()
+        {
+            return m_panelStack.Pop();
+        }
+
+        Type getPanelStack()
+        {
+            return m_panelStack.Peek();
         }
 
         PanelBase createPanel(string _prefabPath,Type _panelType)
@@ -140,7 +131,6 @@ namespace JinJvli
             panel.name=_panelType.Name;
             panel.transform.localPosition = Vector3.zero;
             addPanel(panel);
-            addPanelQueue(_panelType);
             return panel;
         }
 
@@ -172,8 +162,11 @@ namespace JinJvli
     /// </summary>
     public class PanelBase : MonoBehaviour
     {
+        public bool IsShow;
         public virtual void Open(object _openData = null){}
         public virtual void Close(){}
+        public virtual void Show(){IsShow=true;gameObject.SetActive(true);}
+        public virtual void Hide(){IsShow=false;gameObject.SetActive(false);}
     }
 
     public class PanelConfigAttribute : Attribute

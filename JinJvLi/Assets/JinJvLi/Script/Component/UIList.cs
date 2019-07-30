@@ -215,7 +215,6 @@ public class UIList : UIBehaviour, IInitializePotentialDragHandler, IBeginDragHa
     {
         int firstIndex = Mathf.FloorToInt(Mathf.Abs(m_drag_V)/m_itemSize.y)*H_Line;
         int endIndex = Mathf.Min(Mathf.CeilToInt((Mathf.Abs(m_drag_V)+m_listSize.y)/m_itemSize.y)*H_Line,(int)ItemNum);
-        Debug.Log($"firstIndex {firstIndex}  {endIndex}");
         for (int index = firstIndex; index < endIndex; index++)
         {
             int providerIndex = 0;

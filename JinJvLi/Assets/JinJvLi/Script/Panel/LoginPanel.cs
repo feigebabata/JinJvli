@@ -14,13 +14,17 @@ namespace JinJvLi
 
         public override void Open(object _openData = null)
         {
-            PathSelect.OpenData openData = new PathSelect.OpenData();
-            Main.Manager<PanelManager>().Open<PathSelect>(openData);
+        }
+        public override void Show()
+        {
+            base.Show();
         }
 
         public void OnClick_Send()
         {
-            Main.Manager<NetworkManager>().SendBroadcast(new SendData());
+            PathSelect.OpenData openData = new PathSelect.OpenData();
+            Main.Manager<PanelManager>().Open<PathSelect>(openData);
+            // Main.Manager<NetworkManager>().SendBroadcast(new SendData());
         }
 
         struct SendData : ISendData
