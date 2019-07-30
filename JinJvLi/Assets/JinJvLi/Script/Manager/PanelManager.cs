@@ -162,6 +162,7 @@ namespace JinJvli
     /// </summary>
     public class PanelBase : MonoBehaviour
     {
+        [NonSerialized]
         public bool IsShow;
         public virtual void Open(object _openData = null){}
         public virtual void Close(){}

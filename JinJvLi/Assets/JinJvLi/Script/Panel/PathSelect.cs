@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-using TMPro;
 using UnityEngine.UI;
 
 namespace JinJvli
@@ -22,9 +21,11 @@ namespace JinJvli
             public Action<List<string>> Finsh;
         }
         List<string> m_pathRoots = new List<string>();
-        string m_curDirPath;
+        string m_curDirPath=string.Empty;
         [SerializeField]
         UIList m_uiList;
+        [SerializeField]
+        Text m_dirPath,m_dirCount;
         string[] m_curDirs;
         string[] m_curFiles;
         OpenData m_openData;
@@ -40,10 +41,10 @@ namespace JinJvli
         public override void Open(object _openData = null)
         {
             m_openData = _openData as OpenData;
-            // m_curDirPath = PlayerPrefs.GetString(Config.SELECT_PATH);
+            m_curDirPath = PlayerPrefs.GetString(Config.SELECT_PATH);
             if(!Directory.Exists(m_curDirPath))
             {
-                m_curDirPath=null;
+                m_curDirPath=string.Empty;
             }
             getDirAndFile();
         }
@@ -80,6 +81,8 @@ namespace JinJvli
             }
             m_uiList.ItemNum=0;
             m_uiList.ItemNum=(uint)(m_curDirs.Length+m_curFiles.Length);
+            m_dirPath.text = m_curDirPath;
+            m_dirCount.text = (m_curDirs.Length+m_curFiles.Length).ToString();
         }
 
         void getPathRoots()
@@ -104,6 +107,14 @@ namespace JinJvli
 
         void nextDir(string _path)
         {
+            try
+            {
+                Directory.GetDirectories(_path);
+            }
+            catch
+            {
+                return;
+            }
             m_curDirPath = _path;
             getDirAndFile();
         }
@@ -141,11 +152,11 @@ namespace JinJvli
             {
                 if(string.IsNullOrEmpty(m_curDirPath))
                 {
-                    _item.GetChild(0).GetComponent<TMP_Text>().text = m_curDirs[_index];
+                    _item.GetChild(0).GetComponent<Text>().text = m_curDirs[_index];
                 }
                 else
                 {
-                    _item.GetChild(0).GetComponent<TMP_Text>().text = Path.GetFileName(m_curDirs[_index]);
+                    _item.GetChild(0).GetComponent<Text>().text = Path.GetFileName(m_curDirs[_index]);
                 }
                 _item.GetComponent<Button>().onClick.AddListener(()=>
                 {
@@ -154,12 +165,12 @@ namespace JinJvli
             }
             else
             {
-                _item.GetChild(0).GetComponent<TMP_Text>().text = Path.GetFileName(m_curFiles[_index-m_curDirs.Length]);
-                _item.GetChild(1).GetChild(1).GetComponent<TMP_Text>().text = Path.GetExtension(m_curFiles[_index-m_curDirs.Length]);
-                _item.GetChild(1).GetChild(0).gameObject.SetActive(false);
+                _item.GetChild(0).GetComponent<Text>().text = Path.GetFileName(m_curFiles[_index-m_curDirs.Length]);
+                _item.GetChild(1).GetComponent<Text>().text = Path.GetExtension(m_curFiles[_index-m_curDirs.Length]);
+                _item.GetChild(2).gameObject.SetActive(false);
                 _item.GetComponent<Button>().onClick.AddListener(()=>
                 {
-                    selectItem(_index,_item.GetChild(1).GetChild(0).gameObject);
+                    selectItem(_index,_item.GetChild(2).gameObject);
                 });
             }
         }
