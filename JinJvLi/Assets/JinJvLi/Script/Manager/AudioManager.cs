@@ -8,7 +8,7 @@ using UnityEngine.Networking;
 
 namespace JinJvli
 {
-    public class AudioManager : IManager
+    public class AudioClipManager : IManager
     {
         public static string AUDIO_CACHE_PATH;
         Dictionary<string,Action<AudioClip>> waiting = new Dictionary<string,Action<AudioClip>>();
@@ -44,8 +44,8 @@ namespace JinJvli
 
         public string GetLocalPath(string _url)
         {
-            string fileName ="";// MD5Code.GetMD5HashFromData(Encoding.UTF8.GetBytes(_url))+Path.GetExtension(_url);
-            return $"{AUDIO_CACHE_PATH}/{fileName}";;
+            string fileName = MD5Code.GetMD5HashFromData(Encoding.UTF8.GetBytes(_url))+Path.GetExtension(_url);
+            return $"{AUDIO_CACHE_PATH}/{fileName}";
         }
 
         public void GetAudioClip(string _url,Action<AudioClip> _callback)

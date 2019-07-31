@@ -34,7 +34,7 @@ namespace JinJvli
             // //隐藏旧界面
             if(m_curPanel)
             {
-                m_curPanel.Hide();
+                m_curPanel.OnHide();
             }
 
             //打开新界面
@@ -61,8 +61,8 @@ namespace JinJvli
             }
             addPanelStack(panelType);
             m_curPanel = panel;
-            panel.Open(_openData);
-            panel.Show();
+            panel.OnOpen(_openData);
+            panel.OnShow();
         }
         public void CloseCurPanel()
         {
@@ -71,8 +71,8 @@ namespace JinJvli
                 Type panelType = removePanelStack();
                 PanelBase panel=m_curPanel;
                 var panelConfig = getPanelConfig(panelType);
-                panel.Hide();
-                panel.Close();
+                panel.OnHide();
+                panel.OnClose();
                 if (panelConfig.AutoDestroy)
                 {
                     m_panels.Remove(panel);
@@ -96,8 +96,8 @@ namespace JinJvli
                     panel = createPanel(panelConfig.PrefabPath,panelType);
                 }
                 m_curPanel = panel;
-                panel.Open();
-                panel.Show();
+                panel.OnOpen();
+                panel.OnShow();
             }
             else
             {
@@ -164,10 +164,11 @@ namespace JinJvli
     {
         [NonSerialized]
         public bool IsShow;
-        public virtual void Open(object _openData = null){}
-        public virtual void Close(){}
-        public virtual void Show(){IsShow=true;gameObject.SetActive(true);}
-        public virtual void Hide(){IsShow=false;gameObject.SetActive(false);}
+        public virtual void OnOpen(object _openData = null){}
+        public virtual void OnClose(){}
+        public virtual void OnShow(){IsShow=true;gameObject.SetActive(true);}
+        public virtual void OnHide(){IsShow=false;gameObject.SetActive(false);}
+        public virtual void OnClickClose(){Main.Manager<PanelManager>().CloseCurPanel();}
     }
 
     public class PanelConfigAttribute : Attribute

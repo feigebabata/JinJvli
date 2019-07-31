@@ -12,12 +12,8 @@ namespace JinJvLi
     {
         public TMP_InputField m_sendIF;
 
-        public override void Open(object _openData = null)
+        public override void OnOpen(object _openData = null)
         {
-        }
-        public override void Show()
-        {
-            base.Show();
         }
 
         public void OnClick_Send()

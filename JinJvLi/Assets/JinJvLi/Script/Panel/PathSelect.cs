@@ -38,7 +38,7 @@ namespace JinJvli
             m_uiList.m_ItemShow += onItemShow;
         }
 
-        public override void Open(object _openData = null)
+        public override void OnOpen(object _openData = null)
         {
             m_openData = _openData as OpenData;
             m_curDirPath = PlayerPrefs.GetString(Config.SELECT_PATH);
@@ -49,7 +49,7 @@ namespace JinJvli
             getDirAndFile();
         }
 
-        public override void Close()
+        public override void OnClose()
         {
             PlayerPrefs.SetString(Config.SELECT_PATH,m_curDirPath);
         }
@@ -138,11 +138,6 @@ namespace JinJvli
             {
                 m_openData.Finsh(m_select);
             }
-        }
-
-        public void OnClickClose()
-        {
-            Main.Manager<PanelManager>().CloseCurPanel();
         }
 
         void onItemShow(int _index, RectTransform _item)
