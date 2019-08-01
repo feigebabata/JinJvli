@@ -134,10 +134,21 @@ namespace JinJvli
 
         public void OnClickFinsh()
         {
+            if(m_openData.Finsh!=null && m_select.Count>0)
+            {
+                m_openData.Finsh(m_select);
+                base.OnClickClose();
+            }
+        }
+
+        public override void OnClickClose()
+        {
+            m_select.Clear();
             if(m_openData.Finsh!=null)
             {
                 m_openData.Finsh(m_select);
             }
+            base.OnClickClose();
         }
 
         void onItemShow(int _index, RectTransform _item)

@@ -63,9 +63,10 @@ namespace JinJvli
         {
             var assembly = Assembly.GetExecutingAssembly();
             var types = assembly.GetTypes();
+            Type imsgType = typeof(IManager);
             for (int i = 0; i < types.Length; i++)
             {
-                if(new List<Type>(types[i].GetInterfaces()).Contains(typeof(IManager)))
+                if(new List<Type>(types[i].GetInterfaces()).Contains(imsgType))
                 {
                     IManager mng = Activator.CreateInstance(types[i]) as IManager;
                     m_managers.Add(types[i],mng);

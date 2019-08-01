@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package Lobby;
+package JinJvLi.Lobby;
 
 message GameRoom
 {
