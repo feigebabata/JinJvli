@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Threading;
+using System.Net.NetworkInformation;
 
 namespace JinJvli
 {
@@ -15,6 +16,11 @@ namespace JinJvli
             public const string BROADCASR_IP = "192.168.1.255";
             public const int BROADCASR_PORT = 30001;
             public const int UDP_CLIENT_PORT=30002;
+
+            /// <summary>
+            /// 文件传输接口 多个文件传输时累加
+            /// </summary>
+            public const int FILE_TRANSPORT=31000;
             public const int PACK_MAX_LENGTH=1024;
         }
         
@@ -106,6 +112,26 @@ namespace JinJvli
         {
             m_receveBroadcastID = (int)Time.time;
             m_receveBroadcastClient.Close();
+        }
+
+        /// <summary>
+        /// 端口是否被占用
+        /// </summary>
+        /// <param name="_port"></param>
+        /// <returns></returns>
+        public static bool IsPortOccuped(int _port)
+        {
+            IPGlobalProperties ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
+            TcpConnectionInformation[] tcpConnInfoArray = ipGlobalProperties.GetActiveTcpConnections();
+
+            for(int i= 0;i<tcpConnInfoArray.Length;i++)
+            {
+                if (tcpConnInfoArray[i].LocalEndPoint.Port == _port)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
         
     }
