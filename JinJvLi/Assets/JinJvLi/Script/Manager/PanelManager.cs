@@ -42,7 +42,7 @@ namespace JinJvli
             var panelConfig = getPanelConfig(panelType);
             for (int i = m_panels.Count-1; i >=0 ; i--)
             {
-                if(m_panels[i].GetType()==panelType)
+                if(m_panels[i] is T)
                 {
                     panel = m_panels[i];
                     break;
@@ -145,7 +145,7 @@ namespace JinJvli
                 var atts = _panelType.GetCustomAttributes(false);
                 for (int i = 0; i < atts.Length; i++)
                 {
-                    if(atts[i].GetType()==typeof(PanelConfigAttribute))
+                    if(atts[i] is PanelConfigAttribute)
                     {
                         PanelConfigAttribute panelConfig = atts[i] as PanelConfigAttribute;
                         m_panelConfigs.Add(_panelType,panelConfig);
