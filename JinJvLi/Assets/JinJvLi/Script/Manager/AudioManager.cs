@@ -10,7 +10,7 @@ namespace JinJvli
 {
     public class AudioClipManager : IManager
     {
-        public static string AUDIO_CACHE_PATH;
+        public static string AUDIO_CACHE_DIR;
         Dictionary<string,Action<AudioClip>> waiting = new Dictionary<string,Action<AudioClip>>();
         Dictionary<string,AudioClip> cache = new Dictionary<string, AudioClip>();
         public void Clear()
@@ -20,7 +20,7 @@ namespace JinJvli
 
         public void ClearTexCache()
         {
-            string[] files = Directory.GetFiles(AUDIO_CACHE_PATH);
+            string[] files = Directory.GetFiles(AUDIO_CACHE_DIR);
             for (int i = 0; i < files.Length; i++)
             {
                 File.Delete(files[i]);
@@ -29,12 +29,13 @@ namespace JinJvli
 
         public void Init()
         {
-            AUDIO_CACHE_PATH = Path.Combine(Application.persistentDataPath,"audioCache");
-            AUDIO_CACHE_PATH = AUDIO_CACHE_PATH.Replace("\\","/");
-            if(!Directory.Exists(AUDIO_CACHE_PATH))
+            AUDIO_CACHE_DIR = Path.Combine(Application.persistentDataPath,"audioCache");
+            AUDIO_CACHE_DIR = AUDIO_CACHE_DIR.Replace("\\","/");
+            if(!Directory.Exists(AUDIO_CACHE_DIR))
             {
-                Directory.CreateDirectory(AUDIO_CACHE_PATH);
+                Directory.CreateDirectory(AUDIO_CACHE_DIR);
             }
+            Debug.Log(AUDIO_CACHE_DIR);
         }
 
         public void Update()
@@ -45,7 +46,7 @@ namespace JinJvli
         public string GetLocalPath(string _url)
         {
             string fileName = MD5Code.GetMD5HashFromData(Encoding.UTF8.GetBytes(_url))+Path.GetExtension(_url);
-            return $"{AUDIO_CACHE_PATH}/{fileName}";
+            return $"{AUDIO_CACHE_DIR}/{fileName}";
         }
 
         public void GetAudioClip(string _url,Action<AudioClip> _callback)

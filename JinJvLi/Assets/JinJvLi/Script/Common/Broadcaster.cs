@@ -7,13 +7,13 @@ using UnityEngine;
 /// </summary>
 public static class Broadcaster
 {
-    static Dictionary<Type, Action<IMessage>> m_events = new Dictionary<Type, Action<IMessage>>(); 
-    static Dictionary<Delegate, Action<IMessage>> m_eventSources = new Dictionary<Delegate, Action<IMessage>>(); 
+    static Dictionary<Type, Action<IMsg>> m_events = new Dictionary<Type, Action<IMsg>>(); 
+    static Dictionary<Delegate, Action<IMsg>> m_eventSources = new Dictionary<Delegate, Action<IMsg>>(); 
 
     public static void Clear<T>()
     {
         Type key = typeof(T);
-        Action<IMessage> evt;
+        Action<IMsg> evt;
         if(m_events.TryGetValue(key,out evt))
         {
             var eventSources = m_eventSources.GetEnumerator();
@@ -47,7 +47,7 @@ public static class Broadcaster
         m_eventSources.Clear();
     }
 
-    public static void Add<T>(Action<T> _event) where T : struct,IMessage
+    public static void Add<T>(Action<T> _event) where T : struct,IMsg
     {
         if(m_eventSources.ContainsKey(_event))
         {
@@ -55,7 +55,7 @@ public static class Broadcaster
             return;
         }
         Type eventType = typeof(T);
-        Action<IMessage> evt = (_msg)=>{ _event((T)_msg); };
+        Action<IMsg> evt = (_msg)=>{ _event((T)_msg); };
         m_eventSources[_event] = evt;
         if(m_events.ContainsKey(eventType))
         {
@@ -67,13 +67,13 @@ public static class Broadcaster
         }
     }
 
-    public static void Remove<T>(Action<T> _event) where T : struct,IMessage
+    public static void Remove<T>(Action<T> _event) where T : struct,IMsg
     {
-        Action<IMessage> evt;
+        Action<IMsg> evt;
         if(m_eventSources.TryGetValue(_event,out evt))
         {
             Type eventType = typeof(T);
-            Action<IMessage> eventAction = m_events[eventType];
+            Action<IMsg> eventAction = m_events[eventType];
             eventAction -= evt;
             if(eventAction==null)
             {
@@ -87,10 +87,10 @@ public static class Broadcaster
         }
     }
 
-    public static void Broadcast<T>(T _message) where T : struct,IMessage
+    public static void Broadcast<T>(T _message) where T : struct,IMsg
     {
         Type key = typeof(T);
-        Action<IMessage> evt;
+        Action<IMsg> evt;
         if(m_events.TryGetValue(key,out evt))
         {
            evt(_message);
@@ -100,5 +100,5 @@ public static class Broadcaster
     /// <summary>
     /// 表示他是一个可广播的信息
     /// </summary>
-    public interface IMessage{}
+    public interface IMsg{}
 }

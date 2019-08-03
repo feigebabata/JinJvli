@@ -6,12 +6,12 @@ using UnityEngine.UI;
 
 namespace JinJvli
 {
-    [PanelConfig("JJL_Panel/PathSelect",true)]
-    public class PathSelect: PanelBase
+    [PanelConfig("JJL_Panel/PathSelectPanel",true)]
+    public class PathSelectPanel: PanelBase
     {
         public static class Config
         {
-            public const string SELECT_PATH = "PathSelect.PATH";
+            public const string SELECT_PATH = "PathSelectPanel.PATH";
             public const string ANY_FLIE_TYPE = ".*";
         }
         public class OpenData

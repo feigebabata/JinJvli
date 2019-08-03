@@ -6,6 +6,9 @@ using TMPro;
 using System.Collections.Generic;
 using System;
 using Google.Protobuf;
+using JinJvLi.Lobby;
+using System.Net;
+using System.IO;
 
 namespace JinJvLi
 {
@@ -45,6 +48,7 @@ namespace JinJvLi
                     dev_name = "未知";
                 }
                 m_selfInfo.Name = dev_name;
+                m_selfInfo.Color = "#"+m_selfInfo.UID.Substring(0,6);
                 PlayerPrefs.SetString(Config.SELF_INFO,m_selfInfo.ToString());
             }
             else
@@ -56,11 +60,7 @@ namespace JinJvLi
 
         public void OnClick_Send()
         {
-            PathSelect.OpenData openData = new PathSelect.OpenData();
-            openData.FileTypes = new List<string>(){".mp3"};
-            openData.Finsh = selectAudioResult;
-            Main.Manager<PanelManager>().Open<PathSelect>(openData);
-            // Main.Manager<NetworkManager>().SendBroadcast(new SendData());
+            Main.Manager<PanelManager>().Open<OnlineGamePanel>();
         }
 
         public void OnEndEdit(string _text)
@@ -79,7 +79,29 @@ namespace JinJvLi
         {
             if(obj.Count>0)
             {
-                Debug.Log(obj[0]);
+                string filePath = obj[0];
+                Debug.Log(filePath);
+                FileSender sender = new FileSender(filePath);
+                FileTransfer transfer = new FileTransfer();
+                transfer.FileName = Path.GetFileName(filePath);
+                transfer.FileSize = sender.Size;
+                transfer.IP = NetworkManager.GetLocalIP().ToString();
+                transfer.Port = sender.Port;
+                recver = new FileRecver(transfer,"D:/");
+            }
+        }
+
+        FileRecver recver;
+
+        void Update()
+        {
+            if(recver!= null)
+            {
+                Debug.Log(recver.Result);
+                if(recver.Result==1 || recver.Result==-1)
+                {
+                    recver=null;
+                }
             }
         }
 

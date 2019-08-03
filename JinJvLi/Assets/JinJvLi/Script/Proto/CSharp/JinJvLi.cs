@@ -24,12 +24,12 @@ namespace JinJvLi {
     static JinJvLiReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "Cg1KaW5KdkxpLnByb3RvEgdKaW5KdkxpIiUKCFVzZXJJbmZvEgwKBE5hbWUY",
-            "ASABKAkSCwoDVUlEGAIgASgJYgZwcm90bzM="));
+            "Cg1KaW5KdkxpLnByb3RvEgdKaW5KdkxpIjQKCFVzZXJJbmZvEgwKBE5hbWUY",
+            "ASABKAkSCwoDVUlEGAIgASgJEg0KBUNvbG9yGAMgASgJYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::JinJvLi.UserInfo), global::JinJvLi.UserInfo.Parser, new[]{ "Name", "UID" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::JinJvLi.UserInfo), global::JinJvLi.UserInfo.Parser, new[]{ "Name", "UID", "Color" }, null, null, null)
           }));
     }
     #endregion
@@ -63,6 +63,7 @@ namespace JinJvLi {
     public UserInfo(UserInfo other) : this() {
       name_ = other.name_;
       uID_ = other.uID_;
+      color_ = other.color_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -93,6 +94,17 @@ namespace JinJvLi {
       }
     }
 
+    /// <summary>Field number for the "Color" field.</summary>
+    public const int ColorFieldNumber = 3;
+    private string color_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string Color {
+      get { return color_; }
+      set {
+        color_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as UserInfo);
@@ -108,6 +120,7 @@ namespace JinJvLi {
       }
       if (Name != other.Name) return false;
       if (UID != other.UID) return false;
+      if (Color != other.Color) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -116,6 +129,7 @@ namespace JinJvLi {
       int hash = 1;
       if (Name.Length != 0) hash ^= Name.GetHashCode();
       if (UID.Length != 0) hash ^= UID.GetHashCode();
+      if (Color.Length != 0) hash ^= Color.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -137,6 +151,10 @@ namespace JinJvLi {
         output.WriteRawTag(18);
         output.WriteString(UID);
       }
+      if (Color.Length != 0) {
+        output.WriteRawTag(26);
+        output.WriteString(Color);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -150,6 +168,9 @@ namespace JinJvLi {
       }
       if (UID.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(UID);
+      }
+      if (Color.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Color);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -168,6 +189,9 @@ namespace JinJvLi {
       if (other.UID.Length != 0) {
         UID = other.UID;
       }
+      if (other.Color.Length != 0) {
+        Color = other.Color;
+      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -185,6 +209,10 @@ namespace JinJvLi {
           }
           case 18: {
             UID = input.ReadString();
+            break;
+          }
+          case 26: {
+            Color = input.ReadString();
             break;
           }
         }

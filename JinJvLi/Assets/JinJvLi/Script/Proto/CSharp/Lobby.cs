@@ -25,11 +25,14 @@ namespace JinJvLi.Lobby {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CgtMb2JieS5wcm90bxINSmluSnZMaS5Mb2JieSIoCghHYW1lUm9vbRIQCghH",
-            "YW1lTmFtZRgBIAEoCRIKCgJJRBgCIAEoBWIGcHJvdG8z"));
+            "YW1lTmFtZRgBIAEoCRIKCgJJRBgCIAEoBSJMCgxGaWxlVHJhbnNmZXISEAoI",
+            "RmlsZU5hbWUYASABKAkSEAoIRmlsZVNpemUYAiABKAMSCgoCSVAYAyABKAkS",
+            "DAoEUG9ydBgEIAEoBWIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::JinJvLi.Lobby.GameRoom), global::JinJvLi.Lobby.GameRoom.Parser, new[]{ "GameName", "ID" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::JinJvLi.Lobby.GameRoom), global::JinJvLi.Lobby.GameRoom.Parser, new[]{ "GameName", "ID" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::JinJvLi.Lobby.FileTransfer), global::JinJvLi.Lobby.FileTransfer.Parser, new[]{ "FileName", "FileSize", "IP", "Port" }, null, null, null)
           }));
     }
     #endregion
@@ -185,6 +188,219 @@ namespace JinJvLi.Lobby {
           }
           case 16: {
             ID = input.ReadInt32();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  public sealed partial class FileTransfer : pb::IMessage<FileTransfer> {
+    private static readonly pb::MessageParser<FileTransfer> _parser = new pb::MessageParser<FileTransfer>(() => new FileTransfer());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<FileTransfer> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::JinJvLi.Lobby.LobbyReflection.Descriptor.MessageTypes[1]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public FileTransfer() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public FileTransfer(FileTransfer other) : this() {
+      fileName_ = other.fileName_;
+      fileSize_ = other.fileSize_;
+      iP_ = other.iP_;
+      port_ = other.port_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public FileTransfer Clone() {
+      return new FileTransfer(this);
+    }
+
+    /// <summary>Field number for the "FileName" field.</summary>
+    public const int FileNameFieldNumber = 1;
+    private string fileName_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string FileName {
+      get { return fileName_; }
+      set {
+        fileName_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "FileSize" field.</summary>
+    public const int FileSizeFieldNumber = 2;
+    private long fileSize_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public long FileSize {
+      get { return fileSize_; }
+      set {
+        fileSize_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "IP" field.</summary>
+    public const int IPFieldNumber = 3;
+    private string iP_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string IP {
+      get { return iP_; }
+      set {
+        iP_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "Port" field.</summary>
+    public const int PortFieldNumber = 4;
+    private int port_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int Port {
+      get { return port_; }
+      set {
+        port_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as FileTransfer);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(FileTransfer other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (FileName != other.FileName) return false;
+      if (FileSize != other.FileSize) return false;
+      if (IP != other.IP) return false;
+      if (Port != other.Port) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (FileName.Length != 0) hash ^= FileName.GetHashCode();
+      if (FileSize != 0L) hash ^= FileSize.GetHashCode();
+      if (IP.Length != 0) hash ^= IP.GetHashCode();
+      if (Port != 0) hash ^= Port.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (FileName.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(FileName);
+      }
+      if (FileSize != 0L) {
+        output.WriteRawTag(16);
+        output.WriteInt64(FileSize);
+      }
+      if (IP.Length != 0) {
+        output.WriteRawTag(26);
+        output.WriteString(IP);
+      }
+      if (Port != 0) {
+        output.WriteRawTag(32);
+        output.WriteInt32(Port);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (FileName.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(FileName);
+      }
+      if (FileSize != 0L) {
+        size += 1 + pb::CodedOutputStream.ComputeInt64Size(FileSize);
+      }
+      if (IP.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(IP);
+      }
+      if (Port != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Port);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(FileTransfer other) {
+      if (other == null) {
+        return;
+      }
+      if (other.FileName.Length != 0) {
+        FileName = other.FileName;
+      }
+      if (other.FileSize != 0L) {
+        FileSize = other.FileSize;
+      }
+      if (other.IP.Length != 0) {
+        IP = other.IP;
+      }
+      if (other.Port != 0) {
+        Port = other.Port;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            FileName = input.ReadString();
+            break;
+          }
+          case 16: {
+            FileSize = input.ReadInt64();
+            break;
+          }
+          case 26: {
+            IP = input.ReadString();
+            break;
+          }
+          case 32: {
+            Port = input.ReadInt32();
             break;
           }
         }

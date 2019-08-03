@@ -7,3 +7,11 @@ message GameRoom
     string GameName= 1;
     int32 ID=2;
 }
+
+message FileTransfer
+{
+    string FileName = 1;
+    int64 FileSize = 2;
+    string IP = 3;
+    int32 Port = 4;
+}

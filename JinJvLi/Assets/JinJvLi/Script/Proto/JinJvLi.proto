@@ -5,4 +5,5 @@ message UserInfo
 {
     string Name=1;
     string UID=2;
+    string Color=3;
 }

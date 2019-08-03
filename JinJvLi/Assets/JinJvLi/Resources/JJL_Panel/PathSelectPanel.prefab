@@ -897,7 +897,7 @@ GameObject:
   - component: {fileID: 3307094908648092501}
   - component: {fileID: 4540750132842485567}
   m_Layer: 5
-  m_Name: PathSelect
+  m_Name: PathSelectPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -933,7 +933,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5258059300741274388}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 65592c61ff58472468c6c5f1db1c9dd9, type: 3}
+  m_Script: {fileID: 11500000, guid: 8947b2277fa6383428e05dc43fb05c90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_uiList: {fileID: 4261144429088539523}
