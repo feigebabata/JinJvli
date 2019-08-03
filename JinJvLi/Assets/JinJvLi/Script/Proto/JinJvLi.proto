@@ -1,9 +1,15 @@
 syntax = "proto3";
 package JinJvLi;
 
-message UserInfo 
+message PB_UserInfo 
 {
     string Name=1;
     string UID=2;
     string Color=3;
+}
+
+message PB_IPAddress
+{
+    string IP=1;
+    int32 Port=2;
 }

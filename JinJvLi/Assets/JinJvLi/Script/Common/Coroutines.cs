@@ -31,6 +31,30 @@ public class Coroutines : MonoSingleton<Coroutines>
         _callBack();
     }
 
+    /// <summary>
+    /// 多次调用
+    /// </summary>
+    /// <param name="_delay"></param>
+    /// <param name="_count">小于0表示不限次数</param>
+    /// <param name="_callBack"></param>
+    /// <returns></returns>
+    public Coroutine LoopRun(int _delay,int _count,Action _callBack)
+    {
+        return StartCoroutine(loopRun(_delay,_count,_callBack));
+    }
+
+    IEnumerator loopRun(int _delay,int _count,Action _callBack)
+    {
+        int count=0;
+        var wait = new WaitForSeconds(_delay);
+        while(_count!=count)
+        {
+            _callBack();
+            count++;
+            yield return wait;
+        }
+    }
+
     public Coroutine Run(IEnumerator _enumerator)
     {
         return StartCoroutine(_enumerator);

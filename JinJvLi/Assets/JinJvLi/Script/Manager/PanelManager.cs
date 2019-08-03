@@ -20,7 +20,13 @@ namespace JinJvli
         
         public void Clear(){}
 
-        public void Update(){}
+        public void Update()
+        {
+            if(Input.GetKeyDown(KeyCode.Escape))
+            {
+                CloseCurPanel();
+            }
+        }
 
         /// <summary>
         /// 别在Open里打开新界面 会出Bug

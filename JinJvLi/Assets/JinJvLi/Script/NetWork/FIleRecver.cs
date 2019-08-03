@@ -1,6 +1,4 @@
-using System;
 using System.IO;
-using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using JinJvLi.Lobby;
@@ -17,8 +15,7 @@ namespace JinJvli
             /// </summary>
             public const int SEND_LENGTH=1024*8;
         }
-
-        FileTransfer m_transfer;
+        PB_FileTransfer m_transfer;
         TcpClient m_self;
         string m_filePath;
         public double Result
@@ -27,7 +24,7 @@ namespace JinJvli
             private set;
         }
 
-        public FileRecver(FileTransfer _transfer,string _dirPath)
+        public FileRecver(PB_FileTransfer _transfer,string _dirPath)
         {
             m_transfer = _transfer;
             m_filePath = Path.Combine(_dirPath,m_transfer.FileName);
@@ -44,7 +41,7 @@ namespace JinJvli
             var fileStream = File.Create(m_filePath);
             try
             {
-                m_self.Connect(m_transfer.IP,m_transfer.Port);
+                m_self.Connect(m_transfer.Address.IP,m_transfer.Address.Port);
             }
             catch (System.Exception _ex)
             {
@@ -79,6 +76,7 @@ namespace JinJvli
         {
             clear();
             Result=-1;
+            Debug.LogError(_msg);
         }
 
         void clear()

@@ -22,14 +22,14 @@ namespace JinJvLi
             public const byte MIN_USER_NAME_LENGTH=2;
         }
         public TMP_InputField m_sendIF;
-        UserInfo m_selfInfo;
+        PB_UserInfo m_selfInfo;
 
-        public override void OnOpen(object _openData = null)
+        public override void OnShow()
         {
             string user_json = PlayerPrefs.GetString(Config.SELF_INFO);
             if(string.IsNullOrEmpty(user_json))
             {
-                m_selfInfo = new UserInfo();
+                m_selfInfo = new PB_UserInfo();
                 m_selfInfo.UID = SystemInfo.deviceUniqueIdentifier;
                 string dev_name = "";
                 for(int i = 0; i < SystemInfo.deviceName.Length; i++)
@@ -53,13 +53,15 @@ namespace JinJvLi
             }
             else
             {
-                m_selfInfo = UserInfo.Descriptor.Parser.ParseJson(user_json) as UserInfo;
+                m_selfInfo = PB_UserInfo.Descriptor.Parser.ParseJson(user_json) as PB_UserInfo;
             }
             m_sendIF.text = m_selfInfo.Name;
+            base.OnShow();
         }
 
         public void OnClick_Send()
         {
+            PlayerPrefs.SetString(Config.SELF_INFO,m_selfInfo.ToString());
             Main.Manager<PanelManager>().Open<OnlineGamePanel>();
         }
 
@@ -72,44 +74,6 @@ namespace JinJvLi
             else
             {
                 m_sendIF.text = m_selfInfo.Name;
-            }
-        }
-
-        private void selectAudioResult(List<string> obj)
-        {
-            if(obj.Count>0)
-            {
-                string filePath = obj[0];
-                Debug.Log(filePath);
-                FileSender sender = new FileSender(filePath);
-                FileTransfer transfer = new FileTransfer();
-                transfer.FileName = Path.GetFileName(filePath);
-                transfer.FileSize = sender.Size;
-                transfer.IP = NetworkManager.GetLocalIP().ToString();
-                transfer.Port = sender.Port;
-                recver = new FileRecver(transfer,"D:/");
-            }
-        }
-
-        FileRecver recver;
-
-        void Update()
-        {
-            if(recver!= null)
-            {
-                Debug.Log(recver.Result);
-                if(recver.Result==1 || recver.Result==-1)
-                {
-                    recver=null;
-                }
-            }
-        }
-
-        struct SendData : ISendData
-        {
-            public byte[] Pack()
-            {
-                return new byte[45535];
             }
         }
     }

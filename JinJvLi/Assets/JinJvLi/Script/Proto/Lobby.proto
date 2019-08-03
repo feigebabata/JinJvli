@@ -1,17 +1,22 @@
 syntax = "proto3";
 
+import "JinJvLi.proto";
 package JinJvLi.Lobby;
 
-message GameRoom
+message PB_GameRoom
 {
     string GameName= 1;
     int32 ID=2;
+    string Tip=3;
+    PB_IPAddress Address=4;
+    PB_UserInfo Host=5;
+    int32 CreateTime=6;
+    float Version = 7;
 }
 
-message FileTransfer
+message PB_FileTransfer
 {
     string FileName = 1;
     int64 FileSize = 2;
-    string IP = 3;
-    int32 Port = 4;
+    PB_IPAddress Address=3;
 }
