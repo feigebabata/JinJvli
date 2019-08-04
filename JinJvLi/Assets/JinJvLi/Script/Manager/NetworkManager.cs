@@ -22,6 +22,13 @@ namespace JinJvli
             /// </summary>
             public const int FILE_TRANSPORT=31000;
             public const int PACK_MAX_LENGTH=1024;
+            public const UInt32 NET_CMD_LENGTH = sizeof(UInt32);
+        }
+
+        public struct NetBroadcast: Broadcaster.IMsg
+        {
+            public NetCmd Cmd;
+            public byte[] Buffer;
         }
         
         Dictionary<Type,IClient> m_clients = new Dictionary<Type, IClient>();
@@ -31,6 +38,8 @@ namespace JinJvli
         IPEndPoint m_broadcastIPEnd;
 
         int m_receveBroadcastID=-1;
+        List<IServer> m_servers = new List<IServer>();
+        NetBroadcast m_netBroadcast = new NetBroadcast();
 
         public void Init()
         {
@@ -64,6 +73,14 @@ namespace JinJvli
             return (T)m_clients[clientType];
         }
 
+        public T CreateServer<T>() where T : IServer
+        {
+            Type clientType = typeof(T);
+            IServer server = Activator.CreateInstance(clientType) as IServer;
+            m_servers.Add(server);
+            return (T)server;
+        }
+
         public async void SendBroadcast(ISendData _sendData)
         {
             byte[] data = _sendData.Pack();
@@ -87,6 +104,10 @@ namespace JinJvli
                 if(data!=null)
                 {
                     Debug.Log("receve "+data.Length);
+                    m_netBroadcast.Cmd = (NetCmd)BitConverter.ToUInt32(data,0);
+                    m_netBroadcast.Buffer = new byte[data.Length-Config.NET_CMD_LENGTH];
+                    Array.Copy(data,Config.NET_CMD_LENGTH,m_netBroadcast.Buffer,0,m_netBroadcast.Buffer.Length);
+                    Broadcaster.Broadcast(m_netBroadcast);
                 }
 
                 try
@@ -179,7 +200,6 @@ namespace JinJvli
 
     public interface IServer
     {
-        void Start();
-        void Stop();
+        float Version();
     }
 }

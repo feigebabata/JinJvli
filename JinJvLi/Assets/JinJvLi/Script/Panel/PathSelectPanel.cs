@@ -38,7 +38,7 @@ namespace JinJvli
             m_uiList.m_ItemShow += onItemShow;
         }
 
-        public override void OnOpen(object _openData = null)
+        public override void OnCreate(object _openData = null)
         {
             m_openData = _openData as OpenData;
             m_curDirPath = PlayerPrefs.GetString(Config.SELECT_PATH);
@@ -80,7 +80,7 @@ namespace JinJvli
                 }
             }
             m_uiList.ItemNum=0;
-            m_uiList.ItemNum=(uint)(m_curDirs.Length+m_curFiles.Length);
+            m_uiList.ItemNum=m_curDirs.Length+m_curFiles.Length;
             m_dirPath.text = m_curDirPath;
             m_dirCount.text = (m_curDirs.Length+m_curFiles.Length).ToString();
         }

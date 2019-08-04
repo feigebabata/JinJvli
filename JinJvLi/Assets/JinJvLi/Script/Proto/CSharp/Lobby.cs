@@ -24,17 +24,18 @@ namespace JinJvLi.Lobby {
     static LobbyReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "CgtMb2JieS5wcm90bxINSmluSnZMaS5Mb2JieRoNSmluSnZMaS5wcm90byKY",
-            "AQoLUEJfR2FtZVJvb20SEAoIR2FtZU5hbWUYASABKAkSCgoCSUQYAiABKAUS",
+            "CgtMb2JieS5wcm90bxINSmluSnZMaS5Mb2JieRoNSmluSnZMaS5wcm90byK9",
+            "AQoLUEJfR2FtZVJvb20SEAoIR2FtZU5hbWUYASABKAkSCgoCSUQYAiABKA0S",
             "CwoDVGlwGAMgASgJEiYKB0FkZHJlc3MYBCABKAsyFS5KaW5KdkxpLlBCX0lQ",
             "QWRkcmVzcxIiCgRIb3N0GAUgASgLMhQuSmluSnZMaS5QQl9Vc2VySW5mbxIS",
-            "CgpDcmVhdGVUaW1lGAYgASgFIl0KD1BCX0ZpbGVUcmFuc2ZlchIQCghGaWxl",
-            "TmFtZRgBIAEoCRIQCghGaWxlU2l6ZRgCIAEoAxImCgdBZGRyZXNzGAMgASgL",
-            "MhUuSmluSnZMaS5QQl9JUEFkZHJlc3NiBnByb3RvMw=="));
+            "CgpVcGRhdGVUaW1lGAYgASgCEg8KB1ZlcnNpb24YByABKAISEgoKQ3JlYXRl",
+            "VGltZRgIIAEoBSJdCg9QQl9GaWxlVHJhbnNmZXISEAoIRmlsZU5hbWUYASAB",
+            "KAkSEAoIRmlsZVNpemUYAiABKAMSJgoHQWRkcmVzcxgDIAEoCzIVLkppbkp2",
+            "TGkuUEJfSVBBZGRyZXNzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::JinJvLi.JinJvLiReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::JinJvLi.Lobby.PB_GameRoom), global::JinJvLi.Lobby.PB_GameRoom.Parser, new[]{ "GameName", "ID", "Tip", "Address", "Host", "CreateTime" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::JinJvLi.Lobby.PB_GameRoom), global::JinJvLi.Lobby.PB_GameRoom.Parser, new[]{ "GameName", "ID", "Tip", "Address", "Host", "UpdateTime", "Version", "CreateTime" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::JinJvLi.Lobby.PB_FileTransfer), global::JinJvLi.Lobby.PB_FileTransfer.Parser, new[]{ "FileName", "FileSize", "Address" }, null, null, null)
           }));
     }
@@ -72,6 +73,8 @@ namespace JinJvLi.Lobby {
       tip_ = other.tip_;
       address_ = other.address_ != null ? other.address_.Clone() : null;
       host_ = other.host_ != null ? other.host_.Clone() : null;
+      updateTime_ = other.updateTime_;
+      version_ = other.version_;
       createTime_ = other.createTime_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
@@ -94,9 +97,9 @@ namespace JinJvLi.Lobby {
 
     /// <summary>Field number for the "ID" field.</summary>
     public const int IDFieldNumber = 2;
-    private int iD_;
+    private uint iD_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int ID {
+    public uint ID {
       get { return iD_; }
       set {
         iD_ = value;
@@ -136,8 +139,30 @@ namespace JinJvLi.Lobby {
       }
     }
 
+    /// <summary>Field number for the "UpdateTime" field.</summary>
+    public const int UpdateTimeFieldNumber = 6;
+    private float updateTime_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public float UpdateTime {
+      get { return updateTime_; }
+      set {
+        updateTime_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "Version" field.</summary>
+    public const int VersionFieldNumber = 7;
+    private float version_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public float Version {
+      get { return version_; }
+      set {
+        version_ = value;
+      }
+    }
+
     /// <summary>Field number for the "CreateTime" field.</summary>
-    public const int CreateTimeFieldNumber = 6;
+    public const int CreateTimeFieldNumber = 8;
     private int createTime_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CreateTime {
@@ -165,6 +190,8 @@ namespace JinJvLi.Lobby {
       if (Tip != other.Tip) return false;
       if (!object.Equals(Address, other.Address)) return false;
       if (!object.Equals(Host, other.Host)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(UpdateTime, other.UpdateTime)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Version, other.Version)) return false;
       if (CreateTime != other.CreateTime) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -177,6 +204,8 @@ namespace JinJvLi.Lobby {
       if (Tip.Length != 0) hash ^= Tip.GetHashCode();
       if (address_ != null) hash ^= Address.GetHashCode();
       if (host_ != null) hash ^= Host.GetHashCode();
+      if (UpdateTime != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(UpdateTime);
+      if (Version != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Version);
       if (CreateTime != 0) hash ^= CreateTime.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -197,7 +226,7 @@ namespace JinJvLi.Lobby {
       }
       if (ID != 0) {
         output.WriteRawTag(16);
-        output.WriteInt32(ID);
+        output.WriteUInt32(ID);
       }
       if (Tip.Length != 0) {
         output.WriteRawTag(26);
@@ -211,8 +240,16 @@ namespace JinJvLi.Lobby {
         output.WriteRawTag(42);
         output.WriteMessage(Host);
       }
+      if (UpdateTime != 0F) {
+        output.WriteRawTag(53);
+        output.WriteFloat(UpdateTime);
+      }
+      if (Version != 0F) {
+        output.WriteRawTag(61);
+        output.WriteFloat(Version);
+      }
       if (CreateTime != 0) {
-        output.WriteRawTag(48);
+        output.WriteRawTag(64);
         output.WriteInt32(CreateTime);
       }
       if (_unknownFields != null) {
@@ -227,7 +264,7 @@ namespace JinJvLi.Lobby {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(GameName);
       }
       if (ID != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(ID);
+        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(ID);
       }
       if (Tip.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Tip);
@@ -237,6 +274,12 @@ namespace JinJvLi.Lobby {
       }
       if (host_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Host);
+      }
+      if (UpdateTime != 0F) {
+        size += 1 + 4;
+      }
+      if (Version != 0F) {
+        size += 1 + 4;
       }
       if (CreateTime != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(CreateTime);
@@ -273,6 +316,12 @@ namespace JinJvLi.Lobby {
         }
         Host.MergeFrom(other.Host);
       }
+      if (other.UpdateTime != 0F) {
+        UpdateTime = other.UpdateTime;
+      }
+      if (other.Version != 0F) {
+        Version = other.Version;
+      }
       if (other.CreateTime != 0) {
         CreateTime = other.CreateTime;
       }
@@ -292,7 +341,7 @@ namespace JinJvLi.Lobby {
             break;
           }
           case 16: {
-            ID = input.ReadInt32();
+            ID = input.ReadUInt32();
             break;
           }
           case 26: {
@@ -313,7 +362,15 @@ namespace JinJvLi.Lobby {
             input.ReadMessage(Host);
             break;
           }
-          case 48: {
+          case 53: {
+            UpdateTime = input.ReadFloat();
+            break;
+          }
+          case 61: {
+            Version = input.ReadFloat();
+            break;
+          }
+          case 64: {
             CreateTime = input.ReadInt32();
             break;
           }

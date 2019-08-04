@@ -38,12 +38,12 @@ public class Coroutines : MonoSingleton<Coroutines>
     /// <param name="_count">小于0表示不限次数</param>
     /// <param name="_callBack"></param>
     /// <returns></returns>
-    public Coroutine LoopRun(int _delay,int _count,Action _callBack)
+    public Coroutine LoopRun(float _delay,int _count,Action _callBack)
     {
         return StartCoroutine(loopRun(_delay,_count,_callBack));
     }
 
-    IEnumerator loopRun(int _delay,int _count,Action _callBack)
+    IEnumerator loopRun(float _delay,int _count,Action _callBack)
     {
         int count=0;
         var wait = new WaitForSeconds(_delay);

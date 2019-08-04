@@ -53,7 +53,7 @@ namespace JinJvLi
             }
             else
             {
-                m_selfInfo = PB_UserInfo.Descriptor.Parser.ParseJson(user_json) as PB_UserInfo;
+                m_selfInfo = PB_UserInfo.Parser.ParseJson(user_json);
             }
             m_sendIF.text = m_selfInfo.Name;
             base.OnShow();

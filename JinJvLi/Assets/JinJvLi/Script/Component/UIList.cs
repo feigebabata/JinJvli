@@ -51,8 +51,8 @@ public class UIList : UIBehaviour, IInitializePotentialDragHandler, IBeginDragHa
     public RectTransform.Axis m_Axis;
 
     [SerializeField]
-    uint m_itemNum;
-    public uint ItemNum
+    int m_itemNum;
+    public int ItemNum
     {
         get { return m_itemNum;}
         set

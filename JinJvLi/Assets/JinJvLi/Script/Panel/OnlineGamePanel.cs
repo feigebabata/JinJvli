@@ -11,13 +11,19 @@ namespace JinJvli
     [PanelConfig("JJL_Panel/OnlineGamePanel")]
     public class OnlineGamePanel: PanelBase
     {
+        public static class Config
+        {
+            public const int MIN_UPDATE_TIME=2;
+        }
+
         [SerializeField]
         UIList m_uiList;
         List<PB_GameRoom> m_listData = new List<PB_GameRoom>();
         PB_GameRoom m_curSelect;
         Coroutine m_updateList;
+        List<PB_GameRoom> m_remove = new List<PB_GameRoom>();
 
-        public override void OnOpen(object _openData = null)
+        public override void OnCreate(object _openData = null)
         {
             m_uiList.m_ItemShow += onItemShow;
             m_uiList.ItemNum=0;
@@ -25,7 +31,15 @@ namespace JinJvli
 
         public override void OnShow()
         {
+            Broadcaster.Add<NetworkManager.NetBroadcast>(onNetBroadcast);
             m_updateList = Coroutines.Inst.LoopRun(1,-1,updateList);
+            GameServer gameServer = Main.Manager<NetworkManager>().CreateServer<GameServer>();
+            PB_GameRoom gameRoom = new PB_GameRoom();
+            gameRoom.GameName="会跳舞的线";
+            string user_json = PlayerPrefs.GetString(LoginPanel.Config.SELF_INFO);
+            gameRoom.Host = PB_UserInfo.Parser.ParseJson(user_json);
+            gameServer.Start(gameRoom,NetCmd.GameRoom);
+            Coroutines.Inst.Delay(5,gameServer.Close);
             base.OnShow();
         }
 
@@ -33,6 +47,11 @@ namespace JinJvli
         {
             Coroutines.Inst.Stop(m_updateList);
             base.OnHide();
+        }
+
+        void Update()
+        {
+            updateList();
         }
 
         public void OnClickCreate()
@@ -43,6 +62,23 @@ namespace JinJvli
         public void OnClickJoin()
         {
             
+        }
+
+        void onNetBroadcast(NetworkManager.NetBroadcast _netData)
+        {
+            if(_netData.Cmd == NetCmd.GameRoom)
+            {
+                PB_GameRoom gameRoom=null;
+                try
+                {
+                    gameRoom = PB_GameRoom.Parser.ParseFrom(_netData.Buffer);
+                }
+                catch{}
+                if(gameRoom != null)
+                {
+                    addUIList(gameRoom);
+                }
+            }
         }
 
         void onItemShow(int _index, RectTransform _item)
@@ -76,16 +112,43 @@ namespace JinJvli
 
         void updateList()
         {
-
+            m_remove.Clear();
+            for (int i = 0; i < m_listData.Count; i++)
+            {
+                if(Time.time - m_listData[i].UpdateTime>Config.MIN_UPDATE_TIME)
+                {
+                    m_remove.Add(m_listData[i]);
+                }
+            }
+            for (int i = 0; i < m_remove.Count; i++)
+            {
+                m_listData.Remove(m_remove[i]);
+            }
+            if(m_remove.Count>0)
+            {
+                m_uiList.ItemNum=0;
+                m_uiList.ItemNum=m_listData.Count;
+            }
         }
 
         void addUIList(PB_GameRoom _gameRoom)
         {
-            m_listData.Add(_gameRoom);
-            m_listData.Sort((r1,r2)=>
+            var gameRoom = m_listData.Find((_gr)=>{return _gameRoom.ID == _gr.ID && _gameRoom.Host.UID == _gr.Host.UID ;});
+            if(gameRoom == null)
             {
-                return r1.CreateTime - r2.CreateTime;
-            });
+                _gameRoom.UpdateTime = Time.time;
+                m_listData.Add(_gameRoom);
+                m_listData.Sort((r1,r2)=>
+                {
+                    return r1.CreateTime - r2.CreateTime;
+                });
+                m_uiList.ItemNum=0;
+                m_uiList.ItemNum = m_listData.Count;
+            }
+            else
+            {
+                gameRoom.UpdateTime = Time.time;
+            }
         }
     }
 }
