@@ -14,9 +14,13 @@ namespace JinJvli
         PanelBase m_curPanel;
         Toast m_toast = new Toast();
 
+        GameObject m_loading;
+        int m_showLoadingCount=0;
+
         public void Init()
         {
             m_panelParent = GameObject.Find("Canvas/Panels").transform;
+            m_loading = GameObject.Find("Canvas/Loading");
         }
         
         public void Clear()
@@ -179,6 +183,24 @@ namespace JinJvli
         public void ShowToast(string _text,float _delay=Toast.Config.DEFAULT_DELAY)
         {
             m_toast.Show(_text,_delay);
+        }
+
+        public void ShowLoading()
+        {
+            m_showLoadingCount++;
+            if(m_showLoadingCount==1)
+            {
+                m_loading.SetActive(true);
+            }
+        }
+
+        public void HideLoading()
+        {
+            m_showLoadingCount--;
+            if(m_showLoadingCount==0)
+            {
+                m_loading.SetActive(false);
+            }
         }
     }
     
