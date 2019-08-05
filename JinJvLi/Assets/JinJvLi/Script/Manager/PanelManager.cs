@@ -12,13 +12,27 @@ namespace JinJvli
         Dictionary<Type,PanelConfigAttribute> m_panelConfigs = new Dictionary<Type, PanelConfigAttribute>();
         Transform m_panelParent;
         PanelBase m_curPanel;
+        Toast m_toast = new Toast();
 
         public void Init()
         {
-            m_panelParent = GameObject.Find("Canvas").transform;
+            m_panelParent = GameObject.Find("Canvas/Panels").transform;
         }
         
-        public void Clear(){}
+        public void Clear()
+        {
+            m_panelConfigs.Clear();
+            m_curPanel=null;
+            m_panelConfigs.Clear();
+            for (int i = 0; i < m_panels.Count; i++)
+            {
+                m_panels[i].OnHide();
+                m_panels[i].OnClose();
+                GameObject.Destroy(m_panels[i].gameObject);
+            }
+            m_panels.Clear();
+            m_toast.Clear();
+        }
 
         public void Update()
         {
@@ -160,6 +174,11 @@ namespace JinJvli
                 }
             }
             return null;
+        }
+
+        public void ShowToast(string _text,float _delay=Toast.Config.DEFAULT_DELAY)
+        {
+            m_toast.Show(_text,_delay);
         }
     }
     

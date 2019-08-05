@@ -33,7 +33,6 @@ namespace JinJvli
         {
             createAllManager();
             initAllManager();
-            initEnd();
         }
 
         void initEnd()
@@ -44,6 +43,14 @@ namespace JinJvli
         void Update()
         {
             updateAllManager();
+        }
+
+        public void ReStart()
+        {
+            Coroutines.Inst.StopAllCoroutines();
+            Broadcaster.ClearAll();
+            clearAllManager();
+            initAllManager();
         }
 
         public static T Manager<T>() where T : IManager
@@ -82,6 +89,7 @@ namespace JinJvli
             {
                 m_mngs.Current.Value.Init();
             }
+            initEnd();
         }
 
         void updateAllManager()
