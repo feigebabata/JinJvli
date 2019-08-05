@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using JinJvLi;
 using UnityEngine;
@@ -13,14 +14,16 @@ namespace JinJvli
         Transform m_panelParent;
         PanelBase m_curPanel;
         Toast m_toast = new Toast();
+        AlertDialog m_alertDialog = new AlertDialog();
 
         GameObject m_loading;
         int m_showLoadingCount=0;
+        Coroutine m_loadingAnim;
 
         public void Init()
         {
             m_panelParent = GameObject.Find("Canvas/Panels").transform;
-            m_loading = GameObject.Find("Canvas/Loading");
+            m_loading = GameObject.Find("Canvas").transform.Find("Loading").gameObject;
         }
         
         public void Clear()
@@ -36,13 +39,22 @@ namespace JinJvli
             }
             m_panels.Clear();
             m_toast.Clear();
+            m_alertDialog.Clear();
         }
 
         public void Update()
         {
             if(Input.GetKeyDown(KeyCode.Escape))
             {
-                CloseCurPanel();
+                if(m_showLoadingCount==0)
+                {
+                    if(m_alertDialog.Count>0)
+                    {
+                        m_alertDialog.CloseCur();
+                        return;
+                    }
+                    CloseCurPanel();
+                }
             }
         }
 
@@ -66,15 +78,16 @@ namespace JinJvli
             var panelConfig = getPanelConfig(panelType);
             for (int i = m_panels.Count-1; i >=0 ; i--)
             {
-                if(m_panels[i] is T)
+                if(m_panels[i] is T && !m_panels[i].IsShow)
                 {
                     panel = m_panels[i];
                     break;
                 }
             }
-            if(panel== null)
+            if(panel == null)
             {
                 panel=createPanel(panelConfig.PrefabPath,panelType);
+                panel.OnCreate(_createData);
             }
             else
             {
@@ -85,7 +98,6 @@ namespace JinJvli
             }
             addPanelStack(panelType);
             m_curPanel = panel;
-            panel.OnCreate(_createData);
             panel.OnShow();
         }
         public void CloseCurPanel()
@@ -109,7 +121,7 @@ namespace JinJvli
                 panelConfig = getPanelConfig(panelType);
                 for (int i = m_panels.Count-1; i >= 0; i--)
                 {
-                    if(m_panels[i].GetType()==panelType)
+                    if(m_panels[i].GetType()==panelType && m_panels[i] != m_curPanel)
                     { 
                         panel= m_panels[i];
                         break;
@@ -118,9 +130,9 @@ namespace JinJvli
                 if(panel == null)
                 {
                     panel = createPanel(panelConfig.PrefabPath,panelType);
+                    panel.OnCreate();
                 }
                 m_curPanel = panel;
-                panel.OnCreate();
                 panel.OnShow();
             }
             else
@@ -191,15 +203,32 @@ namespace JinJvli
             if(m_showLoadingCount==1)
             {
                 m_loading.SetActive(true);
+                m_loadingAnim = Coroutines.Inst.Run(loadingAnim());
+            }
+        }
+
+        IEnumerator loadingAnim()
+        {
+            Transform loading_logo = m_loading.transform.GetChild(0);
+            var wait = new WaitForEndOfFrame();
+            while (true)
+            {
+                loading_logo.Rotate(0,0,-Time.deltaTime*90);
+                yield return wait;
             }
         }
 
         public void HideLoading()
         {
+            if(m_showLoadingCount==0)
+            {
+                return;
+            }
             m_showLoadingCount--;
             if(m_showLoadingCount==0)
             {
                 m_loading.SetActive(false);
+                Coroutines.Inst.Stop(m_loadingAnim);
             }
         }
     }

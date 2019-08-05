@@ -28,7 +28,7 @@ namespace JinJvli
             }
             if(item == null)
             {
-                item = GameObject.Instantiate(item,m_parent);
+                item = GameObject.Instantiate(item,m_parent.GetChild(0));
             }
             item.GetChild(0).GetComponent<Text>().text = _text;
             item.gameObject.SetActive(true);
