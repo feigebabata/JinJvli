@@ -13,7 +13,7 @@ namespace JinJvli
     {
         public static class Config
         {
-            public const string BROADCASR_IP = "192.168.1.255";
+            public static string Broadcast_IP;
             public const int BROADCASR_PORT = 30001;
             public const int UDP_CLIENT_PORT=30002;
 
@@ -43,9 +43,12 @@ namespace JinJvli
 
         public void Init()
         {
+            var ipv4 = GetLocalIP().ToString().Split('.');
+            Config.Broadcast_IP = $"{ipv4[0]}.{ipv4[1]}.{ipv4[2]}.255";
+
             m_sendBroadcastClient = new UdpClient(Config.UDP_CLIENT_PORT);
             m_receveBroadcastClient = new UdpClient(Config.BROADCASR_PORT);
-            m_broadcastIPEnd = new IPEndPoint(IPAddress.Parse(Config.BROADCASR_IP),Config.BROADCASR_PORT);
+            m_broadcastIPEnd = new IPEndPoint(IPAddress.Parse(Config.Broadcast_IP),Config.BROADCASR_PORT);
             StartReceveBroadcast();
         }
 

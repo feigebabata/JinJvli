@@ -89,13 +89,7 @@ namespace JinJvli
                 panel=createPanel(panelConfig.PrefabPath,panelType);
                 panel.OnCreate(_createData);
             }
-            else
-            {
-                if(!panelConfig.Only)
-                {
-                    // panel =;
-                }
-            }
+            
             addPanelStack(panelType);
             m_curPanel = panel;
             panel.OnShow();
@@ -259,16 +253,10 @@ namespace JinJvli
         /// </summary>
         /// <value></value>
         public bool AutoDestroy{ get;private set;}
-        /// <summary>
-        /// 只存在一个
-        /// </summary>
-        /// <value></value>
-        public bool Only{ get;private set;}
-        public PanelConfigAttribute(string _prefabPath,bool _autoDestroy=false,bool _only=true)
+        public PanelConfigAttribute(string _prefabPath,bool _autoDestroy=false)
         {
             PrefabPath = _prefabPath;
             AutoDestroy = _autoDestroy;
-            Only = _only;
         }
         
     }
