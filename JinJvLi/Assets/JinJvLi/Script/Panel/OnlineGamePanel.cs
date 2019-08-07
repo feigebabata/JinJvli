@@ -38,8 +38,7 @@ namespace JinJvli
             gameRoom.GameName="会跳舞的线";
             string user_json = PlayerPrefs.GetString(LoginPanel.Config.SELF_INFO);
             gameRoom.Host = PB_UserInfo.Parser.ParseJson(user_json);
-            gameServer.Start(gameRoom,NetCmd.GameRoom);
-            Coroutines.Inst.Delay(5,gameServer.Close);
+            // gameServer.Start(gameRoom,NetCmd.GameRoom);
             base.OnShow();
         }
 
@@ -61,7 +60,10 @@ namespace JinJvli
 
         public void OnClickJoin()
         {
-            
+            if(m_curSelect != null)
+            {
+                
+            }
         }
 
         void onNetBroadcast(NetworkManager.NetBroadcast _netData)

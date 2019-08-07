@@ -2,6 +2,9 @@ using JinJvLi.Lobby;
 using Google.Protobuf;
 using System;
 using UnityEngine;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Sockets;
 
 namespace JinJvli
 {
@@ -11,17 +14,19 @@ namespace JinJvli
         {
             public const float BROADCASR_TIME=1.5f;
         }
+        List<IPEndPoint> m_clients = new List<IPEndPoint>();
+        UdpClient m_server;
+        bool m_isRun;
 
-        BroadcastGameData m_gameData;
-        NetworkManager m_networkManager;
-        Coroutine m_broadcastGame;
 
-        public void Start(PB_GameRoom _gameRoom,NetCmd _cmd)
+        public void Start(int _port)
         {
-            m_networkManager = Main.Manager<NetworkManager>();
-            _gameRoom.Version = Version();
-            m_gameData = new BroadcastGameData(_gameRoom,_cmd);
-            m_broadcastGame = Coroutines.Inst.LoopRun(Config.BROADCASR_TIME,-1,broadcastGame);
+            m_server = new UdpClient(_port);
+            recvCmdAsync();
+            // m_networkManager = Main.Manager<NetworkManager>();
+            // _gameRoom.Version = Version();
+            // m_gameData = new BroadcastGameData(_gameRoom,_cmd);
+            // m_broadcastGame = Coroutines.Inst.LoopRun(Config.BROADCASR_TIME,-1,broadcastGame);
         }
 
         public float Version()
@@ -31,12 +36,39 @@ namespace JinJvli
 
         public void Close()
         {
-            Coroutines.Inst.Stop(m_broadcastGame);
+            // Coroutines.Inst.Stop(m_broadcastGame);
+            m_server.Close();
+            m_server.Dispose();
         }
 
-        void broadcastGame()
+        // void broadcastGame()
+        // {
+        //     m_networkManager.SendBroadcast(m_gameData);
+        // }
+
+        async void recvCmdAsync()
         {
-            m_networkManager.SendBroadcast(m_gameData);
+            UdpReceiveResult serverRecvResult;
+            while(m_isRun)
+            {
+                try
+                {
+                    serverRecvResult = await m_server.ReceiveAsync();
+                    sendCmd(serverRecvResult.Buffer);
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.LogError($"[GameServer.recvCmdAsync]接受消息异常!{ex}");
+                }
+            }
+        }
+
+        async void sendCmd(byte[] _data)
+        {
+            for (int i = 0; i < m_clients.Count; i++)
+            {
+                await m_server.SendAsync(_data,_data.Length,m_clients[i]);
+            }
         }
     }
 

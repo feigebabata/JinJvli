@@ -40,6 +40,7 @@ namespace JinJvli
         int m_receveBroadcastID=-1;
         List<IServer> m_servers = new List<IServer>();
         NetBroadcast m_netBroadcast = new NetBroadcast();
+        UdpReceiveResult m_broadcastRecvResult;
 
         public void Init()
         {
@@ -90,7 +91,6 @@ namespace JinJvli
             try
             {
                 var length = await m_sendBroadcastClient.SendAsync(data, data.Length,m_broadcastIPEnd);
-                Debug.Log("send "+length);
             }
             catch(Exception _ex)
             {
@@ -106,7 +106,6 @@ namespace JinJvli
             {
                 if(data!=null)
                 {
-                    Debug.Log("receve "+data.Length);
                     m_netBroadcast.Cmd = (NetCmd)BitConverter.ToUInt32(data,0);
                     m_netBroadcast.Buffer = new byte[data.Length-Config.NET_CMD_LENGTH];
                     Array.Copy(data,Config.NET_CMD_LENGTH,m_netBroadcast.Buffer,0,m_netBroadcast.Buffer.Length);
@@ -115,8 +114,8 @@ namespace JinJvli
 
                 try
                 {
-                    var result = await m_receveBroadcastClient.ReceiveAsync();
-                    data = result.Buffer;
+                    m_broadcastRecvResult = await m_receveBroadcastClient.ReceiveAsync();
+                    data = m_broadcastRecvResult.Buffer;
                 }
                 catch (Exception _ex)
                 {
@@ -129,7 +128,6 @@ namespace JinJvli
         {
             m_receveBroadcastID = (int)Time.time;
             receveBroadcast();
-            // Task.Run(receveBroadcast);
         }
 
         public void StopReceveBroadcast()
