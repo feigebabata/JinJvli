@@ -74,6 +74,7 @@ namespace JinJvli
                 try
                 {
                     gameRoom = PB_GameRoom.Parser.ParseFrom(_netData.Buffer);
+                    
                 }
                 catch{}
                 if(gameRoom != null)

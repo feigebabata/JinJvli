@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Threading;
 using System.Net.NetworkInformation;
+using System.Reflection;
+using Google.Protobuf;
+using System.Text;
 
 namespace JinJvli
 {
@@ -22,16 +25,17 @@ namespace JinJvli
             /// </summary>
             public const int FILE_TRANSPORT=31000;
             public const int PACK_MAX_LENGTH=1024;
-            public const UInt32 NET_CMD_LENGTH = sizeof(UInt32);
+            public const UInt16 NET_CMD_LENGTH = sizeof(UInt16);
         }
 
-        public struct NetBroadcast: Broadcaster.IMsg
+        public struct NetBroadcast : Broadcaster.IMsg
         {
             public NetCmd Cmd;
             public byte[] Buffer;
         }
         
         Dictionary<Type,IClient> m_clients = new Dictionary<Type, IClient>();
+        Dictionary<Type,IClient>.Enumerator m_clientsEnumer;
 
         UdpClient m_sendBroadcastClient,m_receveBroadcastClient;
 
@@ -39,14 +43,14 @@ namespace JinJvli
 
         int m_receveBroadcastID=-1;
         List<IServer> m_servers = new List<IServer>();
-        NetBroadcast m_netBroadcast = new NetBroadcast();
         UdpReceiveResult m_broadcastRecvResult;
+        Queue<NetBroadcast> m_broadcastQueue = new Queue<NetBroadcast>();
+        object m_broadcastQueueLock = new object();
 
         public void Init()
         {
             var ipv4 = GetLocalIP().ToString().Split('.');
             Config.Broadcast_IP = $"{ipv4[0]}.{ipv4[1]}.{ipv4[2]}.255";
-
             m_sendBroadcastClient = new UdpClient(Config.UDP_CLIENT_PORT);
             m_receveBroadcastClient = new UdpClient(Config.BROADCASR_PORT);
             m_broadcastIPEnd = new IPEndPoint(IPAddress.Parse(Config.Broadcast_IP),Config.BROADCASR_PORT);
@@ -63,7 +67,26 @@ namespace JinJvli
 
         public void Update()
         {
-            
+            if((m_broadcastQueue.Count>0))
+            {
+                lock(m_broadcastQueueLock)
+                {
+                    while(m_broadcastQueue.Count>0)
+                    {
+                        var pack = m_broadcastQueue.Dequeue();
+                        Broadcaster.Broadcast(pack);
+                    }
+
+                }
+            }
+            if(m_clients.Count>0)
+            {
+                m_clientsEnumer = m_clients.GetEnumerator();
+                while(m_clientsEnumer.MoveNext())
+                {
+                    m_clientsEnumer.Current.Value.Update();
+                }
+            }
         }
 
         public T Clients<T>() where T : IClient
@@ -106,10 +129,14 @@ namespace JinJvli
             {
                 if(data!=null)
                 {
-                    m_netBroadcast.Cmd = (NetCmd)BitConverter.ToUInt32(data,0);
-                    m_netBroadcast.Buffer = new byte[data.Length-Config.NET_CMD_LENGTH];
-                    Array.Copy(data,Config.NET_CMD_LENGTH,m_netBroadcast.Buffer,0,m_netBroadcast.Buffer.Length);
-                    Broadcaster.Broadcast(m_netBroadcast);
+                    NetBroadcast netBroadcast;
+                    netBroadcast.Cmd = (NetCmd)BitConverter.ToUInt16(data,0);
+                    netBroadcast.Buffer = new byte[data.Length-Config.NET_CMD_LENGTH];
+                    Array.Copy(data,Config.NET_CMD_LENGTH,netBroadcast.Buffer,0,netBroadcast.Buffer.Length);
+                    lock (m_broadcastQueueLock)
+                    {
+                        m_broadcastQueue.Enqueue(netBroadcast);
+                    }
                 }
 
                 try
@@ -197,6 +224,7 @@ namespace JinJvli
     {
         void Connect(string _ip,int _port);
         void Close();
+        void Update();
     }
 
     public interface IServer

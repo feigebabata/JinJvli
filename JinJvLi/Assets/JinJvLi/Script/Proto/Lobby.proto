@@ -11,8 +11,7 @@ message PB_GameRoom
     PB_IPAddress Address=4;
     PB_UserInfo Host=5;
     float UpdateTime=6;
-    float Version = 7;
-    int32 CreateTime = 8;
+    int32 CreateTime = 7;
 }
 
 message PB_FileTransfer

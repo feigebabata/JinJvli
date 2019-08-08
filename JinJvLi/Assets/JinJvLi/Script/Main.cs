@@ -79,7 +79,6 @@ namespace JinJvli
                     m_managers.Add(types[i],mng);
                 }
             }
-            m_mngs = m_managers.GetEnumerator();
         }
 
         void initAllManager()

@@ -47,7 +47,7 @@ public static class Broadcaster
         m_eventSources.Clear();
     }
 
-    public static void Add<T>(Action<T> _event) where T : struct,IMsg
+    public static void Add<T>(Action<T> _event) where T : IMsg
     {
         if(m_eventSources.ContainsKey(_event))
         {
@@ -67,7 +67,7 @@ public static class Broadcaster
         }
     }
 
-    public static void Remove<T>(Action<T> _event) where T : struct,IMsg
+    public static void Remove<T>(Action<T> _event) where T : IMsg
     {
         Action<IMsg> evt;
         if(m_eventSources.TryGetValue(_event,out evt))
@@ -87,7 +87,7 @@ public static class Broadcaster
         }
     }
 
-    public static void Broadcast<T>(T _message) where T : struct,IMsg
+    public static void Broadcast<T>(T _message) where T : IMsg
     {
         Type key = typeof(T);
         Action<IMsg> evt;

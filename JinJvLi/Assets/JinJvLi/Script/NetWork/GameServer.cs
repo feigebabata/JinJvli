@@ -78,7 +78,7 @@ namespace JinJvli
         public BroadcastGameData(PB_GameRoom _gameRoom,NetCmd _cmd)
         {
             byte[] data = _gameRoom.ToByteArray();
-            UInt32 cmd = (UInt32)_cmd;
+            UInt16 cmd = (UInt16)_cmd;
             sendData = new byte[data.Length+NetworkManager.Config.NET_CMD_LENGTH];
             Array.Copy(BitConverter.GetBytes(cmd),sendData,NetworkManager.Config.NET_CMD_LENGTH);
             Array.Copy(data,0,sendData,NetworkManager.Config.NET_CMD_LENGTH,data.Length);

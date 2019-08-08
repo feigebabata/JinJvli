@@ -24,5 +24,10 @@ namespace JinJvli
         {
             return default(T);
         }
+
+        public void Update()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

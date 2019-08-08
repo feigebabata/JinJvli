@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using JinJvLi.Lobby;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -43,13 +44,7 @@ public class FGBBT : MonoBehaviour
     [MenuItem("FGBBT/Run")]
     public static void Run()
     {
-        var m_filePath = "D:/壁纸.jpg";
-        var stream_1 = new FileStream(m_filePath,FileMode.Open);
-        Debug.Log(stream_1.Position);
-        byte[] arr = new byte[32];
-        stream_1.Read(arr,0,arr.Length);
-        Debug.Log(stream_1.Position);
-        stream_1.Close();
-        stream_1.Dispose();
+        PB_GameRoom gameRoom = new PB_GameRoom();
+        Debug.Log(gameRoom.ToString());
     }
 }
