@@ -9,7 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: GameInfoList
-  m_EditorClassIdentifier: Assembly-CSharp:JinJvli:GameInfoList
-  List: []
+  m_Script: {fileID: 11500000, guid: 9afa394a3ed0d0f47a249b61ddee76e9, type: 3}
+  m_Name: GameCreateList
+  m_EditorClassIdentifier: 
+  List:
+  - Name: "\u4F1A\u8DF3\u821E\u7684\u7EBF"
+    ID: 1

@@ -13,24 +13,25 @@ namespace JinJvli
     {
         public static class Config
         {
-            public const string GAME_INFO_LIST_PATH="GameInfoList";
+            public const string GAME_INFO_LIST_PATH="GameCreateList";
         }
 
         [SerializeField]
         UIList m_uiList;
-        List<PB_GameRoom> m_listData = new List<PB_GameRoom>();
-        PB_GameRoom m_curSelect;
-        Coroutine m_updateList;
-        List<PB_GameRoom> m_remove = new List<PB_GameRoom>();
+        CreateGameInfo[] m_listData;
+        CreateGameInfo m_curSelect;
 
         public override void OnCreate(object _openData = null)
         {
             m_uiList.m_ItemShow += onItemShow;
-            m_uiList.ItemNum=0;
+            m_listData  = Resources.Load<GameCreateList>(Config.GAME_INFO_LIST_PATH).List;
         }
 
         public override void OnShow()
         {
+            m_curSelect=null;
+            m_uiList.ItemNum=0;
+            m_uiList.ItemNum=m_listData.Length;
             base.OnShow();
         }
 
@@ -43,18 +44,22 @@ namespace JinJvli
         {
             if(m_curSelect != null)
             {
-                
+                PB_GameRoom gameRoom = new PB_GameRoom();
+                gameRoom.GameName = m_curSelect.Name;
+                gameRoom.ID = m_curSelect.ID;
+
+                Main.Manager<PanelManager>().Open<GameRoomPanel>(gameRoom);
             }
         }
 
         void onItemShow(int _index, RectTransform _item)
         {
-            _item.GetChild(0).GetComponent<Text>().text = $"[{m_listData[_index].GameName}]{m_listData[_index].Tip}";
-            _item.GetChild(1).GetComponent<Text>().text = $"<color={m_listData[_index].Host.Color}>{m_listData[_index].Host.Name}</color>";
-            _item.GetChild(2).gameObject.SetActive(false);
+            _item.GetChild(0).GetComponent<Text>().text = m_listData[_index].Name;
+            _item.GetChild(1).gameObject.SetActive(false);
+            _item.GetComponent<Button>().onClick.RemoveAllListeners();
             _item.GetComponent<Button>().onClick.AddListener(()=>
             {
-                selectItem(_index,_item.GetChild(2).gameObject);
+                selectItem(_index,_item.GetChild(1).gameObject);
             });
         }
 
@@ -67,27 +72,9 @@ namespace JinJvli
             }
             else
             {
-                if(m_curSelect!= null)
-                {
-                    return;
-                }
                 m_curSelect=m_listData[_index];
                 _select.SetActive(true);
             }
         }
-    }
-
-    [Serializable]
-    public class GameInfo
-    {
-        public string Name;
-        public UInt32 ID;
-        public string Tip;
-    } 
-
-    [CreateAssetMenu(menuName="GameInfoList")]
-    public class GameInfoList : ScriptableObject
-    {
-        public GameInfo[] List;
     }
 }

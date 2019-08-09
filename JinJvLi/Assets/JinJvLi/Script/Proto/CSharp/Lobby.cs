@@ -24,19 +24,19 @@ namespace JinJvLi.Lobby {
     static LobbyReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "CgtMb2JieS5wcm90bxINSmluSnZMaS5Mb2JieRoNSmluSnZMaS5wcm90byK9",
+            "CgtMb2JieS5wcm90bxINSmluSnZMaS5Mb2JieRoNSmluSnZMaS5wcm90byKz",
             "AQoLUEJfR2FtZVJvb20SEAoIR2FtZU5hbWUYASABKAkSCgoCSUQYAiABKA0S",
             "CwoDVGlwGAMgASgJEiYKB0FkZHJlc3MYBCABKAsyFS5KaW5KdkxpLlBCX0lQ",
-            "QWRkcmVzcxIiCgRIb3N0GAUgASgLMhQuSmluSnZMaS5QQl9Vc2VySW5mbxIS",
-            "CgpVcGRhdGVUaW1lGAYgASgCEg8KB1ZlcnNpb24YByABKAISEgoKQ3JlYXRl",
-            "VGltZRgIIAEoBSJdCg9QQl9GaWxlVHJhbnNmZXISEAoIRmlsZU5hbWUYASAB",
-            "KAkSEAoIRmlsZVNpemUYAiABKAMSJgoHQWRkcmVzcxgDIAEoCzIVLkppbkp2",
-            "TGkuUEJfSVBBZGRyZXNzYgZwcm90bzM="));
+            "QWRkcmVzcxIiCgRIb3N0GAUgASgLMhQuSmluSnZMaS5QQl9Vc2VySW5mbxIt",
+            "CgVGaWxlcxgGIAMoCzIeLkppbkp2TGkuTG9iYnkuUEJfRmlsZVRyYW5zZmVy",
+            "ImsKD1BCX0ZpbGVUcmFuc2ZlchIQCghGaWxlTmFtZRgBIAEoCRIQCghGaWxl",
+            "U2l6ZRgCIAEoAxImCgdBZGRyZXNzGAMgASgLMhUuSmluSnZMaS5QQl9JUEFk",
+            "ZHJlc3MSDAoEVHlwZRgEIAEoCWIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::JinJvLi.JinJvLiReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::JinJvLi.Lobby.PB_GameRoom), global::JinJvLi.Lobby.PB_GameRoom.Parser, new[]{ "GameName", "ID", "Tip", "Address", "Host", "UpdateTime", "Version", "CreateTime" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::JinJvLi.Lobby.PB_FileTransfer), global::JinJvLi.Lobby.PB_FileTransfer.Parser, new[]{ "FileName", "FileSize", "Address" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::JinJvLi.Lobby.PB_GameRoom), global::JinJvLi.Lobby.PB_GameRoom.Parser, new[]{ "GameName", "ID", "Tip", "Address", "Host", "Files" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::JinJvLi.Lobby.PB_FileTransfer), global::JinJvLi.Lobby.PB_FileTransfer.Parser, new[]{ "FileName", "FileSize", "Address", "Type" }, null, null, null)
           }));
     }
     #endregion
@@ -73,9 +73,7 @@ namespace JinJvLi.Lobby {
       tip_ = other.tip_;
       address_ = other.address_ != null ? other.address_.Clone() : null;
       host_ = other.host_ != null ? other.host_.Clone() : null;
-      updateTime_ = other.updateTime_;
-      version_ = other.version_;
-      createTime_ = other.createTime_;
+      files_ = other.files_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -139,37 +137,14 @@ namespace JinJvLi.Lobby {
       }
     }
 
-    /// <summary>Field number for the "UpdateTime" field.</summary>
-    public const int UpdateTimeFieldNumber = 6;
-    private float updateTime_;
+    /// <summary>Field number for the "Files" field.</summary>
+    public const int FilesFieldNumber = 6;
+    private static readonly pb::FieldCodec<global::JinJvLi.Lobby.PB_FileTransfer> _repeated_files_codec
+        = pb::FieldCodec.ForMessage(50, global::JinJvLi.Lobby.PB_FileTransfer.Parser);
+    private readonly pbc::RepeatedField<global::JinJvLi.Lobby.PB_FileTransfer> files_ = new pbc::RepeatedField<global::JinJvLi.Lobby.PB_FileTransfer>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public float UpdateTime {
-      get { return updateTime_; }
-      set {
-        updateTime_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "Version" field.</summary>
-    public const int VersionFieldNumber = 7;
-    private float version_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public float Version {
-      get { return version_; }
-      set {
-        version_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "CreateTime" field.</summary>
-    public const int CreateTimeFieldNumber = 8;
-    private int createTime_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int CreateTime {
-      get { return createTime_; }
-      set {
-        createTime_ = value;
-      }
+    public pbc::RepeatedField<global::JinJvLi.Lobby.PB_FileTransfer> Files {
+      get { return files_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -190,9 +165,7 @@ namespace JinJvLi.Lobby {
       if (Tip != other.Tip) return false;
       if (!object.Equals(Address, other.Address)) return false;
       if (!object.Equals(Host, other.Host)) return false;
-      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(UpdateTime, other.UpdateTime)) return false;
-      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Version, other.Version)) return false;
-      if (CreateTime != other.CreateTime) return false;
+      if(!files_.Equals(other.files_)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -204,9 +177,7 @@ namespace JinJvLi.Lobby {
       if (Tip.Length != 0) hash ^= Tip.GetHashCode();
       if (address_ != null) hash ^= Address.GetHashCode();
       if (host_ != null) hash ^= Host.GetHashCode();
-      if (UpdateTime != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(UpdateTime);
-      if (Version != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Version);
-      if (CreateTime != 0) hash ^= CreateTime.GetHashCode();
+      hash ^= files_.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -240,18 +211,7 @@ namespace JinJvLi.Lobby {
         output.WriteRawTag(42);
         output.WriteMessage(Host);
       }
-      if (UpdateTime != 0F) {
-        output.WriteRawTag(53);
-        output.WriteFloat(UpdateTime);
-      }
-      if (Version != 0F) {
-        output.WriteRawTag(61);
-        output.WriteFloat(Version);
-      }
-      if (CreateTime != 0) {
-        output.WriteRawTag(64);
-        output.WriteInt32(CreateTime);
-      }
+      files_.WriteTo(output, _repeated_files_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -275,15 +235,7 @@ namespace JinJvLi.Lobby {
       if (host_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Host);
       }
-      if (UpdateTime != 0F) {
-        size += 1 + 4;
-      }
-      if (Version != 0F) {
-        size += 1 + 4;
-      }
-      if (CreateTime != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(CreateTime);
-      }
+      size += files_.CalculateSize(_repeated_files_codec);
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -316,15 +268,7 @@ namespace JinJvLi.Lobby {
         }
         Host.MergeFrom(other.Host);
       }
-      if (other.UpdateTime != 0F) {
-        UpdateTime = other.UpdateTime;
-      }
-      if (other.Version != 0F) {
-        Version = other.Version;
-      }
-      if (other.CreateTime != 0) {
-        CreateTime = other.CreateTime;
-      }
+      files_.Add(other.files_);
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -362,16 +306,8 @@ namespace JinJvLi.Lobby {
             input.ReadMessage(Host);
             break;
           }
-          case 53: {
-            UpdateTime = input.ReadFloat();
-            break;
-          }
-          case 61: {
-            Version = input.ReadFloat();
-            break;
-          }
-          case 64: {
-            CreateTime = input.ReadInt32();
+          case 50: {
+            files_.AddEntriesFrom(input, _repeated_files_codec);
             break;
           }
         }
@@ -408,6 +344,7 @@ namespace JinJvLi.Lobby {
       fileName_ = other.fileName_;
       fileSize_ = other.fileSize_;
       address_ = other.address_ != null ? other.address_.Clone() : null;
+      type_ = other.type_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -449,6 +386,17 @@ namespace JinJvLi.Lobby {
       }
     }
 
+    /// <summary>Field number for the "Type" field.</summary>
+    public const int TypeFieldNumber = 4;
+    private string type_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string Type {
+      get { return type_; }
+      set {
+        type_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as PB_FileTransfer);
@@ -465,6 +413,7 @@ namespace JinJvLi.Lobby {
       if (FileName != other.FileName) return false;
       if (FileSize != other.FileSize) return false;
       if (!object.Equals(Address, other.Address)) return false;
+      if (Type != other.Type) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -474,6 +423,7 @@ namespace JinJvLi.Lobby {
       if (FileName.Length != 0) hash ^= FileName.GetHashCode();
       if (FileSize != 0L) hash ^= FileSize.GetHashCode();
       if (address_ != null) hash ^= Address.GetHashCode();
+      if (Type.Length != 0) hash ^= Type.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -499,6 +449,10 @@ namespace JinJvLi.Lobby {
         output.WriteRawTag(26);
         output.WriteMessage(Address);
       }
+      if (Type.Length != 0) {
+        output.WriteRawTag(34);
+        output.WriteString(Type);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -515,6 +469,9 @@ namespace JinJvLi.Lobby {
       }
       if (address_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Address);
+      }
+      if (Type.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Type);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -538,6 +495,9 @@ namespace JinJvLi.Lobby {
           Address = new global::JinJvLi.PB_IPAddress();
         }
         Address.MergeFrom(other.Address);
+      }
+      if (other.Type.Length != 0) {
+        Type = other.Type;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -563,6 +523,10 @@ namespace JinJvLi.Lobby {
               Address = new global::JinJvLi.PB_IPAddress();
             }
             input.ReadMessage(Address);
+            break;
+          }
+          case 34: {
+            Type = input.ReadString();
             break;
           }
         }

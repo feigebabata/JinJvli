@@ -53,7 +53,7 @@ namespace JinJvli
                         m_alertDialog.CloseCur();
                         return;
                     }
-                    CloseCurPanel();
+                    m_curPanel?.OnClickClose();
                 }
             }
         }
@@ -189,6 +189,11 @@ namespace JinJvli
         public void ShowToast(string _text,float _delay=Toast.Config.DEFAULT_DELAY)
         {
             m_toast.Show(_text,_delay);
+        }
+
+        public void ShowAlertDialog(string _text,Action _ok,Action _cancel=null)
+        {
+            m_alertDialog.Show(_text,_ok,_cancel);
         }
 
         public void ShowLoading()
