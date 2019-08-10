@@ -24,18 +24,18 @@ namespace JinJvLi.Lobby {
     static LobbyReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "CgtMb2JieS5wcm90bxINSmluSnZMaS5Mb2JieRoNSmluSnZMaS5wcm90byKz",
+            "CgtMb2JieS5wcm90bxINSmluSnZMaS5Mb2JieRoNSmluSnZMaS5wcm90byLE",
             "AQoLUEJfR2FtZVJvb20SEAoIR2FtZU5hbWUYASABKAkSCgoCSUQYAiABKA0S",
             "CwoDVGlwGAMgASgJEiYKB0FkZHJlc3MYBCABKAsyFS5KaW5KdkxpLlBCX0lQ",
             "QWRkcmVzcxIiCgRIb3N0GAUgASgLMhQuSmluSnZMaS5QQl9Vc2VySW5mbxIt",
             "CgVGaWxlcxgGIAMoCzIeLkppbkp2TGkuTG9iYnkuUEJfRmlsZVRyYW5zZmVy",
-            "ImsKD1BCX0ZpbGVUcmFuc2ZlchIQCghGaWxlTmFtZRgBIAEoCRIQCghGaWxl",
-            "U2l6ZRgCIAEoAxImCgdBZGRyZXNzGAMgASgLMhUuSmluSnZMaS5QQl9JUEFk",
-            "ZHJlc3MSDAoEVHlwZRgEIAEoCWIGcHJvdG8z"));
+            "Eg8KB1ZlcnNpb24YByABKAIiawoPUEJfRmlsZVRyYW5zZmVyEhAKCEZpbGVO",
+            "YW1lGAEgASgJEhAKCEZpbGVTaXplGAIgASgDEiYKB0FkZHJlc3MYAyABKAsy",
+            "FS5KaW5KdkxpLlBCX0lQQWRkcmVzcxIMCgRUeXBlGAQgASgJYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::JinJvLi.JinJvLiReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::JinJvLi.Lobby.PB_GameRoom), global::JinJvLi.Lobby.PB_GameRoom.Parser, new[]{ "GameName", "ID", "Tip", "Address", "Host", "Files" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::JinJvLi.Lobby.PB_GameRoom), global::JinJvLi.Lobby.PB_GameRoom.Parser, new[]{ "GameName", "ID", "Tip", "Address", "Host", "Files", "Version" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::JinJvLi.Lobby.PB_FileTransfer), global::JinJvLi.Lobby.PB_FileTransfer.Parser, new[]{ "FileName", "FileSize", "Address", "Type" }, null, null, null)
           }));
     }
@@ -74,6 +74,7 @@ namespace JinJvLi.Lobby {
       address_ = other.address_ != null ? other.address_.Clone() : null;
       host_ = other.host_ != null ? other.host_.Clone() : null;
       files_ = other.files_.Clone();
+      version_ = other.version_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -147,6 +148,17 @@ namespace JinJvLi.Lobby {
       get { return files_; }
     }
 
+    /// <summary>Field number for the "Version" field.</summary>
+    public const int VersionFieldNumber = 7;
+    private float version_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public float Version {
+      get { return version_; }
+      set {
+        version_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as PB_GameRoom);
@@ -166,6 +178,7 @@ namespace JinJvLi.Lobby {
       if (!object.Equals(Address, other.Address)) return false;
       if (!object.Equals(Host, other.Host)) return false;
       if(!files_.Equals(other.files_)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Version, other.Version)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -178,6 +191,7 @@ namespace JinJvLi.Lobby {
       if (address_ != null) hash ^= Address.GetHashCode();
       if (host_ != null) hash ^= Host.GetHashCode();
       hash ^= files_.GetHashCode();
+      if (Version != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Version);
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -212,6 +226,10 @@ namespace JinJvLi.Lobby {
         output.WriteMessage(Host);
       }
       files_.WriteTo(output, _repeated_files_codec);
+      if (Version != 0F) {
+        output.WriteRawTag(61);
+        output.WriteFloat(Version);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -236,6 +254,9 @@ namespace JinJvLi.Lobby {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Host);
       }
       size += files_.CalculateSize(_repeated_files_codec);
+      if (Version != 0F) {
+        size += 1 + 4;
+      }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -269,6 +290,9 @@ namespace JinJvLi.Lobby {
         Host.MergeFrom(other.Host);
       }
       files_.Add(other.files_);
+      if (other.Version != 0F) {
+        Version = other.Version;
+      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -308,6 +332,10 @@ namespace JinJvLi.Lobby {
           }
           case 50: {
             files_.AddEntriesFrom(input, _repeated_files_codec);
+            break;
+          }
+          case 61: {
+            Version = input.ReadFloat();
             break;
           }
         }

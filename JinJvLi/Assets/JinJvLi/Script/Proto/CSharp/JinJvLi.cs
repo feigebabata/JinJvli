@@ -24,13 +24,14 @@ namespace JinJvLi {
     static JinJvLiReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "Cg1KaW5KdkxpLnByb3RvEgdKaW5KdkxpIjcKC1BCX1VzZXJJbmZvEgwKBE5h",
-            "bWUYASABKAkSCwoDVUlEGAIgASgJEg0KBUNvbG9yGAMgASgJIigKDFBCX0lQ",
-            "QWRkcmVzcxIKCgJJUBgBIAEoCRIMCgRQb3J0GAIgASgFYgZwcm90bzM="));
+            "Cg1KaW5KdkxpLnByb3RvEgdKaW5KdkxpIl8KC1BCX1VzZXJJbmZvEgwKBE5h",
+            "bWUYASABKAkSCwoDVUlEGAIgASgJEg0KBUNvbG9yGAMgASgJEiYKB0FkZHJl",
+            "c3MYBCABKAsyFS5KaW5KdkxpLlBCX0lQQWRkcmVzcyIoCgxQQl9JUEFkZHJl",
+            "c3MSCgoCSVAYASABKAkSDAoEUG9ydBgCIAEoBWIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::JinJvLi.PB_UserInfo), global::JinJvLi.PB_UserInfo.Parser, new[]{ "Name", "UID", "Color" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::JinJvLi.PB_UserInfo), global::JinJvLi.PB_UserInfo.Parser, new[]{ "Name", "UID", "Color", "Address" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::JinJvLi.PB_IPAddress), global::JinJvLi.PB_IPAddress.Parser, new[]{ "IP", "Port" }, null, null, null)
           }));
     }
@@ -66,6 +67,7 @@ namespace JinJvLi {
       name_ = other.name_;
       uID_ = other.uID_;
       color_ = other.color_;
+      address_ = other.address_ != null ? other.address_.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -107,6 +109,17 @@ namespace JinJvLi {
       }
     }
 
+    /// <summary>Field number for the "Address" field.</summary>
+    public const int AddressFieldNumber = 4;
+    private global::JinJvLi.PB_IPAddress address_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::JinJvLi.PB_IPAddress Address {
+      get { return address_; }
+      set {
+        address_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as PB_UserInfo);
@@ -123,6 +136,7 @@ namespace JinJvLi {
       if (Name != other.Name) return false;
       if (UID != other.UID) return false;
       if (Color != other.Color) return false;
+      if (!object.Equals(Address, other.Address)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -132,6 +146,7 @@ namespace JinJvLi {
       if (Name.Length != 0) hash ^= Name.GetHashCode();
       if (UID.Length != 0) hash ^= UID.GetHashCode();
       if (Color.Length != 0) hash ^= Color.GetHashCode();
+      if (address_ != null) hash ^= Address.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -157,6 +172,10 @@ namespace JinJvLi {
         output.WriteRawTag(26);
         output.WriteString(Color);
       }
+      if (address_ != null) {
+        output.WriteRawTag(34);
+        output.WriteMessage(Address);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -173,6 +192,9 @@ namespace JinJvLi {
       }
       if (Color.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Color);
+      }
+      if (address_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Address);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -193,6 +215,12 @@ namespace JinJvLi {
       }
       if (other.Color.Length != 0) {
         Color = other.Color;
+      }
+      if (other.address_ != null) {
+        if (address_ == null) {
+          Address = new global::JinJvLi.PB_IPAddress();
+        }
+        Address.MergeFrom(other.Address);
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -215,6 +243,13 @@ namespace JinJvLi {
           }
           case 26: {
             Color = input.ReadString();
+            break;
+          }
+          case 34: {
+            if (address_ == null) {
+              Address = new global::JinJvLi.PB_IPAddress();
+            }
+            input.ReadMessage(Address);
             break;
           }
         }

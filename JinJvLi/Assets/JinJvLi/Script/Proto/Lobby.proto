@@ -11,6 +11,7 @@ message PB_GameRoom
     PB_IPAddress Address=4;
     PB_UserInfo Host=5;
     repeated PB_FileTransfer Files = 6;
+    float Version=7;
 }
 
 message PB_FileTransfer

@@ -6,6 +6,7 @@ message PB_UserInfo
     string Name=1;
     string UID=2;
     string Color=3;
+    PB_IPAddress Address=4;
 }
 
 message PB_IPAddress
