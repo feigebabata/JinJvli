@@ -60,14 +60,14 @@ namespace JinJvli
                 addWaiting(_url,_callback);
                 if(File.Exists(_url))
                 {
-                    Coroutines.Inst.Run(loadAudioClip(new Uri(_url),_url));
+                    loadAudioClip(new Uri(_url),_url).Start();
                 }
                 else
                 {
                     string savePath = GetLocalPath(_url);
                     if(File.Exists(savePath))
                     {
-                        Coroutines.Inst.Run(loadAudioClip(new Uri(savePath),_url));
+                        loadAudioClip(new Uri(savePath),_url).Start();
                     }
                     else
                     {

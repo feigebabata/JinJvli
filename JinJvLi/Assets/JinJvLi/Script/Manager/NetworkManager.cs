@@ -89,7 +89,7 @@ namespace JinJvli
             }
         }
 
-        public T Clients<T>() where T : IClient
+        public T Client<T>() where T : IClient
         {
             Type clientType = typeof(T);
             if(!m_clients.ContainsKey(clientType))

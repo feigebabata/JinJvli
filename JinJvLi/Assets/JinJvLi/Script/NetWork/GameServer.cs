@@ -22,14 +22,14 @@ namespace JinJvli
         List<IPEndPoint> m_clients = new List<IPEndPoint>();
         UdpClient m_server;
         bool m_isRun;
-        NetworkManager m_networkManager;
+        NetworkManager m_netMng;
         PB_GameRoom _gameRoom;
         BroadcastGameData m_gameData;
         Coroutine m_broadcastGame;
 
         public void Start(int _port,PB_GameRoom _gameRoom)
         {
-            m_networkManager = Main.Manager<NetworkManager>();
+            m_netMng = Main.Manager<NetworkManager>();
             
             var ip = NetworkManager.GetLocalIP();
             m_server = new UdpClient(new IPEndPoint(ip,_port));
@@ -49,14 +49,14 @@ namespace JinJvli
 
         public void Close()
         {
-            Coroutines.Inst.Stop(m_broadcastGame);
+            m_broadcastGame.Stop();
             m_server.Close();
             m_server.Dispose();
         }
 
         void broadcastGame()
         {
-            m_networkManager.SendBroadcast(m_gameData);
+            m_netMng.SendBroadcast(m_gameData);
         }
 
         async void recvCmdAsync()
@@ -83,24 +83,11 @@ namespace JinJvli
             {
                 case NetCmd.JoinGame:
                 {
-                    PB_UserInfo user;
-                    try
-                    {
-                        user = PB_UserInfo.Parser.ParseFrom(_data,NetworkManager.Config.NET_CMD_LENGTH,_data.Length-NetworkManager.Config.NET_CMD_LENGTH);
-                    }
-                    catch (System.Exception _ex)
-                    {
-                        Debug.LogError($"[GameServer.switchCmd]PB_UserInfo解析异常!{_ex}");
-                        return;
-                    }
-                    if(m_clients.Find((_ip)=>{return _ip.Port==user.Address.Port && _ip.Address.ToString()==user.Address.IP;})==null)
-                    {
-                        m_clients.Add(new IPEndPoint(IPAddress.Parse(user.Address.IP),user.Address.Port));
-                    }
+                    joinGame(_data);
                 }
                 break;
                 default:
-                sendCmd(_data);
+                    sendCmd(_data);
                 break;
             }
         }
@@ -110,6 +97,24 @@ namespace JinJvli
             for (int i = 0; i < m_clients.Count; i++)
             {
                 await m_server.SendAsync(_data,_data.Length,m_clients[i]);
+            }
+        }
+
+        void joinGame(byte[] _data)
+        {
+            PB_UserInfo user;
+            try
+            {
+                user = PB_UserInfo.Parser.ParseFrom(_data,NetworkManager.Config.NET_CMD_LENGTH,_data.Length-NetworkManager.Config.NET_CMD_LENGTH);
+            }
+            catch (System.Exception _ex)
+            {
+                Debug.LogError($"[GameServer.switchCmd]PB_UserInfo解析异常!{_ex}");
+                return;
+            }
+            if(m_clients.Find((_ip)=>{return _ip.Port==user.Address.Port && _ip.Address.ToString()==user.Address.IP;})==null)
+            {
+                m_clients.Add(new IPEndPoint(IPAddress.Parse(user.Address.IP),user.Address.Port));
             }
         }
     }

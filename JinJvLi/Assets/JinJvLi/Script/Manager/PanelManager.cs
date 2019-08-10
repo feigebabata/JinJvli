@@ -202,7 +202,7 @@ namespace JinJvli
             if(m_showLoadingCount==1)
             {
                 m_loading.SetActive(true);
-                m_loadingAnim = Coroutines.Inst.Run(loadingAnim());
+                m_loadingAnim = loadingAnim().Start();
             }
         }
 
@@ -227,7 +227,7 @@ namespace JinJvli
             if(m_showLoadingCount==0)
             {
                 m_loading.SetActive(false);
-                Coroutines.Inst.Stop(m_loadingAnim);
+                m_loadingAnim.Stop();
             }
         }
     }

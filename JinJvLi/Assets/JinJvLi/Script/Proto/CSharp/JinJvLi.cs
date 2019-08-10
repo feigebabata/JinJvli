@@ -24,14 +24,15 @@ namespace JinJvLi {
     static JinJvLiReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "Cg1KaW5KdkxpLnByb3RvEgdKaW5KdkxpIl8KC1BCX1VzZXJJbmZvEgwKBE5h",
+            "Cg1KaW5KdkxpLnByb3RvEgdKaW5KdkxpIm8KC1BCX1VzZXJJbmZvEgwKBE5h",
             "bWUYASABKAkSCwoDVUlEGAIgASgJEg0KBUNvbG9yGAMgASgJEiYKB0FkZHJl",
-            "c3MYBCABKAsyFS5KaW5KdkxpLlBCX0lQQWRkcmVzcyIoCgxQQl9JUEFkZHJl",
-            "c3MSCgoCSVAYASABKAkSDAoEUG9ydBgCIAEoBWIGcHJvdG8z"));
+            "c3MYBCABKAsyFS5KaW5KdkxpLlBCX0lQQWRkcmVzcxIOCgZHYW1lSUQYBSAB",
+            "KA0iKAoMUEJfSVBBZGRyZXNzEgoKAklQGAEgASgJEgwKBFBvcnQYAiABKAVi",
+            "BnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::JinJvLi.PB_UserInfo), global::JinJvLi.PB_UserInfo.Parser, new[]{ "Name", "UID", "Color", "Address" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::JinJvLi.PB_UserInfo), global::JinJvLi.PB_UserInfo.Parser, new[]{ "Name", "UID", "Color", "Address", "GameID" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::JinJvLi.PB_IPAddress), global::JinJvLi.PB_IPAddress.Parser, new[]{ "IP", "Port" }, null, null, null)
           }));
     }
@@ -68,6 +69,7 @@ namespace JinJvLi {
       uID_ = other.uID_;
       color_ = other.color_;
       address_ = other.address_ != null ? other.address_.Clone() : null;
+      gameID_ = other.gameID_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -120,6 +122,17 @@ namespace JinJvLi {
       }
     }
 
+    /// <summary>Field number for the "GameID" field.</summary>
+    public const int GameIDFieldNumber = 5;
+    private uint gameID_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public uint GameID {
+      get { return gameID_; }
+      set {
+        gameID_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as PB_UserInfo);
@@ -137,6 +150,7 @@ namespace JinJvLi {
       if (UID != other.UID) return false;
       if (Color != other.Color) return false;
       if (!object.Equals(Address, other.Address)) return false;
+      if (GameID != other.GameID) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -147,6 +161,7 @@ namespace JinJvLi {
       if (UID.Length != 0) hash ^= UID.GetHashCode();
       if (Color.Length != 0) hash ^= Color.GetHashCode();
       if (address_ != null) hash ^= Address.GetHashCode();
+      if (GameID != 0) hash ^= GameID.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -176,6 +191,10 @@ namespace JinJvLi {
         output.WriteRawTag(34);
         output.WriteMessage(Address);
       }
+      if (GameID != 0) {
+        output.WriteRawTag(40);
+        output.WriteUInt32(GameID);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -195,6 +214,9 @@ namespace JinJvLi {
       }
       if (address_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Address);
+      }
+      if (GameID != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(GameID);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -221,6 +243,9 @@ namespace JinJvLi {
           Address = new global::JinJvLi.PB_IPAddress();
         }
         Address.MergeFrom(other.Address);
+      }
+      if (other.GameID != 0) {
+        GameID = other.GameID;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -250,6 +275,10 @@ namespace JinJvLi {
               Address = new global::JinJvLi.PB_IPAddress();
             }
             input.ReadMessage(Address);
+            break;
+          }
+          case 40: {
+            GameID = input.ReadUInt32();
             break;
           }
         }

@@ -1,14 +1,19 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
-public static class CoroutineExpand
+namespace JinJvli
 {
-    public static bool Run(this Coroutine _coro)
+    public static class CoroutineExpand
     {
-        return Coroutines.Inst.Run(_coro);
-    }
-    public static bool HasZH_CN(this string _text)
-    {
-        return Regex.IsMatch(_text,"^[\u4e00-\u9fa5]$");
+        public static Coroutine Start(this IEnumerator _enumerator)
+        {
+            return Coroutines.Inst.Run(_enumerator);
+        }
+
+        public static void Stop(this Coroutine _enumerator)
+        {
+            Coroutines.Inst.Stop(_enumerator);
+        }
     }
 }

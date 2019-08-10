@@ -44,9 +44,25 @@ namespace JinJvli
         {
             if(m_curSelect != null)
             {
+                GameServer gameServer = Main.Manager<NetworkManager>().CreateServer<GameServer>();
+
+                string user_json = PlayerPrefs.GetString(LoginPanel.Config.SELF_INFO);
+                int serverPort = NetworkManager.Config.FILE_TRANSPORT;
+                var ip = NetworkManager.GetLocalIP().ToString();
+                while (NetworkManager.IsPortOccuped(serverPort))
+                {
+                    serverPort++;
+                }
+
                 PB_GameRoom gameRoom = new PB_GameRoom();
+                gameRoom.Host = PB_UserInfo.Parser.ParseJson(user_json);
+                gameRoom.Host.Address = new PB_IPAddress(){IP=ip,Port=Main.Manager<NetworkManager>().Client<GameClinet>().Port};
                 gameRoom.GameName = m_curSelect.Name;
                 gameRoom.ID = m_curSelect.ID;
+                gameRoom.Address = new PB_IPAddress(){IP=ip,Port=serverPort};
+                
+                gameServer.Start(serverPort,gameRoom);
+                Main.Manager<PanelManager>().ShowToast("游戏已创建 等待其他玩家加入和你的开始",5);
 
                 Main.Manager<PanelManager>().Open<GameRoomPanel>(gameRoom);
             }

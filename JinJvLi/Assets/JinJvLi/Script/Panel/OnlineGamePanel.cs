@@ -41,19 +41,13 @@ namespace JinJvli
             m_uiList.ItemNum=0;
             m_updateList = Coroutines.Inst.LoopRun(1,-1,updateList);
             Broadcaster.Add<NetworkManager.NetBroadcast>(onNetBroadcast);
-            // GameServer gameServer = Main.Manager<NetworkManager>().CreateServer<GameServer>();
-            // PB_GameRoom gameRoom = new PB_GameRoom();
-            // gameRoom.GameName="会跳舞的线";
-            // string user_json = PlayerPrefs.GetString(LoginPanel.Config.SELF_INFO);
-            // gameRoom.Host = PB_UserInfo.Parser.ParseJson(user_json);
-            // gameServer.Start(gameRoom,NetCmd.GameRoom);
             base.OnShow();
         }
 
         public override void OnHide()
         {
             Broadcaster.Remove<NetworkManager.NetBroadcast>(onNetBroadcast);
-            Coroutines.Inst.Stop(m_updateList);
+            m_updateList.Stop();
             base.OnHide();
         }
 
@@ -71,7 +65,7 @@ namespace JinJvli
         {
             if(m_curSelect != null)
             {
-                
+                 Main.Manager<PanelManager>().Open<GameRoomPanel>(m_curSelect.GameRoom);
             }
         }
 
@@ -79,14 +73,14 @@ namespace JinJvli
         {
             if(_netData.Cmd == NetCmd.GameRoom)
             {
-                GameRoomItem gameRoom=null;
+                GameRoomItem gameRoom=new GameRoomItem();
                 try
                 {
                     gameRoom.GameRoom = PB_GameRoom.Parser.ParseFrom(_netData.Buffer);
                     
                 }
                 catch{}
-                if(gameRoom != null)
+                if(gameRoom.GameRoom != null)
                 {
                     gameRoom.CreateTime= Time.time;
                     gameRoom.UpdateTime= Time.time;

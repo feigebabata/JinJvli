@@ -47,20 +47,13 @@ namespace JinJvli
             m_uiList.ItemNum=0;
             m_updateList = Coroutines.Inst.LoopRun(1,-1,updateList);
             Broadcaster.Add<NetworkManager.NetBroadcast>(onNetBroadcast);
-            // GameServer gameServer = Main.Manager<NetworkManager>().CreateServer<GameServer>();
-            // PB_GameRoom gameRoom = new PB_GameRoom();
-            // gameRoom.GameName="会跳舞的线";
-            // string user_json = PlayerPrefs.GetString(LoginPanel.Config.SELF_INFO);
-            // gameRoom.Host = PB_UserInfo.Parser.ParseJson(user_json);
-            // gameServer.Start(gameRoom,NetCmd.GameRoom);
             base.OnShow();
-            Main.Manager<PanelManager>().ShowToast("游戏已创建 等待其他玩家加入和你的开始",5);
         }
 
         public override void OnHide()
         {
             Broadcaster.Remove<NetworkManager.NetBroadcast>(onNetBroadcast);
-            Coroutines.Inst.Stop(m_updateList);
+            m_updateList.Stop();
             base.OnHide();
         }
 
