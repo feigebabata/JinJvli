@@ -27,7 +27,7 @@ namespace JinJvLi {
             "Cg1KaW5KdkxpLnByb3RvEgdKaW5KdkxpIm8KC1BCX1VzZXJJbmZvEgwKBE5h",
             "bWUYASABKAkSCwoDVUlEGAIgASgJEg0KBUNvbG9yGAMgASgJEiYKB0FkZHJl",
             "c3MYBCABKAsyFS5KaW5KdkxpLlBCX0lQQWRkcmVzcxIOCgZHYW1lSUQYBSAB",
-            "KA0iKAoMUEJfSVBBZGRyZXNzEgoKAklQGAEgASgJEgwKBFBvcnQYAiABKAVi",
+            "KAUiKAoMUEJfSVBBZGRyZXNzEgoKAklQGAEgASgJEgwKBFBvcnQYAiABKAVi",
             "BnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
@@ -124,9 +124,9 @@ namespace JinJvLi {
 
     /// <summary>Field number for the "GameID" field.</summary>
     public const int GameIDFieldNumber = 5;
-    private uint gameID_;
+    private int gameID_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public uint GameID {
+    public int GameID {
       get { return gameID_; }
       set {
         gameID_ = value;
@@ -193,7 +193,7 @@ namespace JinJvLi {
       }
       if (GameID != 0) {
         output.WriteRawTag(40);
-        output.WriteUInt32(GameID);
+        output.WriteInt32(GameID);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -216,7 +216,7 @@ namespace JinJvLi {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Address);
       }
       if (GameID != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(GameID);
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(GameID);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -278,7 +278,7 @@ namespace JinJvLi {
             break;
           }
           case 40: {
-            GameID = input.ReadUInt32();
+            GameID = input.ReadInt32();
             break;
           }
         }

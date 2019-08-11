@@ -7,7 +7,7 @@ message PB_UserInfo
     string UID=2;
     string Color=3;
     PB_IPAddress Address=4;
-    uint32 GameID=5;
+    int32 GameID=5;
 }
 
 message PB_IPAddress

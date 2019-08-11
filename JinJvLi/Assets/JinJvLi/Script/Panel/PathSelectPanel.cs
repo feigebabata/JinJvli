@@ -38,7 +38,7 @@ namespace JinJvli
             m_uiList.m_ItemShow += onItemShow;
         }
 
-        public override void OnCreate(object _openData = null)
+        public override void OnShow(object _openData = null)
         {
             m_openData = _openData as OpenData;
             m_curDirPath = PlayerPrefs.GetString(Config.SELECT_PATH);
@@ -47,6 +47,7 @@ namespace JinJvli
                 m_curDirPath=string.Empty;
             }
             getDirAndFile();
+            base.OnShow(_openData);
         }
 
         public override void OnClose()

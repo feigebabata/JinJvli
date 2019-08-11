@@ -38,10 +38,6 @@ namespace JinJvli
             m_filePath = _filePath;
             Size = new FileInfo(_filePath).Length;
             Port = NetworkManager.Config.FILE_TRANSPORT;
-            while (NetworkManager.IsPortOccuped(Port))
-            {
-                Port++;
-            }
             m_self = new TcpListener(NetworkManager.GetLocalIP(),Port);
             m_self.Start();
             waitConnectAsync();

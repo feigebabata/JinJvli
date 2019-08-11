@@ -24,12 +24,8 @@ namespace JinJvli
 
         public GameClinet()
         {
-            Port = NetworkManager.Config.UDP_CLIENT_PORT;
-            while (NetworkManager.IsPortOccuped(Port))
-            {
-                Port++;
-            }
-            m_client = new UdpClient(Port);
+            Port = NetworkManager.Config.GAME_CLIENT_PORT;
+            m_client = new UdpClient(Port);        
         }
 
         public void Connect(string _ip, int _port)
@@ -59,16 +55,23 @@ namespace JinJvli
             }
         }
 
-        public async void SendCmd(ISendData _sendData)
+        public async void SendCmd(byte[] _data)
         {
-            byte[] data = _sendData.Pack();
             try
             {
-                var length = await m_client.SendAsync(data, data.Length,m_serverIP);
+                var length = await m_client.SendAsync(_data, _data.Length,m_serverIP);
             }
             catch(Exception _ex)
             {
                 Debug.LogError($"[NetworkManager.SendBroadcast]{_ex.Message}");
+            }
+        }
+
+        public void RedundancySend(byte[] _data)
+        {
+            for (int j = 0; j < NetworkManager.Config.SEND_REDUNDANCY; j++)
+            {
+                SendCmd(_data);
             }
         }
 
@@ -80,13 +83,13 @@ namespace JinJvli
             {
                 if(data!=null)
                 {
-                    GameCmd netBroadcast=null;
-                    netBroadcast.Cmd = (NetCmd)BitConverter.ToUInt16(data,0);
-                    netBroadcast.Buffer = new byte[data.Length-NetworkManager.Config.NET_CMD_LENGTH];
-                    Array.Copy(data,NetworkManager.Config.NET_CMD_LENGTH,netBroadcast.Buffer,0,netBroadcast.Buffer.Length);
+                    GameCmd gameCmd=new GameCmd();
+                    gameCmd.Cmd = (NetCmd)BitConverter.ToUInt16(data,0);
+                    gameCmd.Buffer = new byte[data.Length-NetworkManager.Config.NET_CMD_LENGTH];
+                    Array.Copy(data,NetworkManager.Config.NET_CMD_LENGTH,gameCmd.Buffer,0,gameCmd.Buffer.Length);
                     lock (m_cmdQueueLock)
                     {
-                        m_cmdQueue.Enqueue(netBroadcast);
+                        m_cmdQueue.Enqueue(gameCmd);
                     }
                 }
 
@@ -99,6 +102,7 @@ namespace JinJvli
                 {
                     data = null;
                     Debug.LogError($"[GameClinet.receveBroadcast]{_ex.Message}");
+                    return;
                 }
             }
         }

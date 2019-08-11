@@ -61,9 +61,9 @@ namespace JinJvli
         /// <summary>
         /// 别在Open里打开新界面 会出Bug
         /// </summary>
-        /// <param name="_createData"></param>
+        /// <param name="_openData"></param>
         /// <typeparam name="T"></typeparam>
-        public void Open<T>(object _createData=null) where T:PanelBase
+        public void Open<T>(object _openData=null) where T:PanelBase
         {
             PanelBase panel=null;
             Type panelType = null;
@@ -87,12 +87,12 @@ namespace JinJvli
             if(panel == null)
             {
                 panel=createPanel(panelConfig.PrefabPath,panelType);
-                panel.OnCreate(_createData);
+                panel.OnCreate();
             }
             
             addPanelStack(panelType);
             m_curPanel = panel;
-            panel.OnShow();
+            panel.OnShow(_openData);
         }
         public void CloseCurPanel()
         {
@@ -239,9 +239,9 @@ namespace JinJvli
     {
         [NonSerialized]
         public bool IsShow;
-        public virtual void OnCreate(object _createData = null){}
+        public virtual void OnCreate(){}
         public virtual void OnClose(){}
-        public virtual void OnShow(){IsShow=true;gameObject.SetActive(true);}
+        public virtual void OnShow(object _openData = null){IsShow=true;gameObject.SetActive(true);}
         public virtual void OnHide(){IsShow=false;gameObject.SetActive(false);}
         public virtual void OnClickClose(){Main.Manager<PanelManager>().CloseCurPanel();}
     }

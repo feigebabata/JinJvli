@@ -30,12 +30,12 @@ namespace JinJvli
         Coroutine m_updateList;
         List<GameRoomItem> m_remove = new List<GameRoomItem>();
 
-        public override void OnCreate(object _openData = null)
+        public override void OnCreate()
         {
             m_uiList.m_ItemShow += onItemShow;
         }
 
-        public override void OnShow()
+        public override void OnShow(object _openData = null)
         {
             m_curSelect=null;
             m_uiList.ItemNum=0;
@@ -49,11 +49,6 @@ namespace JinJvli
             Broadcaster.Remove<NetworkManager.NetBroadcast>(onNetBroadcast);
             m_updateList.Stop();
             base.OnHide();
-        }
-
-        void Update()
-        {
-            updateList();
         }
 
         public void OnClickCreate()

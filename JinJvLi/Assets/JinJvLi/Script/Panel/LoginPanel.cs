@@ -24,7 +24,7 @@ namespace JinJvLi
         public TMP_InputField m_sendIF;
         PB_UserInfo m_selfInfo;
 
-        public override void OnShow()
+        public override void OnShow(object _openData = null)
         {
             string user_json = PlayerPrefs.GetString(Config.SELF_INFO);
             if(string.IsNullOrEmpty(user_json))

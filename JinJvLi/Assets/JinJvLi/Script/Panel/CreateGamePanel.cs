@@ -21,13 +21,13 @@ namespace JinJvli
         CreateGameInfo[] m_listData;
         CreateGameInfo m_curSelect;
 
-        public override void OnCreate(object _openData = null)
+        public override void OnCreate()
         {
             m_uiList.m_ItemShow += onItemShow;
             m_listData  = Resources.Load<GameCreateList>(Config.GAME_INFO_LIST_PATH).List;
         }
 
-        public override void OnShow()
+        public override void OnShow(object _openData = null)
         {
             m_curSelect=null;
             m_uiList.ItemNum=0;
@@ -46,22 +46,16 @@ namespace JinJvli
             {
                 GameServer gameServer = Main.Manager<NetworkManager>().CreateServer<GameServer>();
 
-                string user_json = PlayerPrefs.GetString(LoginPanel.Config.SELF_INFO);
-                int serverPort = NetworkManager.Config.FILE_TRANSPORT;
                 var ip = NetworkManager.GetLocalIP().ToString();
-                while (NetworkManager.IsPortOccuped(serverPort))
-                {
-                    serverPort++;
-                }
 
                 PB_GameRoom gameRoom = new PB_GameRoom();
+                string user_json = PlayerPrefs.GetString(LoginPanel.Config.SELF_INFO);
                 gameRoom.Host = PB_UserInfo.Parser.ParseJson(user_json);
                 gameRoom.Host.Address = new PB_IPAddress(){IP=ip,Port=Main.Manager<NetworkManager>().Client<GameClinet>().Port};
                 gameRoom.GameName = m_curSelect.Name;
                 gameRoom.ID = m_curSelect.ID;
-                gameRoom.Address = new PB_IPAddress(){IP=ip,Port=serverPort};
                 
-                gameServer.Start(serverPort,gameRoom);
+                gameServer.Start(gameRoom);
                 Main.Manager<PanelManager>().ShowToast("游戏已创建 等待其他玩家加入和你的开始",5);
 
                 Main.Manager<PanelManager>().Open<GameRoomPanel>(gameRoom);

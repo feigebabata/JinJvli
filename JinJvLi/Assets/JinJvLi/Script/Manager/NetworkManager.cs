@@ -18,14 +18,14 @@ namespace JinJvli
         {
             public static string Broadcast_IP;
             public const int BROADCASR_PORT = 30001;
-            public const int UDP_CLIENT_PORT=30002;
-
-            /// <summary>
-            /// 文件传输接口 多个文件传输时累加
-            /// </summary>
+            public const int UDP_CLIENT_PORT = 30002;
+            public const int GAME_CLIENT_PORT = 30101;
+            public const int GAME_SERVER_PORT = 30102;
             public const int FILE_TRANSPORT=31000;
+
             public const int PACK_MAX_LENGTH=1024;
             public const UInt16 NET_CMD_LENGTH = sizeof(UInt16);
+            public const int SEND_REDUNDANCY=3;
         }
 
         public struct NetBroadcast : Broadcaster.IMsg
@@ -168,20 +168,20 @@ namespace JinJvli
         /// </summary>
         /// <param name="_port"></param>
         /// <returns></returns>
-        public static bool IsPortOccuped(int _port)
-        {
-            IPGlobalProperties ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
-            TcpConnectionInformation[] tcpConnInfoArray = ipGlobalProperties.GetActiveTcpConnections();
+        // public static bool IsPortOccuped(int _port)
+        // {
+        //     IPGlobalProperties ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
+        //     TcpConnectionInformation[] tcpConnInfoArray = ipGlobalProperties.GetActiveTcpConnections();
 
-            for(int i= 0;i<tcpConnInfoArray.Length;i++)
-            {
-                if (tcpConnInfoArray[i].LocalEndPoint.Port == _port)
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
+        //     for(int i= 0;i<tcpConnInfoArray.Length;i++)
+        //     {
+        //         if (tcpConnInfoArray[i].LocalEndPoint.Port == _port)
+        //         {
+        //             return false;
+        //         }
+        //     }
+        //     return true;
+        // }
         
         public static IPAddress GetLocalIP()
         {

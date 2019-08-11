@@ -4,5 +4,6 @@ namespace JinJvli
     {
         GameRoom,
         JoinGame,
+        ExitGame,
     }
 }

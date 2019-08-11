@@ -19,7 +19,18 @@ namespace JinJvli
         {
             public const float BROADCASR_TIME=1.5f;
         }
-        List<IPEndPoint> m_clients = new List<IPEndPoint>();
+
+        public class ClientUser
+        {
+            public IPEndPoint IP;
+            public PB_UserInfo Info;
+            public ClientUser(PB_UserInfo _info)
+            {
+                Info = _info;
+                IP = new IPEndPoint(IPAddress.Parse(Info.Address.IP),Info.Address.Port);
+            }
+        }
+        List<ClientUser> m_clients = new List<ClientUser>();
         UdpClient m_server;
         bool m_isRun;
         NetworkManager m_netMng;
@@ -27,17 +38,23 @@ namespace JinJvli
         BroadcastGameData m_gameData;
         Coroutine m_broadcastGame;
 
-        public void Start(int _port,PB_GameRoom _gameRoom)
+        public int Port{get;private set;}
+
+        public GameServer()
         {
             m_netMng = Main.Manager<NetworkManager>();
-            
-            var ip = NetworkManager.GetLocalIP();
-            m_server = new UdpClient(new IPEndPoint(ip,_port));
+            Port = NetworkManager.Config.GAME_SERVER_PORT;
+            m_server = new UdpClient(Port);    
+        }
 
+        public void Start(PB_GameRoom _gameRoom)
+        {
+            m_isRun = true;
+            
             recvCmdAsync();
             
             _gameRoom.Version = Version();
-            _gameRoom.Address = new PB_IPAddress(){IP=ip.ToString(),Port=_port};
+            _gameRoom.Address = new PB_IPAddress(){IP=_gameRoom.Host.Address.IP,Port=Port};
             m_gameData = new BroadcastGameData(_gameRoom);
             m_broadcastGame = Coroutines.Inst.LoopRun(Config.BROADCASR_TIME,-1,broadcastGame);
         }
@@ -82,9 +99,10 @@ namespace JinJvli
             switch (cmd)
             {
                 case NetCmd.JoinGame:
-                {
                     joinGame(_data);
-                }
+                break;
+                case NetCmd.ExitGame:
+                    exitGame(_data);
                 break;
                 default:
                     sendCmd(_data);
@@ -92,11 +110,22 @@ namespace JinJvli
             }
         }
 
+        async void redundancySend(byte[] _data)
+        {
+            for (int i = 0; i < m_clients.Count; i++)
+            {
+                for (int j = 0; j < NetworkManager.Config.SEND_REDUNDANCY; j++)
+                {
+                    await m_server.SendAsync(_data,_data.Length,m_clients[i].IP);
+                }
+            }
+        }
+
         async void sendCmd(byte[] _data)
         {
             for (int i = 0; i < m_clients.Count; i++)
             {
-                await m_server.SendAsync(_data,_data.Length,m_clients[i]);
+                await m_server.SendAsync(_data,_data.Length,m_clients[i].IP);
             }
         }
 
@@ -112,9 +141,33 @@ namespace JinJvli
                 Debug.LogError($"[GameServer.switchCmd]PB_UserInfo解析异常!{_ex}");
                 return;
             }
-            if(m_clients.Find((_ip)=>{return _ip.Port==user.Address.Port && _ip.Address.ToString()==user.Address.IP;})==null)
+            if(m_clients.Find((_user)=>{return _user.Info.Address.Port==user.Address.Port && _user.Info.Address.IP==user.Address.IP;})==null)
             {
-                m_clients.Add(new IPEndPoint(IPAddress.Parse(user.Address.IP),user.Address.Port));
+                user.GameID = m_clients.Count;
+                m_clients.Add(new ClientUser(user));
+                Array.Copy(user.ToByteArray(),0,_data,NetworkManager.Config.NET_CMD_LENGTH,_data.Length-NetworkManager.Config.NET_CMD_LENGTH);
+                redundancySend(_data);
+            }
+        }
+
+        void exitGame(byte[] _data)
+        {
+            PB_UserInfo user;
+            try
+            {
+                user = PB_UserInfo.Parser.ParseFrom(_data,NetworkManager.Config.NET_CMD_LENGTH,_data.Length-NetworkManager.Config.NET_CMD_LENGTH);
+            }
+            catch (System.Exception _ex)
+            {
+                Debug.LogError($"[GameServer.switchCmd]PB_UserInfo解析异常!{_ex}");
+                return;
+            }
+            var clientUser = m_clients.Find((_user)=>{return _user.Info.Address.Port==user.Address.Port && _user.Info.Address.IP==user.Address.IP;});
+            if(clientUser!=null)
+            {
+                m_clients.Remove(clientUser);
+                Array.Copy(BitConverter.GetBytes((UInt16)NetCmd.ExitGame),_data,NetworkManager.Config.NET_CMD_LENGTH);
+                redundancySend(_data);
             }
         }
     }
