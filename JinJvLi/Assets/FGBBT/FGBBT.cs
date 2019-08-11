@@ -6,6 +6,7 @@ using JinJvLi.Lobby;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
+using Unity.Entities;
 
 public class FGBBT : MonoBehaviour
 {
@@ -44,7 +45,7 @@ public class FGBBT : MonoBehaviour
     [MenuItem("FGBBT/Run")]
     public static void Run()
     {
-        PB_GameRoom gameRoom = new PB_GameRoom();
-        Debug.Log(gameRoom.ToString());
+        
+        
     }
 }
