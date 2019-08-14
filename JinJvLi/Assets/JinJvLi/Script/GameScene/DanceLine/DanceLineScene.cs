@@ -6,6 +6,7 @@ using Unity.Collections;
 using Unity.Transforms;
 using Unity.Mathematics;
 using Unity.Rendering;
+using JinJvli.DanceLine;
 
 public class DanceLineScene : MonoBehaviour
 {
@@ -18,24 +19,22 @@ public class DanceLineScene : MonoBehaviour
     void Start()
     {
         var entityMng = World.Active.EntityManager;
-        NativeArray<Entity> entitys = new NativeArray<Entity>(1,Allocator.Temp);
-        var archetype = entityMng.CreateArchetype(typeof(Translation),typeof(RenderMesh),typeof(LocalToWorld));
+        NativeArray<Entity> entitys = new NativeArray<Entity>(1,Allocator.Persistent);
+        var archetype = entityMng.CreateArchetype(typeof(Translation),typeof(RenderMesh),typeof(LocalToWorld),typeof(CubeLineGrow));
         entityMng.CreateEntity(archetype,entitys);
-        entityMng.SetComponentData<Translation>(entitys[0],new Translation(){Value=new float3(3,0,0)});
-        Vector3[] vertices = new Vector3[m_mesh.vertexCount];
-        for (int i = 0; i < m_mesh.vertices.Length; i++)
+        Mesh cubeMesh = Instantiate(m_mesh);
+        Vector3[] vertices = cubeMesh.vertices;
+        for (int i = 0; i < cubeMesh.vertices.Length; i++)
         {
-            if(m_mesh.vertices[i].x==0.5f)
+            if(cubeMesh.vertices[i].z==0.5f)
             {
-                vertices[i] = new Vector3(2,m_mesh.vertices[i].y,m_mesh.vertices[i].z);
-            }
-            else
-            {
-                vertices[i]=m_mesh.vertices[i];
+                vertices[i].z +=2;
             }
         }
-        m_mesh.vertices=vertices;
-        entityMng.SetSharedComponentData<RenderMesh>(entitys[0],new RenderMesh(){mesh=m_mesh,material=m_mate});
+        cubeMesh.vertices=vertices;
+        entityMng.SetSharedComponentData<RenderMesh>(entitys[0],new RenderMesh(){mesh=cubeMesh,material=m_mate});
+        entityMng.SetComponentData<CubeLineGrow>(entitys[0],new CubeLineGrow(){Direction=CubeLineDirection.Forward,GrowSpeed=1});
+        entitys.Dispose();
         Debug.Log("");
     }
 
