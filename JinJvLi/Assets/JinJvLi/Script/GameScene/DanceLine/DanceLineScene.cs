@@ -19,8 +19,8 @@ public class DanceLineScene : MonoBehaviour
     void Start()
     {
         var entityMng = World.Active.EntityManager;
-        NativeArray<Entity> entitys = new NativeArray<Entity>(1,Allocator.Persistent);
-        var archetype = entityMng.CreateArchetype(typeof(Translation),typeof(RenderMesh),typeof(LocalToWorld),typeof(CubeLineGrow));
+        NativeArray<Entity> entitys = new NativeArray<Entity>(1,Allocator.Temp);
+        var archetype = entityMng.CreateArchetype(typeof(Translation),typeof(RenderMesh),typeof(LocalToWorld),typeof(CubeLineGrow),typeof(CubeLine));
         entityMng.CreateEntity(archetype,entitys);
         Mesh cubeMesh = Instantiate(m_mesh);
         Vector3[] vertices = cubeMesh.vertices;
