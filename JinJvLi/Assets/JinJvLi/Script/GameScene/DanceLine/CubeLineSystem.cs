@@ -7,21 +7,32 @@ namespace JinJvli.DanceLine
 {
     public class CubeLineSystem : ComponentSystem
     {
-        EntityQuery group;
+        EntityQuery query;
         protected override void OnCreate()
         {
-            group = GetEntityQuery(typeof(RenderMesh),typeof(CubeLine),typeof(CubeLineGrow));
+            query = GetEntityQuery(typeof(CubeLine),typeof(RenderMesh),typeof(CubeLineGrow));
         }
         protected override void OnUpdate()
         {
-            var entitys = group.ToEntityArray(Allocator.TempJob);
-            Debug.Log(entitys.Length);
-            var lines = group.ToComponentDataArray<CubeLine>(Allocator.TempJob);
-            var grows = group.ToComponentDataArray<CubeLineGrow>(Allocator.TempJob);
+            var entitys = query.ToEntityArray(Allocator.TempJob);
+            var lines = query.ToComponentDataArray<CubeLine>(Allocator.TempJob);
+            var grows = query.ToComponentDataArray<CubeLineGrow>(Allocator.TempJob);
             for (int i = 0; i < entitys.Length; i++)
             {
                 var render = EntityManager.GetSharedComponentData<RenderMesh>(entitys[i]);
-                Debug.LogWarning(render.material);
+                if(grows[i].Direction==CubeLineDirection.Forward)
+                {
+                    Debug.Log("*");
+                    var vertices = render.mesh.vertices;
+                    for (int j = 0; j < vertices.Length; j++)
+                    {
+                        if(vertices[j].z>0)
+                        {
+                            vertices[j].z +=grows[i].GrowSpeed*Time.deltaTime;
+                        }
+                    }
+                    render.mesh.vertices = vertices;
+                }
             }
             entitys.Dispose();
             lines.Dispose();
