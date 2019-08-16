@@ -151,8 +151,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4241e15aacf61e545b59cf2a1e2899ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  m_mate: {fileID: 2100000, guid: f525c48caf2824d439b6718305b866af, type: 2}
+  m_cubeMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  m_roadMate: {fileID: 2100000, guid: 185583b15c5e13442bae5d6a88bd86fe, type: 2}
+  m_lineMate: {fileID: 2100000, guid: f525c48caf2824d439b6718305b866af, type: 2}
 --- !u!81 &341745403
 AudioListener:
   m_ObjectHideFlags: 0

@@ -7,15 +7,16 @@ namespace JinJvli.DanceLine
     {
         public float3 StartPoint;
         public float3 EndPoint;
+        public const float WIDTH=1;
     }
 
     public struct CubeLineGrow : IComponentData
     {
-        public CubeLineDirection Direction;
+        public CubeDirection Direction;
         public float GrowSpeed;
     }
 
-    public enum CubeLineDirection
+    public enum CubeDirection
     {
         Forward,Right
     }

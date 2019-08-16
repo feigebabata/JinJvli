@@ -20,7 +20,7 @@ namespace JinJvli.DanceLine
             for (int i = 0; i < entitys.Length; i++)
             {
                 var render = EntityManager.GetSharedComponentData<RenderMesh>(entitys[i]);
-                if(grows[i].Direction==CubeLineDirection.Forward)
+                if(grows[i].Direction==CubeDirection.Forward)
                 {
                     Debug.Log("*");
                     var vertices = render.mesh.vertices;
