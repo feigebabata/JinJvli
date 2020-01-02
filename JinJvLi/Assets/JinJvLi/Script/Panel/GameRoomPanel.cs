@@ -5,7 +5,6 @@ using JinJvLi;
 using JinJvLi.Lobby;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 using Google.Protobuf;
 
 namespace JinJvli
@@ -21,7 +20,7 @@ namespace JinJvli
         [SerializeField]
         UIList m_uiList;
         [SerializeField]
-        TMP_Text m_titleText;
+        Text m_titleText;
         [SerializeField]
         GameObject m_startBtn;
         List<PB_UserInfo> m_listData = new List<PB_UserInfo>();

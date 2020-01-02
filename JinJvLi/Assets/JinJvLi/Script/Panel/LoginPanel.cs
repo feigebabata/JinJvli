@@ -2,7 +2,6 @@ using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
 using JinJvli;
-using TMPro;
 using System.Collections.Generic;
 using System;
 using Google.Protobuf;
@@ -21,7 +20,7 @@ namespace JinJvLi
             public const byte MAX_USER_NAME_LENGTH=4;
             public const byte MIN_USER_NAME_LENGTH=2;
         }
-        public TMP_InputField m_sendIF;
+        public InputField m_sendIF;
         PB_UserInfo m_selfInfo;
 
         public override void OnShow(object _openData = null)

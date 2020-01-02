@@ -17,18 +17,45 @@ namespace JinJvli.DanceLine
             var entitys = query.ToEntityArray(Allocator.TempJob);
             var lines = query.ToComponentDataArray<CubeLine>(Allocator.TempJob);
             var grows = query.ToComponentDataArray<CubeLineGrow>(Allocator.TempJob);
+            float offset=0;
             for (int i = 0; i < entitys.Length; i++)
             {
+                offset=grows[i].GrowSpeed*Time.DeltaTime;
+
+                if(grows[i].Direction==CubeDirection.Forward)
+                {
+                    CubeLine tempLine = lines[i];
+                    tempLine.EndPoint.z+=offset;
+                    EntityManager.SetComponentData<CubeLine>(entitys[i],tempLine);
+                }
+                else
+                {
+                    CubeLine tempLine = lines[i];
+                    tempLine.EndPoint.x+=offset;
+                    EntityManager.SetComponentData<CubeLine>(entitys[i],tempLine);
+                }
+
                 var render = EntityManager.GetSharedComponentData<RenderMesh>(entitys[i]);
                 if(grows[i].Direction==CubeDirection.Forward)
                 {
-                    Debug.Log("*");
                     var vertices = render.mesh.vertices;
                     for (int j = 0; j < vertices.Length; j++)
                     {
                         if(vertices[j].z>0)
                         {
-                            vertices[j].z +=grows[i].GrowSpeed*Time.deltaTime;
+                            vertices[j].z +=offset;
+                        }
+                    }
+                    render.mesh.vertices = vertices;
+                }
+                else
+                {
+                    var vertices = render.mesh.vertices;
+                    for (int j = 0; j < vertices.Length; j++)
+                    {
+                        if(vertices[j].x>0)
+                        {
+                            vertices[j].x +=offset;
                         }
                     }
                     render.mesh.vertices = vertices;
