@@ -67,17 +67,17 @@ public class UIList : UIBehaviour, IInitializePotentialDragHandler, IBeginDragHa
     float m_list_left,m_list_right;
     List<int> removeToCache = new List<int>();
 
-    protected override void Reset()
-    {
-        if(m_h_Line==0)
-        {
-            m_h_Line=1;
-        }
-        if(m_v_Line==0)
-        {
-            m_v_Line=1;
-        }
-    }
+    // protected override void Reset()
+    // {
+    //     if(m_h_Line==0)
+    //     {
+    //         m_h_Line=1;
+    //     }
+    //     if(m_v_Line==0)
+    //     {
+    //         m_v_Line=1;
+    //     }
+    // }
 
     protected override void Awake()
     {

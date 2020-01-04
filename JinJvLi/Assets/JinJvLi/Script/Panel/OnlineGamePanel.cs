@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace JinJvli
 {
-    [PanelConfig("JJL_Panel/OnlineGamePanel")]
+    [PanelConfig("Assets/JinJvLi/Res/JJL_Panel/OnlineGamePanel.prefab")]
     public class OnlineGamePanel: PanelBase
     {
         public static class Config

@@ -11,4 +11,6 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/FGBBT/FGBBT.unity
     guid: d2749c14ec5b6c54f90228c813622d67
-  m_configObjects: {}
+  m_configObjects:
+    com.unity.addressableassets: {fileID: 11400000, guid: 0a41c2dc30c45d542aa132f70f02eab1,
+      type: 2}

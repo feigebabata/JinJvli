@@ -9,7 +9,7 @@ using Google.Protobuf;
 
 namespace JinJvli
 {
-    [PanelConfig("JJL_Panel/GameRoomPanel",true)]
+    [PanelConfig("Assets/JinJvLi/Res/JJL_Panel/GameRoomPanel.prefab",true)]
     public class GameRoomPanel: PanelBase
     {
         public static class Config

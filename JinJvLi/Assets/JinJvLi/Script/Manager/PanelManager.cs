@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using JinJvLi;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace JinJvli
 {
@@ -86,13 +87,23 @@ namespace JinJvli
             }
             if(panel == null)
             {
-                panel=createPanel(panelConfig.PrefabPath,panelType);
-                panel.OnCreate();
+                createPanel(panelConfig.PrefabPath,panelType,(_p)=>
+                {
+                    panel = _p;
+                    panel.OnCreate();
+                    addPanelStack(panelType);
+                    m_curPanel = panel;
+                    panel.OnShow(_openData);
+                });
+            }
+            else
+            {
+                addPanelStack(panelType);
+                m_curPanel = panel;
+                panel.OnShow(_openData);
+
             }
             
-            addPanelStack(panelType);
-            m_curPanel = panel;
-            panel.OnShow(_openData);
         }
         public void CloseCurPanel()
         {
@@ -123,8 +134,11 @@ namespace JinJvli
                 }
                 if(panel == null)
                 {
-                    panel = createPanel(panelConfig.PrefabPath,panelType);
-                    panel.OnCreate();
+                    createPanel(panelConfig.PrefabPath,panelType,(_p)=>
+                    {
+                        panel = _p;
+                        panel.OnCreate();
+                    });
                 }
                 m_curPanel = panel;
                 panel.OnShow();
@@ -155,13 +169,18 @@ namespace JinJvli
             return m_panelStack.Peek();
         }
 
-        PanelBase createPanel(string _prefabPath,Type _panelType)
+        void createPanel(string _prefabPath,Type _panelType,Action<PanelBase> _callback)
         {
-            PanelBase panel = GameObject.Instantiate<GameObject>(Resources.Load<GameObject>(_prefabPath),m_panelParent).GetComponent<PanelBase>();
-            panel.name=_panelType.Name;
-            panel.transform.localPosition = Vector3.zero;
-            addPanel(panel);
-            return panel;
+            // PanelBase panel = GameObject.Instantiate<GameObject>(Resources.Load<GameObject>(_prefabPath),m_panelParent).GetComponent<PanelBase>();
+            Debug.Log(_prefabPath);
+            Addressables.InstantiateAsync(_prefabPath,m_panelParent).Completed += (handle)=>
+            {
+                PanelBase panel = handle.Result.GetComponent<PanelBase>();
+                panel.name=_panelType.Name;
+                panel.transform.localPosition = Vector3.zero;
+                addPanel(panel);
+                _callback(panel);
+            };
         }
 
         PanelConfigAttribute getPanelConfig(Type _panelType)

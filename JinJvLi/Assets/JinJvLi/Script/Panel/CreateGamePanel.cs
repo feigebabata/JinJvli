@@ -4,16 +4,17 @@ using System.IO;
 using JinJvLi;
 using JinJvLi.Lobby;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
 
 namespace JinJvli
 {
-    [PanelConfig("JJL_Panel/CreateGamePanel")]
+    [PanelConfig("Assets/JinJvLi/Res/JJL_Panel/CreateGamePanel.prefab")]
     public class CreateGamePanel: PanelBase
     {
         public static class Config
         {
-            public const string GAME_INFO_LIST_PATH="GameCreateList";
+            public const string GAME_INFO_LIST_PATH="Assets/JinJvLi/Res/GameCreateList.asset";
         }
 
         [SerializeField]
@@ -24,14 +25,21 @@ namespace JinJvli
         public override void OnCreate()
         {
             m_uiList.m_ItemShow += onItemShow;
-            m_listData  = Resources.Load<GameCreateList>(Config.GAME_INFO_LIST_PATH).List;
+            // m_listData  = Resources.Load<GameCreateList>(Config.GAME_INFO_LIST_PATH).List;
         }
 
         public override void OnShow(object _openData = null)
         {
             m_curSelect=null;
             m_uiList.ItemNum=0;
-            m_uiList.ItemNum=m_listData.Length;
+            if(m_listData==null)
+            {
+                Addressables.LoadAssetAsync<GameCreateList>(Config.GAME_INFO_LIST_PATH).Completed += (handle)=>
+                {
+                    m_listData = handle.Result.List;
+                    m_uiList.ItemNum=m_listData.Length;
+                };
+            }
             base.OnShow();
         }
 

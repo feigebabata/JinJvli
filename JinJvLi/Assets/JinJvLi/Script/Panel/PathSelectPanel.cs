@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace JinJvli
 {
-    [PanelConfig("JJL_Panel/PathSelectPanel",true)]
+    [PanelConfig("Assets/JinJvLi/Res/JJL_Panel/PathSelectPanel.prefab",true)]
     public class PathSelectPanel: PanelBase
     {
         public static class Config

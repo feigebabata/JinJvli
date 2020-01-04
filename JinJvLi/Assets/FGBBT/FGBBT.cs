@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using JinJvLi.Lobby;
-using UnityEditor;
+// using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 using Unity.Entities;
@@ -41,10 +41,10 @@ public class FGBBT : MonoBehaviour
         audioSource.Play();
     }
     
-    [MenuItem("FGBBT/Run")]
-    public static void Run()
-    {
+    // [MenuItem("FGBBT/Run")]
+    // public static void Run()
+    // {
         
         
-    }
+    // }
 }

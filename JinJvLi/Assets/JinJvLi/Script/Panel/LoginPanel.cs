@@ -11,7 +11,7 @@ using System.IO;
 
 namespace JinJvLi
 {
-    [PanelConfig("JJL_Panel/LoginPanel")]
+    [PanelConfig("Assets/JinJvLi/Res/JJL_Panel/LoginPanel.prefab")]
     public class LoginPanel : PanelBase
     {
         public static class Config
