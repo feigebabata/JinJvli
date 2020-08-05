@@ -6,12 +6,9 @@ using JinJvLi.Lobby;
 // using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
-using Unity.Entities;
 
 public class FGBBT : MonoBehaviour
-{
-    public AudioSamples audioSamples;
-    List<float> samples=new List<float>();
+{    List<float> samples=new List<float>();
     public AudioSource audioSource;
     void Start()
     {
@@ -31,7 +28,7 @@ public class FGBBT : MonoBehaviour
 
     public void End()
     {
-        audioSamples.Samples = samples.ToArray();
+        
     }
 
     public void Play()
