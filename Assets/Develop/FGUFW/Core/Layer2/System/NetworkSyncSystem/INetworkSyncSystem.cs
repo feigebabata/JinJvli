@@ -1,4 +1,4 @@
-namespace FGUFW.Core.System
+namespace FGUFW.Core
 {
     public interface INetworkSyncSystem : ISystem
     {

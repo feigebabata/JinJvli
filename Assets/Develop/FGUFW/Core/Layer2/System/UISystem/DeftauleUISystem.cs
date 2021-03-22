@@ -8,7 +8,7 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.UI;
 
-namespace FGUFW.Core.System
+namespace FGUFW.Core
 {
     public class DeftauleUISystem : IUISystem
     {
@@ -86,6 +86,16 @@ namespace FGUFW.Core.System
             panelData.PanelGO.GetComponent<Canvas>().enabled=true;
             panelData.PanelGO.GetComponent<GraphicRaycaster>().enabled=true;
             uiPanel.OnShow(module);
+        }
+
+        public void OnEnable()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnDisable()
+        {
+            throw new NotImplementedException();
         }
     }
 }

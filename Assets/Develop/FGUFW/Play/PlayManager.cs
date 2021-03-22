@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using FGUFW.Core;
-using FGUFW.Core.System;
 using UnityEngine;
 
 namespace FGUFW.Play

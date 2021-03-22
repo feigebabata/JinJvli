@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using UnityEngine;
-namespace FGUFW.Core.System
+namespace FGUFW.Core
 {
     public interface IAudioSystem :ISystem
     {

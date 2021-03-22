@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace FGUFW.Core.System
+namespace FGUFW.Core
 {
     public class NetworkSyncID : MonoBehaviour
     {

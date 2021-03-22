@@ -1,6 +1,6 @@
 
 using System.Collections;
-using FGUFW.Core.System;
+using FGUFW.Core;
 
 namespace FGUFW.Play
 {

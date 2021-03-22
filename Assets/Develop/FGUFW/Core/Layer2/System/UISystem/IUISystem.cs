@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using FGUFW.Play;
 using UnityEngine;
 
-namespace FGUFW.Core.System
+namespace FGUFW.Core
 {
     public interface IUISystem : ISystem
     {

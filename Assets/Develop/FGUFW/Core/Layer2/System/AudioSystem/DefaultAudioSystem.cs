@@ -5,13 +5,23 @@ using UnityEngine.AddressableAssets;
 using System.Collections;
 using System.Diagnostics;
 
-namespace FGUFW.Core.System
+namespace FGUFW.Core
 {
     public class DefaultAudioSystem : IAudioSystem
     {
         private IDictionary<string,AudioClip> _audioClipCache = new Dictionary<string,AudioClip>();
         private GameObject _gameObject;
         private List<AudioSource> _audioSourceCache = new List<AudioSource>();
+
+        public void OnDisable()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void OnEnable()
+        {
+            throw new System.NotImplementedException();
+        }
 
         public void OnInit()
         {
