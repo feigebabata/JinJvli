@@ -127,29 +127,27 @@ namespace GamePlay.GameLobby
             if(Physics.Raycast(ray,out raycastHit))
             {
                 var item = raycastHit.transform.GetComponent<GameItem>();
+
                 if(item)
                 {
-                    if(_currectSelect==null )
+                    
+                    if(_currectSelect && _currectSelect!=item)
+                    {
+                        _currectSelect.GetComponent<MeshRenderer>().material.SetColor("MainColor",UnSelect);
+                    }
+
+                    if(_currectSelect==null || _currectSelect!=item)
                     {
                         _currectSelect = item;
                         _currectSelect.GetComponent<MeshRenderer>().material.SetColor("MainColor",Select);
                     }
-                    else if(_currectSelect!=item)
-                    {
-
-                    }
                 }
-                if(!_currectSelect && item != _currectSelect )
-                {
-                    _currectSelect = item;
-                    _currectSelect.GetComponent<MeshRenderer>().material.SetColor("MainColor",Select);
-                }
-                
-                if(_currectSelect && !item)
+                else if(_currectSelect)
                 {
                     _currectSelect.GetComponent<MeshRenderer>().material.SetColor("MainColor",UnSelect);
-                    _currectSelect = item;
+                    _currectSelect=null;
                 }
+                
             }
         }
 
@@ -184,8 +182,10 @@ namespace GamePlay.GameLobby
                     item.GetComponent<GameItem>().TypeName = datas[i].TypeName;
                     item.GetChild(0).GetComponent<SpriteRenderer>().sprite = datas[i].Icon;
                     item.GetChild(0).localScale = datas[i].Scale;
-                    item.localPosition = new Vector3(0,0,i*-5);
+                    var space = item.localPosition*(1+i*0.02f);
+                    item.localPosition = Quaternion.Euler(0,23*i,0) * space;
                     item.gameObject.SetActive(true);
+                    item.name = datas[i].TypeName;
                 }
             }
         }
