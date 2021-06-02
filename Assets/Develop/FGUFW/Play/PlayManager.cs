@@ -6,10 +6,12 @@ using UnityEngine;
 
 namespace FGUFW.Play
 {
-    public class PlayManager : IPlayManager
+    public abstract class PlayManager
     {
 
         Dictionary<Type,IPlayModule> _modelDict = new Dictionary<Type, IPlayModule>();
+
+        internal IMessenger<string,object> Messenger = new Messenger<string,object>();
 
         public U Module<U>() where U : IPlayModule
         {

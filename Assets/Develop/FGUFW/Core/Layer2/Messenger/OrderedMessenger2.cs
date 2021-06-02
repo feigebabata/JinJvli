@@ -5,29 +5,31 @@ using System.Linq;
 
 namespace FGUFW.Core
 {
-    public class OrderMessenger<V> : IOrderMessenger<V>
+    public class OrderedMessenger2<V> : IOrderedMessenger<V>
     {
-        Dictionary<string,Dictionary<Action<V>,int>> _eventDict = new Dictionary<string, Dictionary<Action<V>, int>>();
+        Dictionary<string,OrderedLinkedList<Action<V>>> _eventDict = new Dictionary<string, OrderedLinkedList<Action<V>>>();
         HashSet<string> _aborts = new HashSet<string>();
         public void Abort(string msgID)
         {
             _aborts.Add(msgID);
+            LinkedList<object> linked = new LinkedList<object>();
         }
 
         public void Add(string msgID,int weight, Action<V> callback)
         {
             if(!_eventDict.ContainsKey(msgID))
             {
-                _eventDict.Add(msgID,new Dictionary<Action<V>,int>());
+                _eventDict.Add(msgID,new OrderedLinkedList<Action<V>>());
+
             }
-            var dict = _eventDict[msgID];
-            if(dict.ContainsKey(callback))
+            var linked = _eventDict[msgID];
+            if(linked.Contains(callback))
             {
                 Logger.w($"[OrderedMessenger.Add] msgID={msgID},消息重复监听");
             }
             else
             {
-                dict.Add(callback,weight);
+                linked.Add(weight,callback);
             }
             
         }
@@ -37,11 +39,10 @@ namespace FGUFW.Core
             if(_eventDict.ContainsKey(msgID))
             {
                 _aborts.Remove(msgID);
-                var dict = _eventDict[msgID];
-                var dictSort = from kv in dict orderby kv.Value  descending select kv;
-                foreach (var kv in dictSort)
+                var linked = _eventDict[msgID];
+                foreach (var kv in linked)
                 {
-                    kv.Key(msg);
+                    kv.Value(msg);
                     if(_aborts.Contains(msgID))
                     {
                         _aborts.Remove(msgID);
@@ -53,7 +54,7 @@ namespace FGUFW.Core
 
         public void Remove(string msgID, Action<V> callback)
         {
-            if(_eventDict.ContainsKey(msgID) && _eventDict[msgID].ContainsKey(callback))
+            if(_eventDict.ContainsKey(msgID) && _eventDict[msgID].Contains(callback))
             {
                 _eventDict[msgID].Remove(callback);
             }

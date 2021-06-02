@@ -1,13 +1,17 @@
 
-
 namespace FGUFW.Play
 {
     public interface IPlayModule
     {
-        void OnInit(IPlayManager playManager);
+
+        void OnInit(PlayManager playManager);
+
         void OnRelease();
+
         void OnShow();
+
         void OnHide();
-        bool IsInit();
+
+        bool IsInit { get;}
     }
 }

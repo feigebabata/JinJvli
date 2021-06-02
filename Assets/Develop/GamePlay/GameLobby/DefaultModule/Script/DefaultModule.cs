@@ -10,10 +10,8 @@ using UnityEngine.AddressableAssets;
 
 namespace GamePlay.GameLobby
 {
-    public class DefaultModule : IPlayModule
+    public class DefaultModule : PlayModule<GameLobbyPlayManager>
     {
-        private bool _isInit;
-        private GameLobbyPlayManager _playManager;
         private Camera _mainCamera;
         private CharacterController _characterController;
         private float Speed=3;
@@ -23,16 +21,12 @@ namespace GamePlay.GameLobby
         public Color Select = new Color32(255,0,255,255);
         public Color UnSelect = new Color32(0,255,255,255);
 
-        public bool IsInit()
-        {
-            return _isInit;
-        }
 
-        public void OnInit(IPlayManager playManager)
+        public override void OnInit(PlayManager playManager)
         {
-            if(!_isInit)
+            base.OnInit(playManager);
+            if(!IsInit)
             {
-                _isInit = true;
                 _playManager = playManager as GameLobbyPlayManager;
                 GameObject.Find("cameraAnim").GetComponent<PlayableDirector>().stopped += onStartAniStop;
                 _playManager.PlayerInput.OnMove += onMove;
@@ -71,33 +65,33 @@ namespace GamePlay.GameLobby
             _characterController.SimpleMove(selfDirRight+selfDirUp);
         }
 
-        public void OnRelease()
+        public override void OnRelease()
         {
-            if(_isInit)
+            if(IsInit)
             {
                 _playManager.PlayerInput.OnMove -= onMove;
                 _playManager.PlayerInput.OnClickA -= onClickA;
                 _playManager.PlayerInput.OnClickBack -= onClickBack;
                 MonoBehaviourEvent.I.UpdateListener -= Update;
-                _isInit = false;
                 _playManager = null;
                 _mainCamera = null;
                 _characterController = null;
                 Cursor.lockState = CursorLockMode.None;
             }
+            base.OnRelease();
         }
 
-        public void OnShow()
+        public override void OnShow()
         {
-            if(_isInit)
+            if(IsInit)
             {
 
             }
         }
 
-        public void OnHide()
+        public override void OnHide()
         {
-            if(_isInit)
+            if(IsInit)
             {
 
             }
@@ -154,7 +148,7 @@ namespace GamePlay.GameLobby
         void enterGame(string typeName)
         {
             Assembly assembly = Assembly.GetExecutingAssembly(); // 获取当前程序集 
-            var playManager = assembly.CreateInstance(typeName) as IPlayManager; 
+            var playManager = assembly.CreateInstance(typeName) as PlayManager; 
 
             _playManager.Destroy();
             playManager.Create();

@@ -6,49 +6,25 @@ using FGUFW.Play;
 
 namespace GamePlay.StepGrid
 {
-    public class DefaultModule : IPlayModule
+    public class DefaultModule : PlayModule<StepGridPlayManager>
     {
-        private bool _isInit;
-        private StepGridPlayManager _playManager;
 
-        public bool IsInit()
+        public override void OnInit(PlayManager playManager)
         {
-            return _isInit;
+            base.OnInit(playManager);
         }
 
-        public void OnInit(IPlayManager playManager)
+        public override void OnRelease()
         {
-            if(!_isInit)
-            {
-                _isInit = true;
-                _playManager = playManager as StepGridPlayManager;
-            }
+            base.OnRelease();
         }
 
-        public void OnRelease()
+        public override void OnShow()
         {
-            if(_isInit)
-            {
-                _isInit = false;
-                _playManager = null;
-
-            }
         }
 
-        public void OnShow()
+        public override void OnHide()
         {
-            if(_isInit)
-            {
-
-            }
-        }
-
-        public void OnHide()
-        {
-            if(_isInit)
-            {
-
-            }
         }
 
     }
