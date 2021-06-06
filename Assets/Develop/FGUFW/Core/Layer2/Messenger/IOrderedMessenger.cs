@@ -7,7 +7,7 @@ namespace FGUFW.Core
     /// </summary>
     public interface IOrderedMessenger<V>
     {
-		void Add(string msgID,int weight,Action<V> callback);
+		void Add(string msgID,Action<V> callback,int weight=0);
 		void Remove(string msgID,Action<V> callback);
 		void Broadcast(string msgID,V msg);
         void Abort(string msgID);

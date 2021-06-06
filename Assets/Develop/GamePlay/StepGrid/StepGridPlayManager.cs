@@ -9,7 +9,6 @@ namespace GamePlay.StepGrid
 {
     public class StepGridPlayManager : PlayManager
     {
-        public IPlayerInput PlayerInput;
         public override void Create()
         {
             base.Create();
@@ -21,12 +20,8 @@ namespace GamePlay.StepGrid
         {
             base.Destroy();
             Screen.orientation = ScreenOrientation.Landscape;
-            
-            MonoBehaviourEvent.I.LateUpdateListener -= LateUpdate;
-            PlayerInput.OnClickBack -= onClickBack;
-            
-            PlayerInput.OnRelease();
-            PlayerInput=null;
+            GlobalMessenger.M.Remove(GlobalMsgID.OnBackKey,onClickBack);
+
         }
 
         IEnumerator loadScene()
@@ -34,28 +29,15 @@ namespace GamePlay.StepGrid
             yield return Addressables.LoadSceneAsync("GamePlay.StepGrid");
             SceneLoading.I.Hide();
             Debug.Log(Screen.orientation);
-            
-            #if UNITY_ANDROID// && !UNITY_EDITOR
-            PlayerInput = new AndroidPlayerInput();
-            #else
-            PlayerInput = new PCPlayerInput();
-            #endif
-            PlayerInput.OnInit();
 
-            MonoBehaviourEvent.I.LateUpdateListener += LateUpdate;
             
-            PlayerInput.OnClickBack += onClickBack;
+            GlobalMessenger.M.Add(GlobalMsgID.OnBackKey,onClickBack);
         }
 
-        private void onClickBack()
+        private void onClickBack(object data)
         {
             Destroy();
             new GameLobby.GameLobbyPlayManager().Create();
-        }
-
-        void LateUpdate()
-        {
-            PlayerInput.LateUpdate();
         }
 
 

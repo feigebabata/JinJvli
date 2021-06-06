@@ -15,7 +15,7 @@ namespace FGUFW.Core
             LinkedList<object> linked = new LinkedList<object>();
         }
 
-        public void Add(string msgID,int weight, Action<V> callback)
+        public void Add(string msgID, Action<V> callback,int weight)
         {
             if(!_eventDict.ContainsKey(msgID))
             {

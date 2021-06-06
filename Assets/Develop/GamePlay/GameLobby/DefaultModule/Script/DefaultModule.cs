@@ -24,32 +24,32 @@ namespace GamePlay.GameLobby
 
         public override void OnInit(PlayManager playManager)
         {
-            base.OnInit(playManager);
-            if(!IsInit)
+            if(IsInit)
             {
-                _playManager = playManager as GameLobbyPlayManager;
-                GameObject.Find("cameraAnim").GetComponent<PlayableDirector>().stopped += onStartAniStop;
-                _playManager.PlayerInput.OnMove += onMove;
-                _playManager.PlayerInput.OnClickA += onClickA;
-                _playManager.PlayerInput.OnDisable();
-                _mainCamera = GameObject.Find("character/Main Camera").GetComponent<Camera>();
-                _gameItemsParent = GameObject.Find("gamelist").transform;
-                _characterController = GameObject.Find("character").GetComponent<CharacterController>();
-                MonoBehaviourEvent.I.UpdateListener += Update;
-                _playManager.PlayerInput.OnClickBack += onClickBack;
-                Cursor.lockState = CursorLockMode.Locked;
-                
-                showItemList().Start();
-                OnShow();
+                return;
             }
+            base.OnInit(playManager);
+            _playManager = playManager as GameLobbyPlayManager;
+            GameObject.Find("cameraAnim").GetComponent<PlayableDirector>().stopped += onStartAniStop;
+            _playManager.Messenger.Add(GameLobbyMsgID.OnMove,onMove);
+            _playManager.Messenger.Add(GameLobbyMsgID.OnSelectGameItem,onClickScreen);
+            GlobalMessenger.M.Add(GlobalMsgID.OnBackKey,onClickBack);
+            _mainCamera = GameObject.Find("character/Main Camera").GetComponent<Camera>();
+            _gameItemsParent = GameObject.Find("gamelist").transform;
+            _characterController = GameObject.Find("character").GetComponent<CharacterController>();
+            MonoBehaviourEvent.I.UpdateListener += Update;
+            Cursor.lockState = CursorLockMode.Locked;
+            
+            showItemList().Start();
+            OnShow();
         }
 
-        private void onClickBack()
+        private void onClickBack(object data)
         {
             Application.Quit();
         }
 
-        private void onClickA()
+        private void onClickScreen(object data)
         {
             if(_currectSelect)
             {
@@ -57,11 +57,11 @@ namespace GamePlay.GameLobby
             }
         }
 
-        private void onMove(Vector2 obj)
+        private void onMove(object data)
         {
-            
-            var selfDirUp = new Vector3(_mainCamera.transform.forward.x,0,_mainCamera.transform.forward.z).normalized*obj.y*Speed; 
-            var selfDirRight = new Vector3(_mainCamera.transform.right.x,0,_mainCamera.transform.right.z).normalized*obj.x*Speed;
+            var v2 = (Vector2)data;
+            var selfDirUp = new Vector3(_mainCamera.transform.forward.x,0,_mainCamera.transform.forward.z).normalized*v2.y*Speed; 
+            var selfDirRight = new Vector3(_mainCamera.transform.right.x,0,_mainCamera.transform.right.z).normalized*v2.x*Speed;
             _characterController.SimpleMove(selfDirRight+selfDirUp);
         }
 
@@ -69,11 +69,10 @@ namespace GamePlay.GameLobby
         {
             if(IsInit)
             {
-                _playManager.PlayerInput.OnMove -= onMove;
-                _playManager.PlayerInput.OnClickA -= onClickA;
-                _playManager.PlayerInput.OnClickBack -= onClickBack;
+                _playManager.Messenger.Remove(GameLobbyMsgID.OnMove,onMove);
+                _playManager.Messenger.Remove(GameLobbyMsgID.OnSelectGameItem,onClickScreen);
+                GlobalMessenger.M.Remove(GlobalMsgID.OnBackKey,onClickBack);
                 MonoBehaviourEvent.I.UpdateListener -= Update;
-                _playManager = null;
                 _mainCamera = null;
                 _characterController = null;
                 Cursor.lockState = CursorLockMode.None;
@@ -99,7 +98,6 @@ namespace GamePlay.GameLobby
 
         private void onStartAniStop(PlayableDirector obj)
         {
-            _playManager.PlayerInput.OnEnable();
             #if UNITY_ANDROID && !UNITY_EDITOR
             _mainCamera.GetComponent<AndroidCameraRotateCtrl>().enabled=true;
             _mainCamera.GetComponent<AndroidCameraRotateCtrl>().PlayerInput = _playManager.PlayerInput as AndroidPlayerInput;
@@ -162,13 +160,18 @@ namespace GamePlay.GameLobby
             bool ignore = false;
             for (int i = 0; i < datas.Length; i++)
             {
-                #if UNITY_ANDROID && !UNITY_EDITOR
+                if(!Application.isEditor && Application.platform==RuntimePlatform.Android)
+                {
                     ignore = !datas[i].AndroidPlatform;
-                #elif UNITY_WEBGL && !UNITY_EDITOR
+                }
+                else if(!Application.isEditor && Application.platform==RuntimePlatform.WebGLPlayer)
+                {
                     ignore = !datas[i].WebPlatform;
-                #else
+                }
+                else if(!Application.isEditor)
+                {
                     ignore = !datas[i].PCPlatform;
-                #endif
+                }
 
                 if(!ignore)
                 {

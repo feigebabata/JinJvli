@@ -3,6 +3,6 @@ namespace FGUFW.Core
 {
     static public class GlobalMessenger
     {
-        static Messenger<string,object> M = new Messenger<string,object>();
+        static public IOrderedMessenger<object> M = new OrderedMessenger2<object>();
     }
 }

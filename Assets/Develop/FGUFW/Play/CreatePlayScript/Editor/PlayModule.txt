@@ -6,49 +6,45 @@ using FGUFW.Play;
 
 namespace GamePlay.#NAMESPACE#
 {
-    public class #CLASSNAME# : IPlayModule
+    public class  #CLASSNAME# : PlayModule<#NAMESPACE#PlayManager>
     {
-        private bool _isInit;
-        private #NAMESPACE#PlayManager _playManager;
-
-        public bool IsInit()
+        private  #CLASSNAME#Input _moduleInput;
+        private  #CLASSNAME#Output _moduleOutput;
+        public override void OnInit(PlayManager playManager)
         {
-            return _isInit;
+            if(IsInit)
+            {
+                return;
+            }
+            base.OnInit(playManager);
+            _moduleInput = new  #CLASSNAME#Input(_playManager);
+            _moduleOutput = new  #CLASSNAME#Output(_playManager);
+            //code
         }
 
-        public void OnInit(IPlayManager playManager)
+        public override void OnRelease()
         {
-            if(!_isInit)
+            if(!IsInit)
             {
-                _isInit = true;
-                _playManager = playManager as #NAMESPACE#PlayManager;
+                return;
             }
+            //code
+
+            _moduleInput.Dispose();
+            _moduleOutput.Dispose();
+            base.OnRelease();
         }
 
-        public void OnRelease()
+        public override void OnShow()
         {
-            if(_isInit)
-            {
-                _isInit = false;
-                _playManager = null;
-
-            }
+            base.OnShow();
+            //code
         }
 
-        public void OnShow()
+        public override void OnHide()
         {
-            if(_isInit)
-            {
-
-            }
-        }
-
-        public void OnHide()
-        {
-            if(_isInit)
-            {
-
-            }
+            base.OnHide();
+            //code
         }
 
     }

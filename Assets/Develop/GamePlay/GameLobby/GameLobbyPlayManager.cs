@@ -9,7 +9,6 @@ namespace GamePlay.GameLobby
 {
     public class GameLobbyPlayManager : PlayManager
     {
-        public IPlayerInput PlayerInput;
         public override void Create()
         {
             base.Create();
@@ -20,10 +19,7 @@ namespace GamePlay.GameLobby
         {
             base.Destroy();
             
-            MonoBehaviourEvent.I.LateUpdateListener -= LateUpdate;
             
-            PlayerInput.OnRelease();
-            PlayerInput=null;
         }
 
         IEnumerator loadScene()
@@ -32,22 +28,13 @@ namespace GamePlay.GameLobby
             yield return Addressables.LoadSceneAsync("GamePlay.GameLobby");
             SceneLoading.I.Hide();
             #if UNITY_ANDROID && !UNITY_EDITOR
-            PlayerInput = new AndroidPlayerInput();
             GameObject.Find("character/Main Camera").AddComponent<AndroidCameraRotateCtrl>().enabled=false;
             #else
-            PlayerInput = new PCPlayerInput();
             GameObject.Find("character/Main Camera").AddComponent<PCCameraRotateCtrl>().enabled=false;
             #endif
-            PlayerInput.OnInit();
 
-            MonoBehaviourEvent.I.LateUpdateListener += LateUpdate;
 
-            Module<DefaultModule>().OnInit(this);
-        }
-
-        void LateUpdate()
-        {
-            PlayerInput.LateUpdate();
+            Module<LobbyModule>().OnInit(this);
         }
 
     }

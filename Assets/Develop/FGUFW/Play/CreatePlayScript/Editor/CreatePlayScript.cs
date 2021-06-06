@@ -32,7 +32,15 @@ static public class CreatePlayScript
     {
         string tempScriptPath = TempScriptFolder + "PlayView.txt";
         string createPath = GetSelectPathOrFallback()+"/New PlayView.cs";
-        ProjectWindowUtil.StartNameEditingIfProjectWindowExists(0,ScriptableObject.CreateInstance<CreatePlayModuleScript>(),createPath,null,tempScriptPath);
+        ProjectWindowUtil.StartNameEditingIfProjectWindowExists(0,ScriptableObject.CreateInstance<CreatePlayViewScript>(),createPath,null,tempScriptPath);
+    }
+
+    [MenuItem("Assets/Create/PlayModule Folder",false,80)]
+    static void CreatePlayModuleFolder()
+    {
+        // string tempScriptPath = TempScriptFolder + "PlayView.txt";
+        string createPath = GetSelectPathOrFallback()+"/New PlayModule";
+        ProjectWindowUtil.StartNameEditingIfProjectWindowExists(0,ScriptableObject.CreateInstance<CreatePlayModuleFolderAction>(),createPath,null,null);
     }
     
     //取得要创建文件的路径
@@ -205,6 +213,66 @@ static public class CreatePlayScript
             AssetDatabase.Refresh();
             return AssetDatabase.LoadAssetAtPath(pathName, typeof(UnityEngine.Object));
         }
+    }
+
+    class CreatePlayModuleFolderAction : EndNameEditAction
+    {
+        public override void Action(int instanceId, string pathName, string resourceFile)
+        {
+            #region 创建文件夹
+            string direPath = Application.dataPath.Replace("Assets",pathName);
+            // Debug.Log("创建文件夹 "+direPath);
+            var folders = direPath.Split('/');
+            string moduleName = folders[folders.Length-1];
+            if(!Directory.Exists(direPath))
+            {
+                Directory.CreateDirectory(direPath);
+            }
+            #endregion
+
+            string cloneScriptPath = null,newScriptPath=null,scriptText=null;
+            string nameSpace = "";
+            for (int i = 0; i < folders.Length; i++)
+            {
+                if(folders[i]=="GamePlay")
+                {
+                    nameSpace = folders[i+1];
+                    break;
+                }
+            }
+
+            #region 创建ModuleScript
+            cloneScriptPath = TempScriptFolder + "PlayModule.txt";
+            newScriptPath = $"{direPath}/{moduleName}.cs";
+            scriptText = File.ReadAllText(cloneScriptPath);
+            scriptText = Regex.Replace(scriptText, "#CLASSNAME#", moduleName);
+            scriptText = Regex.Replace(scriptText, "#NAMESPACE#", nameSpace);
+            File.WriteAllText(newScriptPath,scriptText);
+            #endregion
+
+            #region 创建ModuleInputScript
+            cloneScriptPath = TempScriptFolder + "PlayModuleInput.txt";
+            newScriptPath = $"{direPath}/{moduleName}Input.cs";
+            scriptText = File.ReadAllText(cloneScriptPath);
+            scriptText = Regex.Replace(scriptText, "#CLASSNAME#", moduleName+"Input");
+            scriptText = Regex.Replace(scriptText, "#NAMESPACE#", nameSpace);
+            File.WriteAllText(newScriptPath,scriptText);
+            #endregion
+
+            #region 创建ModuleOutputScript
+            cloneScriptPath = TempScriptFolder + "PlayModuleOutput.txt";
+            newScriptPath = $"{direPath}/{moduleName}Output.cs";
+            scriptText = File.ReadAllText(cloneScriptPath);
+            scriptText = Regex.Replace(scriptText, "#CLASSNAME#", moduleName+"Output");
+            scriptText = Regex.Replace(scriptText, "#NAMESPACE#", nameSpace);
+            File.WriteAllText(newScriptPath,scriptText);
+            #endregion
+
+
+            
+            AssetDatabase.Refresh();
+        }
+
     }
 
 

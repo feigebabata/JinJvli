@@ -2,6 +2,6 @@ namespace FGUFW.Core
 {
     static public class GlobalMsgID
     {
-        const string OnBackKey = "OnBackKey";
+        public const string OnBackKey = "OnBackKey";
     }
 }
