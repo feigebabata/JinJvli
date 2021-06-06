@@ -17,12 +17,6 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: fab24eb7dcf8f84429eadfade4c23a93
   m_SerializeEntries:
-  - m_GUID: c00e6ecbf2c9a0b429f2d92e13db9b79
-    m_Address: FGUFW.Core.AndroidPlayerInput
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: b3bb18bda0d0dc34084e54246996a682
     m_Address: GamePlay.GameLobby
     m_ReadOnly: 0

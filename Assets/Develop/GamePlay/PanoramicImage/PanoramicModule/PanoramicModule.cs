@@ -4,12 +4,12 @@ using UnityEngine;
 using FGUFW.Core;
 using FGUFW.Play;
 
-namespace GamePlay.#NAMESPACE#
+namespace GamePlay.PanoramicImage
 {
-    public class  #CLASSNAME# : PlayModule<#NAMESPACE#PlayManager>
+    public class  PanoramicModule : PlayModule<PanoramicImagePlayManager>
     {
-        private  #CLASSNAME#Input _moduleInput;
-        private  #CLASSNAME#Output _moduleOutput;
+        private  PanoramicModuleInput _moduleInput;
+        private  PanoramicModuleOutput _moduleOutput;
         public override void OnInit(PlayManager playManager)
         {
             if(IsInit)
@@ -18,8 +18,9 @@ namespace GamePlay.#NAMESPACE#
             }
             base.OnInit(playManager);
             //code
-            _moduleInput = new  #CLASSNAME#Input(_playManager);
-            _moduleOutput = new  #CLASSNAME#Output(_playManager);
+            _moduleInput = new  PanoramicModuleInput(_playManager);
+            _moduleOutput = new  PanoramicModuleOutput(_playManager);
+            GlobalMessenger.M.Add(GlobalMsgID.OnBackKey,onClickBack);
         }
 
         public override void OnRelease()
@@ -29,6 +30,7 @@ namespace GamePlay.#NAMESPACE#
                 return;
             }
             //code
+            GlobalMessenger.M.Remove(GlobalMsgID.OnBackKey,onClickBack);
 
             _moduleInput.Dispose();
             _moduleOutput.Dispose();
@@ -45,6 +47,12 @@ namespace GamePlay.#NAMESPACE#
         {
             base.OnHide();
             //code
+        }
+
+        private void onClickBack(object data)
+        {
+            _playManager.Destroy();
+            new GameLobby.GameLobbyPlayManager().Create();
         }
 
     }

@@ -21,7 +21,6 @@ namespace GamePlay.PanoramicImage
         public override void Destroy()
         {
             Cursor.lockState = CursorLockMode.None;
-            GlobalMessenger.M.Remove(GlobalMsgID.OnBackKey,onClickBack);
 
             base.Destroy();
             
@@ -31,14 +30,7 @@ namespace GamePlay.PanoramicImage
         {
             yield return Addressables.LoadSceneAsync("GamePlay.PanoramicImage");
             SceneLoading.I.Hide();
-            
-            GlobalMessenger.M.Add(GlobalMsgID.OnBackKey,onClickBack);
-        }
-
-        private void onClickBack(object data)
-        {
-            Destroy();
-            new GameLobby.GameLobbyPlayManager().Create();
+            Module<PanoramicModule>().OnInit(this);
         }
 
     }
