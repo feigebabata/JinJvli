@@ -25,6 +25,7 @@ namespace GamePlay.GameLobby
         IEnumerator loadScene()
         {
             Debug.Log("Addressables.BuildPath:"+Addressables.BuildPath);
+            Debug.Log("Addressables.RuntimePath:"+Addressables.RuntimePath);
             yield return Addressables.LoadSceneAsync("GamePlay.GameLobby");
             SceneLoading.I.Hide();
 

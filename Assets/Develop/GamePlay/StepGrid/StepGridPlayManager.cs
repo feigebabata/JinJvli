@@ -11,8 +11,8 @@ namespace GamePlay.StepGrid
     {
         public override void Create()
         {
-            base.Create();
             Screen.orientation = ScreenOrientation.Portrait;
+            base.Create();
             loadScene().Start();
         }
         
@@ -20,7 +20,6 @@ namespace GamePlay.StepGrid
         {
             base.Destroy();
             Screen.orientation = ScreenOrientation.Landscape;
-            GlobalMessenger.M.Remove(GlobalMsgID.OnBackKey,onClickBack);
 
         }
 
@@ -30,14 +29,7 @@ namespace GamePlay.StepGrid
             SceneLoading.I.Hide();
             Debug.Log(Screen.orientation);
 
-            
-            GlobalMessenger.M.Add(GlobalMsgID.OnBackKey,onClickBack);
-        }
-
-        private void onClickBack(object data)
-        {
-            Destroy();
-            new GameLobby.GameLobbyPlayManager().Create();
+            Module<DefaultModule>().OnInit(this);
         }
 
 

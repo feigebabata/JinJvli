@@ -15,13 +15,10 @@ namespace GamePlay.PanoramicImage
             base.Create();
 
             loadScene().Start();
-            Cursor.lockState = CursorLockMode.Locked;
         }
         
         public override void Destroy()
         {
-            Cursor.lockState = CursorLockMode.None;
-
             base.Destroy();
             
         }

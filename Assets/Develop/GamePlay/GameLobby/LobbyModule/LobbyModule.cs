@@ -96,12 +96,19 @@ namespace GamePlay.GameLobby
 
         private void onStartAniStop(PlayableDirector obj)
         {
-            #if UNITY_ANDROID && !UNITY_EDITOR
-            _mainCamera.gameObject.AddComponent<AndroidCameraRotateCtrl>();
-            _mainCamera.GetComponent<AndroidCameraRotateCtrl>().PlayerInput = _playManager.PlayerInput as AndroidPlayerInput;
-            #else
-            _mainCamera.gameObject.AddComponent<PCCameraRotateCtrl>();
-            #endif
+            switch (Application.platform)
+            {
+                case RuntimePlatform.Android:
+                {
+                    _mainCamera.gameObject.AddComponent<GyroRotateCtrl>();
+                }
+                break;
+                default:
+                {
+                    _mainCamera.gameObject.AddComponent<MouseRotateCtrl>();
+                }
+                break;
+            }
         }
 
     }
