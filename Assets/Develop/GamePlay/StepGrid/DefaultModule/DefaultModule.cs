@@ -23,7 +23,6 @@ namespace GamePlay.StepGrid
 
             GlobalMessenger.M.Add(GlobalMsgID.OnBackKey,onClickBack);
 
-            initGrids();
         }
 
         public override void OnRelease()
@@ -66,7 +65,7 @@ namespace GamePlay.StepGrid
         /// <param name="spacing">格子间隔</param>
         /// <param name="width">横向格子数</param>
         /// <returns></returns>
-        Vector2 getGridPos(int index,Vector2 grid,Vector2 spacing,int width)
+        public static Vector2 GetGridPos(int index,Vector2 grid,Vector2 spacing,int width)
         {
             Vector2 gridPos=Vector2.zero;
             float groupWidth = grid.x*width+spacing.x*(width-1);
@@ -75,18 +74,6 @@ namespace GamePlay.StepGrid
             int line = index/width;
             gridPos.y = line*(grid.y+spacing.y)+grid.y/2;
             return gridPos;
-        }
-
-        void initGrids()
-        {
-            Transform gridsT = GameObject.Find("grids").transform;
-            Vector2 gridSize = new Vector2(1,2);
-            Vector2 spacing = new Vector2(0.1f,0.1f);
-            for (int i = 0; i < gridsT.childCount; i++)
-            {
-                var pos = getGridPos(i,gridSize,spacing,4);
-                gridsT.GetChild(i).localPosition = new Vector3(pos.x,0,pos.y);
-            }
         }
 
     }

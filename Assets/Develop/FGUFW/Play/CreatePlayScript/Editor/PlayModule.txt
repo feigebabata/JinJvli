@@ -18,8 +18,8 @@ namespace GamePlay.#NAMESPACE#
             }
             base.OnInit(playManager);
             //code
-            _moduleInput = new  #CLASSNAME#Input(_playManager);
             _moduleOutput = new  #CLASSNAME#Output(_playManager);
+            _moduleInput = new  #CLASSNAME#Input(_playManager);
         }
 
         public override void OnRelease()
