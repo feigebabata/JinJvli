@@ -45,8 +45,14 @@ MonoBehaviour:
     m_Address: GamePlay.StepGrid.DefaultModule.StartPanel
     m_ReadOnly: 0
     m_SerializedLabels: []
-    m_MainAsset: {fileID: 5100701766577055287, guid: fc873d1831c96344082ef2d7df50faba, type: 3}
-    m_TargetAsset: {fileID: 5100701766577055287, guid: fc873d1831c96344082ef2d7df50faba, type: 3}
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: a6f5819c59fc44f4aa26b71a2b9ee5f2
+    m_Address: GamePlay.StepGrid.DefaultModule.StopPanel
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 4f6af6a87dcbc924fb2e96aeef4f4b43, type: 2}
   m_SchemaSet:

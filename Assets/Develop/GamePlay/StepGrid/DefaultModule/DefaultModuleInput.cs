@@ -9,8 +9,9 @@ namespace GamePlay.StepGrid
 {
     public class DefaultModuleInput : IDisposable
     {
-        StepGridPlayManager _playManager;
-        StartPanelComps _startPanelComps;
+        private StepGridPlayManager _playManager;
+        private StartPanelComps _startPanelComps;
+        private StopPanelComps _stopPanelComps;
 
         public DefaultModuleInput(StepGridPlayManager playManager)
         {
@@ -76,11 +77,28 @@ namespace GamePlay.StepGrid
                 _startPanelComps = go.GetComponent<StartPanelComps>();
                 _startPanelComps.StartBtn.onClick.AddListener(onClickStartBtn);
             }
+            else if(go.name=="StopPanel")
+            {
+                _stopPanelComps = go.GetComponent<StopPanelComps>();
+                _stopPanelComps.RestartBtn.onClick.AddListener(onClickRestartBtn);
+                _stopPanelComps.ExitBtn.onClick.AddListener(onClickExitBtn);
+                _stopPanelComps.Tip.text = "游戏结束";
+            }
+        }
+
+        private void onClickExitBtn()
+        {
+            _playManager.Messenger.Broadcast(StepGridMsgID.Exit,null);
         }
 
         private void onClickStartBtn()
         {
             _playManager.Messenger.Broadcast(StepGridMsgID.Start,null);
+        }
+
+        private void onClickRestartBtn()
+        {
+            _playManager.Messenger.Broadcast(StepGridMsgID.Restart,null);
         }
     }
 }

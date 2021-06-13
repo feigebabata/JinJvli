@@ -22,7 +22,7 @@ namespace GamePlay.StepGrid
         Color _selectCol = Color.green;
         Color _errCol = Color.red;
         private Coroutine _moveCor;
-        private GameObject _startPanel;
+        private GameObject _startPanel,_stopPanel;
 
         public DefaultModuleOutput(StepGridPlayManager playManager)
         {
@@ -31,9 +31,10 @@ namespace GamePlay.StepGrid
             _playManager.Messenger.Add(StepGridMsgID.ClickGrid,onClickGrid);
             _playManager.Messenger.Add(StepGridMsgID.Start,onPlayStart);
             _playManager.Messenger.Add(StepGridMsgID.Stop,onPlayStop);
+            _playManager.Messenger.Add(StepGridMsgID.Restart,onPlayRestart);
             initGrids();
 
-            loadPanel();
+            loadStartPanel();
         }
 
         public void Dispose()
@@ -41,9 +42,12 @@ namespace GamePlay.StepGrid
             _playManager.Messenger.Remove(StepGridMsgID.ClickGrid,onClickGrid);
             _playManager.Messenger.Remove(StepGridMsgID.Start,onPlayStart);
             _playManager.Messenger.Remove(StepGridMsgID.Stop,onPlayStop);
+            _playManager.Messenger.Remove(StepGridMsgID.Restart,onPlayRestart);
 
-            _startPanel=null;
-
+            _startPanel.GetComponent<Canvas>().ClearSortOrder();
+            GameObject.Destroy(_startPanel);
+            _stopPanel.GetComponent<Canvas>().ClearSortOrder();
+            GameObject.Destroy(_stopPanel);
             _playManager = null;
         }
 
@@ -134,6 +138,7 @@ namespace GamePlay.StepGrid
         private void onPlayStop(object obj)
         {
             _moveCor.Stop();
+            loadStopPanel();
         }
 
         private void onPlayStart(object obj)
@@ -148,7 +153,7 @@ namespace GamePlay.StepGrid
             _startPanel.GetComponent<Canvas>().enabled = false;
         }
 
-        async void loadPanel()
+        async void loadStartPanel()
         {
             _startPanel = await Addressables.InstantiateAsync("GamePlay.StepGrid.DefaultModule.StartPanel",null,false).Task;
             _startPanel.GetComponent<Canvas>().SetPanelSortOrder();
@@ -156,6 +161,22 @@ namespace GamePlay.StepGrid
             _playManager.Messenger.Broadcast(StepGridMsgID.PanelLoadComplete,_startPanel);
             SceneLoading.I.Hide();
         }
+
+        async void loadStopPanel()
+        {
+            _stopPanel = await Addressables.InstantiateAsync("GamePlay.StepGrid.DefaultModule.StopPanel",null,false).Task;
+            _stopPanel.GetComponent<Canvas>().SetPanelSortOrder();
+            _stopPanel.name = "StopPanel";
+            _playManager.Messenger.Broadcast(StepGridMsgID.PanelLoadComplete,_stopPanel);
+        }
+
+        private void onPlayRestart(object obj)
+        {
+            _stopPanel.GetComponent<Canvas>().enabled=false;
+            initGrids();
+            _playManager.Messenger.Broadcast(StepGridMsgID.Start,null);
+        }
+
 
     }
 }

@@ -7,5 +7,7 @@ namespace GamePlay.StepGrid
         public const string Start = "Start";
         public const string Stop = "Stop";
         public const string PanelLoadComplete = "PanelLoadComplete";
+        public const string Restart = "Restart";
+        public const string Exit = "Exit";
     }
 }

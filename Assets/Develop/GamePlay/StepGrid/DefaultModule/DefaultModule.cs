@@ -28,6 +28,7 @@ namespace GamePlay.StepGrid
             GlobalMessenger.M.Add(GlobalMsgID.OnBackKey,onClickBack);
             _playManager.Messenger.Add(StepGridMsgID.ClickGrid,onClickGrid);
             _playManager.Messenger.Add(StepGridMsgID.GridDestroy,onGridDestroy);
+            _playManager.Messenger.Add(StepGridMsgID.Exit,onClickBack);
 
             GridListData = createGridListData(666);
 
@@ -45,6 +46,7 @@ namespace GamePlay.StepGrid
             GlobalMessenger.M.Remove(GlobalMsgID.OnBackKey,onClickBack);
             _playManager.Messenger.Remove(StepGridMsgID.ClickGrid,onClickGrid);
             _playManager.Messenger.Remove(StepGridMsgID.GridDestroy,onGridDestroy);
+            _playManager.Messenger.Remove(StepGridMsgID.Exit,onClickBack);
             _moduleInput.Dispose();
             _moduleOutput.Dispose();
             base.OnRelease();
