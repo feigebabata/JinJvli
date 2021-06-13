@@ -9,14 +9,11 @@ namespace GamePlay.StepGrid
 {
     public class StepGridPlayManager : PlayManager
     {
-        public IUISystem UISystem;
         public override void Create()
         {
             Screen.orientation = ScreenOrientation.Portrait;
             base.Create();
 
-            UISystem = new DefaultUISystem();
-            UISystem.OnInit();
             loadScene().Start();
         }
         
@@ -24,8 +21,6 @@ namespace GamePlay.StepGrid
         {
             base.Destroy();
 
-            UISystem.OnRelease();
-            UISystem=null;
             Screen.orientation = ScreenOrientation.Landscape;
         }
 

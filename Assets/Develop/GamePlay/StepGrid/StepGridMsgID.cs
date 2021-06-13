@@ -6,5 +6,6 @@ namespace GamePlay.StepGrid
         public const string GridDestroy = "GridDestory";
         public const string Start = "Start";
         public const string Stop = "Stop";
+        public const string PanelLoadComplete = "PanelLoadComplete";
     }
 }

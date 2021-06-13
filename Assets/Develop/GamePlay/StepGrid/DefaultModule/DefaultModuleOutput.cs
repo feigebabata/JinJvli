@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using FGUFW.Core;
 using FGUFW.Play;
+using UnityEngine.AddressableAssets;
 
 namespace GamePlay.StepGrid
 {
@@ -21,7 +22,7 @@ namespace GamePlay.StepGrid
         Color _selectCol = Color.green;
         Color _errCol = Color.red;
         private Coroutine _moveCor;
-        private StartPanel _startPanel;
+        private GameObject _startPanel;
 
         public DefaultModuleOutput(StepGridPlayManager playManager)
         {
@@ -30,10 +31,9 @@ namespace GamePlay.StepGrid
             _playManager.Messenger.Add(StepGridMsgID.ClickGrid,onClickGrid);
             _playManager.Messenger.Add(StepGridMsgID.Start,onPlayStart);
             _playManager.Messenger.Add(StepGridMsgID.Stop,onPlayStop);
-            _startPanel = new StartPanel();
             initGrids();
 
-            loadPanel().Start();
+            loadPanel();
         }
 
         public void Dispose()
@@ -42,7 +42,6 @@ namespace GamePlay.StepGrid
             _playManager.Messenger.Remove(StepGridMsgID.Start,onPlayStart);
             _playManager.Messenger.Remove(StepGridMsgID.Stop,onPlayStop);
 
-            _playManager.UISystem.ReleaseView(_startPanel);
             _startPanel=null;
 
             _playManager = null;
@@ -146,15 +145,16 @@ namespace GamePlay.StepGrid
             }
 
             _moveCor = moveGrid().Start();
-
-            _playManager.UISystem.HideView(_startPanel);
+            _startPanel.GetComponent<Canvas>().enabled = false;
         }
 
-        IEnumerator loadPanel()
+        async void loadPanel()
         {
-           yield return _playManager.UISystem.CreateView(_startPanel,_playManager);
-           _playManager.UISystem.ShowView(_startPanel);
-           SceneLoading.I.Hide();
+            _startPanel = await Addressables.InstantiateAsync("GamePlay.StepGrid.DefaultModule.StartPanel",null,false).Task;
+            _startPanel.GetComponent<Canvas>().SetPanelSortOrder();
+            _startPanel.name = "StartPanel";
+            _playManager.Messenger.Broadcast(StepGridMsgID.PanelLoadComplete,_startPanel);
+            SceneLoading.I.Hide();
         }
 
     }

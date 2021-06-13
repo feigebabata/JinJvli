@@ -10,17 +10,23 @@ namespace GamePlay.StepGrid
     public class DefaultModuleInput : IDisposable
     {
         StepGridPlayManager _playManager;
+        StartPanelComps _startPanelComps;
+
         public DefaultModuleInput(StepGridPlayManager playManager)
         {
             _playManager = playManager;
             _playManager.Messenger.Add(StepGridMsgID.Start,onPlayStart);
             _playManager.Messenger.Add(StepGridMsgID.Stop,onPlayStop);
+            _playManager.Messenger.Add(StepGridMsgID.PanelLoadComplete,onPanelLoadComplete);
         }
 
         public void Dispose()
         {
             _playManager.Messenger.Remove(StepGridMsgID.Start,onPlayStart);
             _playManager.Messenger.Remove(StepGridMsgID.Stop,onPlayStop);
+            _playManager.Messenger.Remove(StepGridMsgID.PanelLoadComplete,onPanelLoadComplete);
+            _startPanelComps.StartBtn.onClick.RemoveAllListeners();
+            _startPanelComps=null;
             _playManager = null;
         }
 
@@ -62,7 +68,19 @@ namespace GamePlay.StepGrid
             MonoBehaviourEvent.I.UpdateListener += Update;
         }
 
+        private void onPanelLoadComplete(object obj)
+        {
+            var go = obj as GameObject;
+            if(go.name=="StartPanel")
+            {
+                _startPanelComps = go.GetComponent<StartPanelComps>();
+                _startPanelComps.StartBtn.onClick.AddListener(onClickStartBtn);
+            }
+        }
 
-
+        private void onClickStartBtn()
+        {
+            _playManager.Messenger.Broadcast(StepGridMsgID.Start,null);
+        }
     }
 }
