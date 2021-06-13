@@ -187,7 +187,7 @@ static public class CreatePlayScript
             string nameSpace = "";
             for (int i = 0; i < folderNodes.Length; i++)
             {
-                Debug.LogWarning(folderNodes[i]);
+                // Debug.LogWarning(folderNodes[i]);
                 if(folderNodes[i]=="GamePlay")
                 {
                     nameSpace = nameSpace+folderNodes[i+1];
@@ -197,7 +197,7 @@ static public class CreatePlayScript
             
             //将模板类中的类名替换成你创建的文件名
             text = Regex.Replace(text, "#CLASSNAME#", fileNameWithoutExtension);
-            text = Regex.Replace(text, "#NAMESPACE#", "GamePlay."+nameSpace);
+            text = Regex.Replace(text, "#NAMESPACE#", nameSpace);
 
 
             bool encoderShouldEmitUTF8Identifier = true; //参数指定是否提供 Unicode 字节顺序标记

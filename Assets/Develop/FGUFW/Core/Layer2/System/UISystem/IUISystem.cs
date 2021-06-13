@@ -8,9 +8,9 @@ namespace FGUFW.Core
 {
     public interface IUISystem : ISystem
     {
-        IEnumerator CreateView(IUIPanel uiPanel);
+        IEnumerator CreateView(IUIPanel uiPanel,PlayManager playManager);
         void ReleaseView(IUIPanel uiPanel);
-        void ShowView(IUIPanel uiPanel,IPlayModule module);
+        void ShowView(IUIPanel uiPanel);
         void HideView(IUIPanel uiPanel);
     }
 
@@ -18,9 +18,9 @@ namespace FGUFW.Core
     {
         string GetPanelAssetPath();
         
-        void OnInit(GameObject panelGO);
+        void OnInit(GameObject panelGO,PlayManager playManager);
         void OnRelease();
-        void OnShow(IPlayModule module);
+        void OnShow();
         void OnHide();
     }
 

@@ -10,7 +10,7 @@ using UnityEngine.UI;
 
 namespace FGUFW.Core
 {
-    public class DeftauleUISystem : IUISystem
+    public class DefaultUISystem : IUISystem
     {
         public class UIPanelData
         {
@@ -43,7 +43,7 @@ namespace FGUFW.Core
             uiPanel.OnHide();
         }
 
-        public IEnumerator CreateView(IUIPanel uiPanel)
+        public IEnumerator CreateView(IUIPanel uiPanel,PlayManager playManager)
         {
             string assetPath = uiPanel.GetPanelAssetPath();
             Logger.d($"[DeftauleUISystem.Create] UI预制体加载 assetPath={assetPath}");
@@ -58,7 +58,7 @@ namespace FGUFW.Core
 
                 panelData.PanelGO.GetComponent<Canvas>().enabled=false;
                 panelData.PanelGO.GetComponent<GraphicRaycaster>().enabled=false;
-                uiPanel.OnInit(loader.Result);
+                uiPanel.OnInit(loader.Result,playManager);
                 
             }
             else
@@ -78,24 +78,24 @@ namespace FGUFW.Core
             _uiPanelDatas.Remove(panelData);
         }
 
-        public void ShowView(IUIPanel uiPanel, IPlayModule module)
+        public void ShowView(IUIPanel uiPanel)
         {
             UIPanelData panelData = _uiPanelDatas.Find((uiPanelDataItem)=>{return uiPanelDataItem.UIPanel==uiPanel;});
             panelData.RenderSortOrder=_uiPanelDatas.Count;
             panelData.PanelGO.GetComponent<Canvas>().sortingOrder = panelData.RenderSortOrder;
             panelData.PanelGO.GetComponent<Canvas>().enabled=true;
             panelData.PanelGO.GetComponent<GraphicRaycaster>().enabled=true;
-            uiPanel.OnShow(module);
+            uiPanel.OnShow();
         }
 
         public void OnEnable()
         {
-            throw new NotImplementedException();
+            
         }
 
         public void OnDisable()
         {
-            throw new NotImplementedException();
+            
         }
     }
 }

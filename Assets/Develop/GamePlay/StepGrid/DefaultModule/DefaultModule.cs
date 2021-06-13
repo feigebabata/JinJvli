@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using FGUFW.Core;
 using FGUFW.Play;
+using System;
 
 namespace GamePlay.StepGrid
 {
@@ -10,6 +11,9 @@ namespace GamePlay.StepGrid
     {
         private  DefaultModuleInput _moduleInput;
         private  DefaultModuleOutput _moduleOutput;
+        public GridListData GridListData{get;private set;}
+        private HashSet<int> _clickGrids = new HashSet<int>();
+
         public override void OnInit(PlayManager playManager)
         {
             if(IsInit)
@@ -22,6 +26,10 @@ namespace GamePlay.StepGrid
             _moduleOutput = new  DefaultModuleOutput(_playManager);
 
             GlobalMessenger.M.Add(GlobalMsgID.OnBackKey,onClickBack);
+            _playManager.Messenger.Add(StepGridMsgID.ClickGrid,onClickGrid);
+            _playManager.Messenger.Add(StepGridMsgID.GridDestroy,onGridDestroy);
+
+            GridListData = createGridListData(666);
 
         }
 
@@ -33,7 +41,10 @@ namespace GamePlay.StepGrid
             }
             //code
 
+            GridListData=null;
             GlobalMessenger.M.Remove(GlobalMsgID.OnBackKey,onClickBack);
+            _playManager.Messenger.Remove(StepGridMsgID.ClickGrid,onClickGrid);
+            _playManager.Messenger.Remove(StepGridMsgID.GridDestroy,onGridDestroy);
             _moduleInput.Dispose();
             _moduleOutput.Dispose();
             base.OnRelease();
@@ -43,6 +54,7 @@ namespace GamePlay.StepGrid
         {
             base.OnShow();
             //code
+            
         }
 
         public override void OnHide()
@@ -76,5 +88,55 @@ namespace GamePlay.StepGrid
             return gridPos;
         }
 
+        GridListData createGridListData(int seed)
+        {
+            var data = new GridListData();
+            data.GridValues = new byte[1024];
+
+            UnityEngine.Random.InitState(seed);
+            for (int i = 0; i < data.GridValues.Length; i++)
+            {
+                data.GridValues[i] = (byte)UnityEngine.Random.Range(0,4);
+            }
+
+            data.LineColor = new Color[]{Color.yellow};
+            return data;
+        }
+
+        public static bool GridIsTarget(int index,GridListData gridListData,int gridGroupWidth)
+        {
+            int line = index/gridGroupWidth;
+            int x_i = index%gridGroupWidth;
+            int val = gridListData.GridValues[line%gridListData.GridValues.Length];
+            return val==x_i;
+        }
+
+        private void onClickGrid(object obj)
+        {
+            int index = (int)obj;
+            if(!GridIsTarget(index,GridListData,4))
+            {
+                _playManager.Messenger.Broadcast(StepGridMsgID.Stop,null);
+            }
+            _clickGrids.Add(index);
+        }
+
+        private void onGridDestroy(object obj)
+        {
+            int index = (int)obj;
+            if(GridIsTarget(index,GridListData,4) && !_clickGrids.Contains(index))
+            {
+                _playManager.Messenger.Broadcast(StepGridMsgID.Stop,null);
+            }
+            _clickGrids.Remove(index);
+        }
+
+
+    }
+
+    public class GridListData
+    {
+        public byte[] GridValues;
+        public Color[] LineColor;
     }
 }

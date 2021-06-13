@@ -1,8 +1,10 @@
 namespace GamePlay.StepGrid
 {
-    public enum StepGridMsgID
+    public static class StepGridMsgID
     {
-        ClickGrid,
-        GridDestroy
+        public const string ClickGrid = "ClickGrid";
+        public const string GridDestroy = "GridDestory";
+        public const string Start = "Start";
+        public const string Stop = "Stop";
     }
 }

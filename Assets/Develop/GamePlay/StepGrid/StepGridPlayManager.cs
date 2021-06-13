@@ -9,27 +9,33 @@ namespace GamePlay.StepGrid
 {
     public class StepGridPlayManager : PlayManager
     {
+        public IUISystem UISystem;
         public override void Create()
         {
             Screen.orientation = ScreenOrientation.Portrait;
             base.Create();
+
+            UISystem = new DefaultUISystem();
+            UISystem.OnInit();
             loadScene().Start();
         }
         
         public override void Destroy()
         {
             base.Destroy();
-            Screen.orientation = ScreenOrientation.Landscape;
 
+            UISystem.OnRelease();
+            UISystem=null;
+            Screen.orientation = ScreenOrientation.Landscape;
         }
 
         IEnumerator loadScene()
         {
             yield return Addressables.LoadSceneAsync("GamePlay.StepGrid");
-            SceneLoading.I.Hide();
             Debug.Log(Screen.orientation);
 
             Module<DefaultModule>().OnInit(this);
+            Module<DefaultModule>().OnShow();
         }
 
 

@@ -8,9 +8,26 @@ namespace GamePlay.#NAMESPACE#
 {
     public class #CLASSNAME# : IUIPanel
     {
+       #NAMESPACE#PlayManager _playManager;
         public string GetPanelAssetPath()
         {//返回UI预制件地址
-            throw new System.NotImplementedException();
+            return "";
+        }
+
+        public void OnInit(GameObject panelGO, PlayManager playManager)
+        {
+            _playManager = playManager as #NAMESPACE#PlayManager;
+        }
+
+        public void OnRelease()
+        {
+            
+            _playManager=null;
+        }
+
+        public void OnShow()
+        {
+            
         }
 
         public void OnHide()
@@ -18,20 +35,5 @@ namespace GamePlay.#NAMESPACE#
             
         }
 
-        public void OnInit(GameObject panelGO)
-        {
-            
-        }
-
-        public void OnRelease()
-        {
-            
-        }
-
-        public void OnShow(IPlayModule module)
-        {
-            
-        }
-        
     }
 }

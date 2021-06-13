@@ -332,7 +332,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6613578424414237405, guid: dcd6bacb85ae2504ea11308aba92aeb0, type: 3}
       propertyPath: UIStyle.m_FontSize
-      value: 100
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 6613578424414237405, guid: dcd6bacb85ae2504ea11308aba92aeb0, type: 3}
       propertyPath: UIStyle.m_Normal.m_TextColor.b
