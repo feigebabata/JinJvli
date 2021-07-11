@@ -1,15 +1,15 @@
-syntax = "proto3";
+﻿syntax = "proto3";
 
 /*
 引用库 同级目录文件 import "XXX.proto"; 
 类型proto>>C# 
 uint32:uint 
 sint32:int   含有负值时效率比int32高
-bytes:byte[] 字节数组
+ByteString:bytes 字节数组
 集合关键字 repeated
 */
 
-package #NAMESPACE#;
+package StepGrid;
 
 message MSG_NAME
 {

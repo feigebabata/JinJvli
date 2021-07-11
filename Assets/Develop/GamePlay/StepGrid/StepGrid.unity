@@ -2034,7 +2034,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8114567e07e70b649819c95e397d9238, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ViewingCone: {x: 1080, y: 1920}
+  ViewingCone: {x: 1920, y: 1080}
   Distance: 7.8
 --- !u!1 &987131241
 GameObject:

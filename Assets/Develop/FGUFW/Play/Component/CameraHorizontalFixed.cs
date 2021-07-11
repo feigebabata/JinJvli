@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
  
- namespace GamePlay.StepGrid
+ namespace FGUFW.Play
  {
      
     [RequireComponent(typeof(Camera))]
@@ -17,8 +17,11 @@ using UnityEngine;
         [Header("垂直距离")]
         public float Distance;
     
-        void Awake()
+        void Start()
         {
+            #if UNITY_EDITOR
+                ViewingCone = new Vector2(Screen.width,Screen.height);
+            #endif
             Camera camera = GetComponent<Camera>();
             setCameraPos(ViewingCone,new Vector2(Screen.width,Screen.height),camera.fieldOfView,Distance,transform.eulerAngles.x);
         }

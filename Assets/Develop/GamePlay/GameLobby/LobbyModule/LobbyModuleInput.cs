@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using FGUFW.Core;
 using UnityEngine.EventSystems;
+using FGUFW.Play;
 
 namespace GamePlay.GameLobby
 {
@@ -20,11 +21,13 @@ namespace GamePlay.GameLobby
             _mainCamera = GameObject.Find("character/Main Camera").GetComponent<Camera>();
 
             MonoBehaviourEvent.I.UpdateListener += Update;
+            _playManager.Messenger.Add(GameLobbyMsgID.OnStartAniStop,onStartAniStop);
         }
-        
+
         public void Dispose()
         {
             MonoBehaviourEvent.I.UpdateListener -= Update;
+            _playManager.Messenger.Remove(GameLobbyMsgID.OnStartAniStop,onStartAniStop);
             _playManager = null;
             _mainCamera=null;
         }
@@ -39,27 +42,6 @@ namespace GamePlay.GameLobby
                 {
                     _playManager.Messenger.Broadcast(GameLobbyMsgID.OnEnterGame,_currectSelect.TypeName);
                 }
-            }
-            Vector2 dir = Vector2.zero;
-            if(Input.GetKey(KeyCode.W))
-            {
-                dir+=Vector2.up;
-            }
-            if(Input.GetKey(KeyCode.S))
-            {
-                dir+=Vector2.down;
-            }
-            if(Input.GetKey(KeyCode.A))
-            {
-                dir+=Vector2.left;
-            }
-            if(Input.GetKey(KeyCode.D))
-            {
-                dir+=Vector2.right;
-            }
-            if(dir!=Vector2.zero)
-            {
-                _playManager.Messenger.Broadcast(GameLobbyMsgID.OnMove,dir.normalized);
             }
 
         }
@@ -96,5 +78,29 @@ namespace GamePlay.GameLobby
             
         }
 
+        private void onStartAniStop(object obj)
+        {
+            
+            switch (Application.platform)
+            {
+                case RuntimePlatform.Android:
+                {
+                    _mainCamera.gameObject.AddComponent<GyroRotateCtrl>();
+                    _mainCamera.gameObject.AddComponent<TouchMoveCtrl>().OnMove += onMove;
+                }
+                break;
+                default:
+                {
+                    _mainCamera.gameObject.AddComponent<MouseRotateCtrl>();
+                    _mainCamera.gameObject.AddComponent<KeyboardMoveCtrl>().OnMove += onMove;
+                }
+                break;
+            }
+        }
+
+        private void onMove(Vector2 obj)
+        {
+            _playManager.Messenger.Broadcast(GameLobbyMsgID.OnMove,obj);
+        }
     }
 }

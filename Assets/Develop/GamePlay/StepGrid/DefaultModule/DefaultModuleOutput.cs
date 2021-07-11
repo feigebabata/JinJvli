@@ -44,10 +44,12 @@ namespace GamePlay.StepGrid
             _playManager.Messenger.Remove(StepGridMsgID.Stop,onPlayStop);
             _playManager.Messenger.Remove(StepGridMsgID.Restart,onPlayRestart);
 
-            _startPanel.GetComponent<Canvas>().ClearSortOrder();
+            _startPanel?.GetComponent<Canvas>().ClearSortOrder();
             GameObject.Destroy(_startPanel);
-            _stopPanel.GetComponent<Canvas>().ClearSortOrder();
+            _stopPanel?.GetComponent<Canvas>().ClearSortOrder();
             GameObject.Destroy(_stopPanel);
+            _moveCor?.Stop();
+            _moveCor=null;
             _playManager = null;
         }
 
@@ -138,6 +140,7 @@ namespace GamePlay.StepGrid
         private void onPlayStop(object obj)
         {
             _moveCor.Stop();
+            _moveCor=null;
             loadStopPanel();
         }
 

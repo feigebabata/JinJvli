@@ -23,6 +23,7 @@ namespace GamePlay.StepGrid
 
         public void Dispose()
         {
+            MonoBehaviourEvent.I.UpdateListener -= Update;
             _playManager.Messenger.Remove(StepGridMsgID.Start,onPlayStart);
             _playManager.Messenger.Remove(StepGridMsgID.Stop,onPlayStop);
             _playManager.Messenger.Remove(StepGridMsgID.PanelLoadComplete,onPanelLoadComplete);

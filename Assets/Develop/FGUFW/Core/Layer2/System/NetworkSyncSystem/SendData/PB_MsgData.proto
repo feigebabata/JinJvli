@@ -1,4 +1,4 @@
-syntax = "proto3";
+﻿syntax = "proto3";
 
 /*
 引用库 同级目录文件 import "XXX.proto"; 
@@ -9,9 +9,11 @@ bytes:byte[] 字节数组
 集合关键字 repeated
 */
 
-package #NAMESPACE#;
+package FGUFW.Core;
 
-message MSG_NAME
+message PB_MsgData
 {
-    uint32 ID=1;
+    int32 PlayerID=1;
+    uint32 Cmd=2;
+    bytes MsgData=3;
 }

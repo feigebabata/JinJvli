@@ -6,5 +6,6 @@ namespace GamePlay.GameLobby
         public const string OnEnterGame = "OnEnterGame";
         public const string OnSelectGameItem = "OnSelectGameItem";
         public const string OnUnSelectGameItem = "OnUnSelectGameItem";
+        public const string OnStartAniStop = "OnStartAniStop";
     }
 }
