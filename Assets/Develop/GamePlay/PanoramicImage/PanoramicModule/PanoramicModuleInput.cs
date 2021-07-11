@@ -13,6 +13,20 @@ namespace GamePlay.PanoramicImage
         public PanoramicModuleInput(PanoramicImagePlayManager playManager)
         {
             _playManager = playManager;
+            
+            switch (Application.platform)
+            {
+                case RuntimePlatform.Android:
+                {
+                    Camera.main.gameObject.AddComponent<GyroRotateCtrl>();
+                }
+                break;
+                default:
+                {
+                    Camera.main.gameObject.AddComponent<MouseRotateCtrl>();
+                }
+                break;
+            }
         }
         
         public void Dispose()

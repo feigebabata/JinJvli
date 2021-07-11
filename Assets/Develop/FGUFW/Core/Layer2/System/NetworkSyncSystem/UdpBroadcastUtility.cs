@@ -11,6 +11,7 @@ namespace FGUFW.Core
     {
         public const int BROADCAST_PORT = 31410;
         public const int LOCAL_PORT = 31411;
+
         private static UdpClient sendClient,receiveClient;
         private static IPEndPoint broadcastIEP;
         public static Action<byte[]> OnReceive;
@@ -29,7 +30,11 @@ namespace FGUFW.Core
             receive();
         }
 
-        
+        /// <summary>
+        /// 发送数据 [ appid 2 | length 2 | gameplayid 2 | msgdata ]
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static async void Send(byte[] data)
         {
             try

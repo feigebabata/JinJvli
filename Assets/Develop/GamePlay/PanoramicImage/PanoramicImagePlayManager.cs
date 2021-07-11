@@ -14,7 +14,7 @@ namespace GamePlay.PanoramicImage
         {
             base.Create();
 
-            loadScene().Start();
+            loadScene();
         }
         
         public override void Destroy()
@@ -23,9 +23,9 @@ namespace GamePlay.PanoramicImage
             
         }
 
-        IEnumerator loadScene()
+        async void loadScene()
         {
-            yield return Addressables.LoadSceneAsync("GamePlay.PanoramicImage");
+            await Addressables.LoadSceneAsync("GamePlay.PanoramicImage").Task;
             SceneLoading.I.Hide();
             Module<PanoramicModule>().OnInit(this);
         }

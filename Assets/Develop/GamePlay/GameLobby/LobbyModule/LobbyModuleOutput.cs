@@ -41,9 +41,7 @@ namespace GamePlay.GameLobby
 
         public IEnumerator ShowItemList()
         {
-            var loader = Addressables.LoadAssetAsync<GameItemDatas>("GamePlay.GameLobby.GameDatas");
-            yield return loader;
-            var datas = loader.Result.Datas;
+            var datas = GameLobbyPlayManager.GameItemDatas.Datas;
             bool ignore = false;
             for (int i = 0; i < datas.Length; i++)
             {
@@ -71,6 +69,7 @@ namespace GamePlay.GameLobby
                     item.gameObject.SetActive(true);
                     item.name = datas[i].TypeName;
                 }
+                yield return new WaitForSeconds(1);
             }
         }
 

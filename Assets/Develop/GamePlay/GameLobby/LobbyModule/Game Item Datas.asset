@@ -18,10 +18,10 @@ MonoBehaviour:
     Scale: {x: 0.06, y: 0.06, z: 0}
     AndroidPlatform: 1
     PCPlatform: 1
-    WebPlatform: 1
+    WebPlatform: 0
   - TypeName: GamePlay.StepGrid.StepGridPlayManager
     Icon: {fileID: 21300000, guid: 324963a812f587c478c1a967138f0163, type: 3}
     Scale: {x: 0.06, y: 0.06, z: 0}
     AndroidPlatform: 1
     PCPlatform: 1
-    WebPlatform: 1
+    WebPlatform: 0

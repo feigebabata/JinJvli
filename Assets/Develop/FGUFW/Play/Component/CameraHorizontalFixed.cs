@@ -56,7 +56,7 @@ using UnityEngine;
             
             Vector3 pos = transform.position+forward.normalized*length;
             transform.position = pos;
-            Debug.Log(pos);
+            // Debug.Log(pos);
         }
     
         /// <summary>

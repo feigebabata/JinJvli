@@ -67,6 +67,7 @@ namespace GamePlay.GameLobby
 
         private void onClickBack(object obj)
         {
+            Application.Quit();
         }
 
         private void onEnterGame(object obj)

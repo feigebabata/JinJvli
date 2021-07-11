@@ -11,16 +11,26 @@ namespace FGUFW.Core
     {
         public class SendUnit
         {
+            public ushort GamePlayID;
             public int PlayerID;
             public uint Cmd;
             public Google.Protobuf.IMessage Msg;
         }
+        public class ReceiveUnit
+        {
+            public ushort GamePlayID;
+            public PB_MsgData MsgData;
+        }
+
+        public IMessenger<ushort,PB_MsgData> Messenger = new Messenger<ushort,PB_MsgData>();
+
         private bool _enable;
         private Queue<SendUnit> _sendDataQueue = new Queue<SendUnit>();
         private object _sendDataLock = new object();
-        private Queue<PB_MsgData> _reveiveDataQueue = new Queue<PB_MsgData>();
+        private Queue<ReceiveUnit> _reveiveDataQueue = new Queue<ReceiveUnit>();
         private object _receiveDataLock = new object();
         private int _playerID;
+        // private byte[] sendBuffer = new byte[1024];
 
         public void OnInit()
         {
@@ -68,9 +78,9 @@ namespace FGUFW.Core
 
         void sendMsg()
         {
-            PB_MsgData sendData = new PB_MsgData();
-            sendData.Cmd = 0;
-            sendData.PlayerID = _playerID; 
+            PB_MsgData msg = new PB_MsgData();
+            msg.Cmd = 0;
+            msg.PlayerID = _playerID; 
             lock(_sendDataLock)
             {
                 while(_sendDataQueue.Count>0)
@@ -78,32 +88,90 @@ namespace FGUFW.Core
                     SendUnit sendUnit = _sendDataQueue.Dequeue();
                     if(sendUnit.Msg!=null)
                     {
-                        sendData.MsgData = sendUnit.Msg.ToByteString();
+                        msg.MsgData = sendUnit.Msg.ToByteString();
                     }
-                    sendData.Cmd = sendUnit.Cmd;
-                    byte[] data = sendData.ToByteArray();
-                    UdpBroadcastUtility.Send(data);
+                    msg.Cmd = sendUnit.Cmd;
+                    byte[] msgBuffer = msg.ToByteArray();
+                    ushort bufferLength = (ushort)(msgBuffer.Length+NetworkConfig.PACK_HEAD_LENGTH);
+                    byte[] sendBuffer = new byte[bufferLength];
+                    byte[] appIDBuffer = BitConverter.GetBytes(NetworkConfig.APP_ID);
+                    byte[] gpIDBuffer = BitConverter.GetBytes(sendUnit.GamePlayID);
+                    byte[] lengthBuffer = BitConverter.GetBytes(bufferLength);
+
+                    int index = 0,length=0;
+
+                    length = appIDBuffer.Length;
+                    Array.Copy(appIDBuffer,0,sendBuffer,index,length);
+                    index+=length;
+
+                    length = lengthBuffer.Length;
+                    Array.Copy(lengthBuffer,0,sendBuffer,index,length);
+                    index+=length;
+
+                    length = gpIDBuffer.Length;
+                    Array.Copy(gpIDBuffer,0,sendBuffer,index,length);
+                    index+=length;
+
+                    length = msgBuffer.Length;
+                    Array.Copy(msgBuffer,0,sendBuffer,index,length);
+                    index+=length;
+                    for (int i = 0; i < NetworkConfig.BROADCAST_COUNT; i++)
+                    {
+                        UdpBroadcastUtility.Send(sendBuffer);
+                    }
                 }
             }
         }
 
-        public void SendMsg(object msg,uint cmd)
+        public void SendMsg(uint cmd,ushort gameplayID,object msg)
         {
             lock(_sendDataLock)
             {
-                _sendDataQueue.Enqueue(new SendUnit(){Msg=(Google.Protobuf.IMessage)msg,Cmd=cmd});
+                _sendDataQueue.Enqueue(new SendUnit()
+                {
+                    Msg=(Google.Protobuf.IMessage)msg,
+                    Cmd=cmd,
+                    GamePlayID=gameplayID,
+                });
             }
         }
 
-        private void onReceive(byte[] obj)
+        private void onReceive(byte[] buffer)
         {
-            PB_MsgData receiveData=null;
+            PB_MsgData msgData=null;
             try
             {
-                receiveData = PB_MsgData.Parser.ParseFrom(obj);
+                int index=0;
+
+                int appID = BitConverter.ToUInt16(buffer,index);
+                index += NetworkConfig.PACK_APPID_LENGTH;
+
+                if(appID!=NetworkConfig.APP_ID)
+                {//不是这个应用的消息
+                    Debug.LogWarning("不是这个应用的消息");
+                    return;
+                }
+
+                ushort length = BitConverter.ToUInt16(buffer,index);
+                index += NetworkConfig.PACK_LEN_LENGTH;
+                if(length!=buffer.Length)
+                {//数据包不完整
+                    Debug.LogWarning("数据包不完整");
+                    return;
+                }
+
+                ushort gameplayID = BitConverter.ToUInt16(buffer,index);
+                index += NetworkConfig.PACK_GAMEPLAY_LENGTH;
+                
+                msgData = PB_MsgData.Parser.ParseFrom(buffer,index,buffer.Length-index);
+
                 lock(_receiveDataLock)
                 {
-                    _reveiveDataQueue.Enqueue(receiveData);
+                    _reveiveDataQueue.Enqueue(new ReceiveUnit()
+                    {
+                        GamePlayID=gameplayID,
+                        MsgData=msgData,
+                    });
                 }
             }
             catch (System.Exception)
@@ -121,15 +189,17 @@ namespace FGUFW.Core
                 {
                     while (_reveiveDataQueue.Count>0)
                     {
-                        broadCaseMsg(_reveiveDataQueue.Dequeue());
+                        var unit = _reveiveDataQueue.Dequeue();
+                        broadCaseMsg(unit.GamePlayID,unit.MsgData);
                     }
                 }
             }
         }
 
-        void broadCaseMsg(PB_MsgData msgData)
+        void broadCaseMsg(ushort gameplayID,PB_MsgData msgData)
         {
             UnityEngine.Debug.Log("cmd "+msgData.Cmd);
+            Messenger.Broadcast(gameplayID,msgData);
         }
 
     }

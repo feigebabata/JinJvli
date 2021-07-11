@@ -14,41 +14,46 @@ namespace GamePlay.StepGrid
 
         public override void Create()
         {
-            Screen.orientation = ScreenOrientation.Portrait;
+            ScreenHelper.Portrait();
             base.Create();
-
             NetworkSyncSystem = new NetworkSyncSystem();
             NetworkSyncSystem.OnInit();
             NetworkSyncSystem.OnEnable();
 
-            MonoBehaviourEvent.I.UpdateListener+=Update;
 
-            loadScene().Start();
+            loadScene();
+
+            testCor = test().Start();
         }
 
         public override void Destroy()
         {
             base.Destroy();
 
-            MonoBehaviourEvent.I.UpdateListener-=Update;
             NetworkSyncSystem.OnRelease();
             NetworkSyncSystem=null;
 
-            Screen.orientation = ScreenOrientation.Landscape;
+            ScreenHelper.Landscape();
+            testCor.Stop();
         }
 
-        private void Update()
+        async void loadScene()
         {
-            NetworkSyncSystem.SendMsg(null,(uint)UnityEngine.Random.Range(1,int.MaxValue));
-        }
-
-        IEnumerator loadScene()
-        {
-            yield return Addressables.LoadSceneAsync("GamePlay.StepGrid");
+            await Addressables.LoadSceneAsync("GamePlay.StepGrid").Task;
             Debug.Log(Screen.orientation);
 
             Module<DefaultModule>().OnInit(this);
             Module<DefaultModule>().OnShow();
+        }
+
+        Coroutine testCor;
+        IEnumerator test()
+        {
+            while (true)
+            {
+                yield return null;
+                NetworkSyncSystem.SendMsg((uint)UnityEngine.Random.Range(1,int.MaxValue),1,null);
+            }
         }
 
 

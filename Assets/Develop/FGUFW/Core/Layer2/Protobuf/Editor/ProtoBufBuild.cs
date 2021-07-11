@@ -40,11 +40,12 @@ public class ProtoBufBuild : Editor
                 }
             }
         }
-        UnityEngine.Debug.LogWarning($"[ProtoBufBuild.Build]选择proto文件数{protoFilePaths.Count}");
+        // UnityEngine.Debug.LogWarning($"[ProtoBufBuild.Build]选择proto文件数{protoFilePaths.Count}");
         string cmd,protoName,csharpDir;
         List<string> cmds;
         foreach (var path in protoFilePaths)
         {
+            // UnityEngine.Debug.LogWarning($"[ProtoBufBuild.Build]等待转换脚本结束 {path}");
             protoName = Path.GetFileName(path);
             csharpDir = path.Replace(protoName,"CSharp");
             if(!Directory.Exists(csharpDir))
@@ -58,7 +59,9 @@ public class ProtoBufBuild : Editor
             cmds.Add(cmd);
             cmd = $"\n{protocPath} ./{protoName}  --csharp_out ./CSharp";
             cmds.Add(cmd);
-            RunCmd(cmds);
+            var outText = RunCmd(cmds);
+           
+            UnityEngine.Debug.LogWarning($"[ProtoBufBuild.Build] {outText} 转换脚本结束 {path}");
         }
         AssetDatabase.Refresh();
     }

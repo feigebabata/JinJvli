@@ -12,30 +12,20 @@ namespace GamePlay.PanoramicImage
         private  PanoramicModuleOutput _moduleOutput;
         public override void OnInit(PlayManager playManager)
         {
-            Cursor.lockState = CursorLockMode.Locked;
             if(IsInit)
             {
                 return;
             }
             base.OnInit(playManager);
+            Cursor.lockState = CursorLockMode.Locked;
             //code
             _moduleInput = new  PanoramicModuleInput(_playManager);
             _moduleOutput = new  PanoramicModuleOutput(_playManager);
             GlobalMessenger.M.Add(GlobalMsgID.OnBackKey,onClickBack);
 
-            switch (Application.platform)
-            {
-                case RuntimePlatform.Android:
-                {
-                    Camera.main.gameObject.AddComponent<GyroRotateCtrl>();
-                }
-                break;
-                default:
-                {
-                    Camera.main.gameObject.AddComponent<MouseRotateCtrl>();
-                }
-                break;
-            }
+            var id = GameLobby.GameLobbyPlayManager.GamePlayID(_playManager.GetType().FullName);
+            string name = GameLobby.GameLobbyPlayManager.GamePlayName(id);
+            Debug.Log($"id={id} name={name}");
         }
 
         public override void OnRelease()

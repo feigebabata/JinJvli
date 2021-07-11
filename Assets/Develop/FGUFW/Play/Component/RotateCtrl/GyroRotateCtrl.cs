@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -37,9 +38,9 @@ namespace FGUFW.Play
 
         float GetOffsetY(float offsetY)
         {
-            if(_touchID==-1)
+            if(Input.touchCount>0)
             {
-                if(Input.touchCount>0)
+                if(_touchID==-1)
                 {
                     foreach (var touch in Input.touches)
                     {
@@ -49,25 +50,35 @@ namespace FGUFW.Play
                         }
                     }
                 }
+                else
+                {
+                    if(!Array.Exists<Touch>(Input.touches,touchMatch))
+                    {
+                        _touchID=-1;
+                        return offsetY;
+                    }
+                    Touch touch = Input.GetTouch(_touchID);
+                    if(touch.phase==TouchPhase.Moved || touch.phase==TouchPhase.Stationary)
+                    {
+                        offsetY += touch.deltaPosition.x/Screen.width*Weight;
+                    }
+                }
             }
             else
             {
-                Touch touch = Input.GetTouch(_touchID);
-                if(touch.phase==TouchPhase.Moved)
-                {
-                    offsetY += Input.touches[0].deltaPosition.x/Screen.width*Weight;
-                }
-                if(touch.phase==TouchPhase.Canceled)
-                {
-                    _touchID=-1;
-                }
+                _touchID=-1;
             }
             return offsetY;
         }
 
+        private bool touchMatch(Touch obj)
+        {
+            return obj.fingerId == _touchID;
+        }
+
         bool touchInRange(Touch touch,Vector4 range)
         {
-            return touch.position.x>range.x && touch.position.x<range.y && touch.position.y>range.z && touch.position.y>range.w;
+            return touch.position.x>range.x && touch.position.x<range.y && touch.position.y>range.z && touch.position.y<range.w;
         }
 
 

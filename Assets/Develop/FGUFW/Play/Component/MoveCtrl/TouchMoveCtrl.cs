@@ -14,10 +14,9 @@ namespace FGUFW.Play
         // Update is called once per frame
         void LateUpdate()
         {
-            
-            if(_touchID==-1)
+            if(Input.touchCount>0)
             {
-                if(Input.touchCount>0)
+                if(_touchID==-1)
                 {
                     foreach (var touch in Input.touches)
                     {
@@ -27,26 +26,35 @@ namespace FGUFW.Play
                         }
                     }
                 }
+                else
+                {
+                    if(!Array.Exists<Touch>(Input.touches,touchMatch))
+                    {
+                        _touchID=-1;
+                        return;
+                    }
+                    Touch touch = Input.GetTouch(_touchID);
+                    if(touch.phase==TouchPhase.Moved || touch.phase==TouchPhase.Stationary)
+                    {
+                        var dir = touch.position-touch.rawPosition;
+                        OnMove?.Invoke(dir.normalized);
+                    }
+                }
             }
             else
             {
-                
-                Touch touch = Input.GetTouch(_touchID);
-                if(touch.phase==TouchPhase.Moved)
-                {
-                    var dir = touch.position-touch.rawPosition;
-                    OnMove?.Invoke(dir.normalized);
-                }
-                if(touch.phase==TouchPhase.Canceled)
-                {
-                    _touchID=-1;
-                }
+                _touchID=-1;
             }
+        }
+
+        private bool touchMatch(Touch obj)
+        {
+            return obj.fingerId == _touchID;
         }
 
         bool touchInRange(Touch touch,Vector4 range)
         {
-            return touch.position.x>range.x && touch.position.x<range.y && touch.position.y>range.z && touch.position.y>range.w;
+            return touch.position.x>range.x && touch.position.x<range.y && touch.position.y>range.z && touch.position.y<range.w;
         }
 
 

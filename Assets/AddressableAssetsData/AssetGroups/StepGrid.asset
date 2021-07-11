@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: StepGrid
+  m_EditorClassIdentifier: 
+  m_GroupName: StepGrid
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 2cba433ba3d73af49abb222082f4da83
+  m_SerializeEntries:
+  - m_GUID: a6f5819c59fc44f4aa26b71a2b9ee5f2
+    m_Address: GamePlay.StepGrid.DefaultModule.StopPanel
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 6814396190063931628, guid: a6f5819c59fc44f4aa26b71a2b9ee5f2, type: 3}
+    m_TargetAsset: {fileID: 6814396190063931628, guid: a6f5819c59fc44f4aa26b71a2b9ee5f2, type: 3}
+  - m_GUID: 0e46a85f492ec6d428b02eb65fe077d6
+    m_Address: GamePlay.StepGrid
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 102900000, guid: 0e46a85f492ec6d428b02eb65fe077d6, type: 3}
+    m_TargetAsset: {fileID: 102900000, guid: 0e46a85f492ec6d428b02eb65fe077d6, type: 3}
+  - m_GUID: fc873d1831c96344082ef2d7df50faba
+    m_Address: GamePlay.StepGrid.DefaultModule.StartPanel
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 5100701766577055287, guid: fc873d1831c96344082ef2d7df50faba, type: 3}
+    m_TargetAsset: {fileID: 5100701766577055287, guid: fc873d1831c96344082ef2d7df50faba, type: 3}
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 4f6af6a87dcbc924fb2e96aeef4f4b43, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: e1ac29207bde2fd448dc27f9d8805f37, type: 2}
+    - {fileID: 11400000, guid: 97abc92591c046f4aae276afa10a6716, type: 2}

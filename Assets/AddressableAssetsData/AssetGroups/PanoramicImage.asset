@@ -10,16 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: Default Local Group
+  m_Name: PanoramicImage
   m_EditorClassIdentifier: 
-  m_GroupName: Default Local Group
+  m_GroupName: PanoramicImage
   m_Data:
     m_SerializedData: []
-  m_GUID: fab24eb7dcf8f84429eadfade4c23a93
-  m_SerializeEntries: []
+  m_GUID: 0651370c588fc774383978716cc91d04
+  m_SerializeEntries:
+  - m_GUID: 5d2a3f19a88e9d940b67d84a6d335008
+    m_Address: GamePlay.PanoramicImage
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 4f6af6a87dcbc924fb2e96aeef4f4b43, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: 6003a3d761c104741894e2b2d2a21244, type: 2}
-    - {fileID: 11400000, guid: f22e0360d810c6b4b96e3bd1988eaaa8, type: 2}
+    - {fileID: 11400000, guid: 8c7962e0f06ae6842ac971c79ea06b6f, type: 2}
+    - {fileID: 11400000, guid: 6f10f9b776b1172439e6b0a68206d639, type: 2}
