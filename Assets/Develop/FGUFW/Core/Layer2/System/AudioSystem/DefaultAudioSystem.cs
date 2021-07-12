@@ -23,7 +23,7 @@ namespace FGUFW.Core
             throw new System.NotImplementedException();
         }
 
-        public void OnInit()
+        public void OnInit(object data)
         {
             _gameObject = new GameObject("DefaultAudioSystem");
             _gameObject.AddComponent<AudioListener>();

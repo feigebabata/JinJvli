@@ -23,9 +23,6 @@ namespace GamePlay.PanoramicImage
             _moduleOutput = new  PanoramicModuleOutput(_playManager);
             GlobalMessenger.M.Add(GlobalMsgID.OnBackKey,onClickBack);
 
-            var id = GameLobby.GameLobbyPlayManager.GamePlayID(_playManager.GetType().FullName);
-            string name = GameLobby.GameLobbyPlayManager.GamePlayName(id);
-            Debug.Log($"id={id} name={name}");
         }
 
         public override void OnRelease()

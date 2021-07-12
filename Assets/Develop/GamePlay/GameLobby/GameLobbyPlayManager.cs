@@ -11,7 +11,7 @@ namespace GamePlay.GameLobby
     public class GameLobbyPlayManager : PlayManager
     {
         static public GameItemDatas GameItemDatas;
-
+        public IMessenger<string,object> Messenger = new Messenger<string,object>();
         public override void Create()
         {
             base.Create();
@@ -36,7 +36,7 @@ namespace GamePlay.GameLobby
             Module<LobbyModule>().OnInit(this);
         }
 
-        public static ushort GamePlayID(string gameplayName)
+        public static ushort GetGamePlayID(string gameplayName)
         {
             for (int i = 0; i < GameItemDatas.Datas.Length; i++)
             {

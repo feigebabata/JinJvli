@@ -21,20 +21,26 @@ MonoBehaviour:
     m_Address: GamePlay.StepGrid.DefaultModule.StopPanel
     m_ReadOnly: 0
     m_SerializedLabels: []
-    m_MainAsset: {fileID: 6814396190063931628, guid: a6f5819c59fc44f4aa26b71a2b9ee5f2, type: 3}
-    m_TargetAsset: {fileID: 6814396190063931628, guid: a6f5819c59fc44f4aa26b71a2b9ee5f2, type: 3}
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
   - m_GUID: 0e46a85f492ec6d428b02eb65fe077d6
     m_Address: GamePlay.StepGrid
     m_ReadOnly: 0
     m_SerializedLabels: []
-    m_MainAsset: {fileID: 102900000, guid: 0e46a85f492ec6d428b02eb65fe077d6, type: 3}
-    m_TargetAsset: {fileID: 102900000, guid: 0e46a85f492ec6d428b02eb65fe077d6, type: 3}
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
   - m_GUID: fc873d1831c96344082ef2d7df50faba
     m_Address: GamePlay.StepGrid.DefaultModule.StartPanel
     m_ReadOnly: 0
     m_SerializedLabels: []
-    m_MainAsset: {fileID: 5100701766577055287, guid: fc873d1831c96344082ef2d7df50faba, type: 3}
-    m_TargetAsset: {fileID: 5100701766577055287, guid: fc873d1831c96344082ef2d7df50faba, type: 3}
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: cfdeb1768df3f7b47badecab88a51d24
+    m_Address: GamePlay.StepGrid.StepGridConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 4f6af6a87dcbc924fb2e96aeef4f4b43, type: 2}
   m_SchemaSet:

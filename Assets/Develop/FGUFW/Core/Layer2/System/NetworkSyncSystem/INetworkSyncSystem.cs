@@ -3,6 +3,7 @@ namespace FGUFW.Core
     public interface INetworkSyncSystem : ISystem
     {
         void SendMsg(uint cmd,ushort gameplayID,object msg);
+        IMessenger<uint,PB_MsgData> Messenger{get;}
     }
 
     static public class NetworkConfig
@@ -12,6 +13,6 @@ namespace FGUFW.Core
         public const ushort PACK_GAMEPLAY_LENGTH = 2;
         public const ushort PACK_APPID_LENGTH = 2;
         public const ushort PACK_LEN_LENGTH = 2;
-        public const int BROADCAST_COUNT = 3;
+        public const int BROADCAST_COUNT = 1;
     }
 }

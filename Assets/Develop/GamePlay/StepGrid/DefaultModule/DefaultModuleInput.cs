@@ -19,6 +19,7 @@ namespace GamePlay.StepGrid
             _playManager.Messenger.Add(StepGridMsgID.Start,onPlayStart);
             _playManager.Messenger.Add(StepGridMsgID.Stop,onPlayStop);
             _playManager.Messenger.Add(StepGridMsgID.PanelLoadComplete,onPanelLoadComplete);
+            _playManager.NetworkSyncSystem.Messenger.Add((ushort)StepGridMsgID.ClickGrid,onClickGrid);
         }
 
         public void Dispose()
@@ -53,10 +54,19 @@ namespace GamePlay.StepGrid
                     GridComp gridComp = raycastHit.transform.GetComponent<GridComp>();
                     if(gridComp)
                     {
-                        _playManager.Messenger.Broadcast(StepGridMsgID.ClickGrid,gridComp.Index);
+                        sendClickMsg(gridComp.Index);
                     }
                 }
             }
+        }
+
+        void sendClickMsg(int gridIndex)
+        {
+            var clickGrid = new PB_ClickGrid()
+            {
+                Index = gridIndex,
+            };
+            _playManager.NetworkSyncSystem.SendMsg((uint)StepGridMsgID.ClickGrid,_playManager.GamePlayID,clickGrid);
         }
 
         private void onPlayStop(object obj)
@@ -100,6 +110,12 @@ namespace GamePlay.StepGrid
         private void onClickRestartBtn()
         {
             _playManager.Messenger.Broadcast(StepGridMsgID.Restart,null);
+        }
+
+        private void onClickGrid(PB_MsgData obj)
+        {
+            var clickGrid = PB_ClickGrid.Parser.ParseFrom(obj.MsgData);
+            _playManager.Messenger.Broadcast(StepGridMsgID.ClickGrid,clickGrid.Index);
         }
     }
 }

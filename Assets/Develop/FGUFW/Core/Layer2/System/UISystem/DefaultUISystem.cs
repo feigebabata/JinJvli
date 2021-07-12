@@ -21,7 +21,7 @@ namespace FGUFW.Core
 
         Transform _uiPanelRoot;
         List<UIPanelData> _uiPanelDatas = new List<UIPanelData>();
-        public void OnInit()
+        public void OnInit(object data)
         {
             _uiPanelRoot = new GameObject("UIPanelRoot").transform;
             GameObject.DontDestroyOnLoad(_uiPanelRoot);

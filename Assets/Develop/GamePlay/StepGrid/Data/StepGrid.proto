@@ -9,9 +9,9 @@ ByteString:bytes 字节数组
 集合关键字 repeated
 */
 
-package StepGrid;
+package GamePlay.StepGrid;
 
-message MSG_NAME
+message PB_ClickGrid
 {
-    uint32 ID=1;
+    int32 Index=1;
 }

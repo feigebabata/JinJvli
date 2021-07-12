@@ -9,9 +9,8 @@ namespace FGUFW.Play
     public abstract class PlayManager
     {
 
-        Dictionary<Type,IPlayModule> _modelDict = new Dictionary<Type, IPlayModule>();
-
-        internal IMessenger<string,object> Messenger = new Messenger<string,object>();
+        private Dictionary<Type,IPlayModule> _modelDict = new Dictionary<Type, IPlayModule>();
+        private ushort _gameplayID = ushort.MaxValue;
 
         public U Module<U>() where U : IPlayModule
         {
@@ -36,6 +35,18 @@ namespace FGUFW.Play
         public virtual void Create()
         {
             SceneLoading.I.Show();
+        }
+
+        public ushort GamePlayID
+        {
+            get
+            {
+                if(_gameplayID==ushort.MaxValue)
+                {
+                    _gameplayID = GamePlay.GameLobby.GameLobbyPlayManager.GetGamePlayID(this.GetType().FullName);
+                }
+                return _gameplayID;
+            }
         }
     }
 }

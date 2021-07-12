@@ -10,6 +10,7 @@ namespace GamePlay.StepGrid
 {
     public class StepGridPlayManager : PlayManager
     {
+        public IMessenger<StepGridMsgID,object> Messenger = new Messenger<StepGridMsgID,object>();
         public INetworkSyncSystem NetworkSyncSystem;
 
         public override void Create()
@@ -17,7 +18,7 @@ namespace GamePlay.StepGrid
             ScreenHelper.Portrait();
             base.Create();
             NetworkSyncSystem = new NetworkSyncSystem();
-            NetworkSyncSystem.OnInit();
+            NetworkSyncSystem.OnInit(GamePlayID);
             NetworkSyncSystem.OnEnable();
 
 

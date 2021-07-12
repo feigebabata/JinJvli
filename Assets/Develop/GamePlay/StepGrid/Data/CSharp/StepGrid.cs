@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace StepGrid {
+namespace GamePlay.StepGrid {
 
   /// <summary>Holder for reflection information generated from StepGrid.proto</summary>
   public static partial class StepGridReflection {
@@ -24,27 +24,27 @@ namespace StepGrid {
     static StepGridReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "Cg5TdGVwR3JpZC5wcm90bxIIU3RlcEdyaWQiFgoITVNHX05BTUUSCgoCSUQY",
-            "ASABKA1iBnByb3RvMw=="));
+            "Cg5TdGVwR3JpZC5wcm90bxIRR2FtZVBsYXkuU3RlcEdyaWQiHQoMUEJfQ2xp",
+            "Y2tHcmlkEg0KBUluZGV4GAEgASgFYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::StepGrid.MSG_NAME), global::StepGrid.MSG_NAME.Parser, new[]{ "ID" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::GamePlay.StepGrid.PB_ClickGrid), global::GamePlay.StepGrid.PB_ClickGrid.Parser, new[]{ "Index" }, null, null, null)
           }));
     }
     #endregion
 
   }
   #region Messages
-  public sealed partial class MSG_NAME : pb::IMessage<MSG_NAME> {
-    private static readonly pb::MessageParser<MSG_NAME> _parser = new pb::MessageParser<MSG_NAME>(() => new MSG_NAME());
+  public sealed partial class PB_ClickGrid : pb::IMessage<PB_ClickGrid> {
+    private static readonly pb::MessageParser<PB_ClickGrid> _parser = new pb::MessageParser<PB_ClickGrid>(() => new PB_ClickGrid());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pb::MessageParser<MSG_NAME> Parser { get { return _parser; } }
+    public static pb::MessageParser<PB_ClickGrid> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::StepGrid.StepGridReflection.Descriptor.MessageTypes[0]; }
+      get { return global::GamePlay.StepGrid.StepGridReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -53,55 +53,55 @@ namespace StepGrid {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public MSG_NAME() {
+    public PB_ClickGrid() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public MSG_NAME(MSG_NAME other) : this() {
-      iD_ = other.iD_;
+    public PB_ClickGrid(PB_ClickGrid other) : this() {
+      index_ = other.index_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public MSG_NAME Clone() {
-      return new MSG_NAME(this);
+    public PB_ClickGrid Clone() {
+      return new PB_ClickGrid(this);
     }
 
-    /// <summary>Field number for the "ID" field.</summary>
-    public const int IDFieldNumber = 1;
-    private uint iD_;
+    /// <summary>Field number for the "Index" field.</summary>
+    public const int IndexFieldNumber = 1;
+    private int index_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public uint ID {
-      get { return iD_; }
+    public int Index {
+      get { return index_; }
       set {
-        iD_ = value;
+        index_ = value;
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
-      return Equals(other as MSG_NAME);
+      return Equals(other as PB_ClickGrid);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(MSG_NAME other) {
+    public bool Equals(PB_ClickGrid other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (ID != other.ID) return false;
+      if (Index != other.Index) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (ID != 0) hash ^= ID.GetHashCode();
+      if (Index != 0) hash ^= Index.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -115,9 +115,9 @@ namespace StepGrid {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (ID != 0) {
+      if (Index != 0) {
         output.WriteRawTag(8);
-        output.WriteUInt32(ID);
+        output.WriteInt32(Index);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -127,8 +127,8 @@ namespace StepGrid {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (ID != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(ID);
+      if (Index != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Index);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -137,12 +137,12 @@ namespace StepGrid {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(MSG_NAME other) {
+    public void MergeFrom(PB_ClickGrid other) {
       if (other == null) {
         return;
       }
-      if (other.ID != 0) {
-        ID = other.ID;
+      if (other.Index != 0) {
+        Index = other.Index;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -156,7 +156,7 @@ namespace StepGrid {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 8: {
-            ID = input.ReadUInt32();
+            Index = input.ReadInt32();
             break;
           }
         }

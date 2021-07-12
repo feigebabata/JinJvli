@@ -10,19 +10,12 @@ namespace GamePlay.StepGrid
 {
     public class DefaultModuleOutput : IDisposable
     {
-        StepGridPlayManager _playManager;
-        GridComp[] _gridComps;
-        Vector2 _gridSize = new Vector2(1,3);
-        Vector2 _spacing = new Vector2(0.1f,0.2f);
-        int _gridGroupWidth = 4;
-        float _acceleration=0.1f;
-        float _startSpeed=2;
-        float _offsetY;
-        Color _defCol = Color.white;
-        Color _selectCol = Color.green;
-        Color _errCol = Color.red;
+        private StepGridPlayManager _playManager;
+        private GridComp[] _gridComps;
+        private StepGridConfig _stepGridConfig;
         private Coroutine _moveCor;
         private GameObject _startPanel,_stopPanel;
+        private float _offsetY;
 
         public DefaultModuleOutput(StepGridPlayManager playManager)
         {
@@ -32,6 +25,12 @@ namespace GamePlay.StepGrid
             _playManager.Messenger.Add(StepGridMsgID.Start,onPlayStart);
             _playManager.Messenger.Add(StepGridMsgID.Stop,onPlayStop);
             _playManager.Messenger.Add(StepGridMsgID.Restart,onPlayRestart);
+            loadStepGridConfig();
+        }
+
+        private async void loadStepGridConfig()
+        {
+            _stepGridConfig = await Addressables.LoadAssetAsync<StepGridConfig>("GamePlay.StepGrid.StepGridConfig").Task;
             initGrids();
 
             loadStartPanel();
@@ -62,7 +61,7 @@ namespace GamePlay.StepGrid
                 _gridComps[i] = gridsT.GetChild(i).GetComponent<GridComp>();
                 _gridComps[i].Index = i;
             }
-            _offsetY = 4 * (_gridSize.y+_spacing.y);
+            _offsetY = 4 * (_stepGridConfig.GridSize.y+_stepGridConfig.Spacing.y);
             setGridsPos();
             
             
@@ -87,7 +86,7 @@ namespace GamePlay.StepGrid
             while (true)
             {
                 yield return new WaitForEndOfFrame();
-                _offsetY = -getMovingDistance(_startSpeed,_acceleration,Time.time-startTime) + 4 * (_gridSize.y+_spacing.y);
+                _offsetY = -getMovingDistance(_stepGridConfig.StartSpeed,_stepGridConfig.Acceleration,Time.time-startTime) + 4 * (_stepGridConfig.GridSize.y+_stepGridConfig.Spacing.y);
                 setGridsPos();
                 checkGridIndex();
             }
@@ -97,7 +96,7 @@ namespace GamePlay.StepGrid
         {
             for (int i = 0; i < _gridComps.Length; i++)
             {
-                var pos = DefaultModule.GetGridPos(_gridComps[i].Index,_gridSize,_spacing,_gridGroupWidth);
+                var pos = DefaultModule.GetGridPos(_gridComps[i].Index,_stepGridConfig.GridSize,_stepGridConfig.Spacing,_stepGridConfig.GridGroupWidth);
                 _gridComps[i].transform.localPosition = new Vector3(pos.x,0,pos.y+_offsetY);
             }
         }
@@ -106,7 +105,7 @@ namespace GamePlay.StepGrid
         {
             for (int i = 0; i < _gridComps.Length; i++)
             {
-                if(_gridComps[i].transform.localPosition.z<_gridSize.y*-0.5f)
+                if(_gridComps[i].transform.localPosition.z<_stepGridConfig.GridSize.y*-0.5f)
                 {
                     _playManager.Messenger.Broadcast(StepGridMsgID.GridDestroy,_gridComps[i].Index);
                     _gridComps[i].Index+=_gridComps.Length;
@@ -123,16 +122,17 @@ namespace GamePlay.StepGrid
                 return g.Index == index;
             });
 
-            girdComp.GetComponent<MeshRenderer>().material.color = DefaultModule.GridIsTarget(index,_playManager.Module<DefaultModule>().GridListData,_gridGroupWidth)?_selectCol:_errCol;
+            girdComp.GetComponent<MeshRenderer>().material.color = DefaultModule.GridIsTarget(index,_playManager.Module<DefaultModule>().GridListData,_stepGridConfig.GridGroupWidth)?_stepGridConfig.SelectCol:_stepGridConfig.ErrCol;
         }
 
         private void setGridColor(GridComp grid,GridListData gridListData)
         {
-            Color color = _defCol;
-            if(DefaultModule.GridIsTarget(grid.Index,gridListData,_gridGroupWidth))
+            Color color = _stepGridConfig.DefCol;
+            if(DefaultModule.GridIsTarget(grid.Index,gridListData,_stepGridConfig.GridGroupWidth))
             {
-                int line = grid.Index/_gridGroupWidth;
-                color = gridListData.LineColor[line%gridListData.LineColor.Length];
+                int line = grid.Index/_stepGridConfig.GridGroupWidth;
+                // color = gridListData.LineColor[line%gridListData.LineColor.Length];
+                color = _stepGridConfig.Setas[line%_stepGridConfig.Setas.Length].Color;
             }
             grid.GetComponent<MeshRenderer>().material.color = color;
         }

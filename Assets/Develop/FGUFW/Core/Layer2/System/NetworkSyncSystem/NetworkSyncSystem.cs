@@ -16,30 +16,30 @@ namespace FGUFW.Core
             public uint Cmd;
             public Google.Protobuf.IMessage Msg;
         }
-        public class ReceiveUnit
-        {
-            public ushort GamePlayID;
-            public PB_MsgData MsgData;
-        }
 
-        public IMessenger<ushort,PB_MsgData> Messenger = new Messenger<ushort,PB_MsgData>();
+        private IMessenger<uint,PB_MsgData> _messenger = new Messenger<uint,PB_MsgData>();
 
         private bool _enable;
         private Queue<SendUnit> _sendDataQueue = new Queue<SendUnit>();
         private object _sendDataLock = new object();
-        private Queue<ReceiveUnit> _reveiveDataQueue = new Queue<ReceiveUnit>();
+        private Queue<PB_MsgData> _reveiveDataQueue = new Queue<PB_MsgData>();
         private object _receiveDataLock = new object();
         private int _playerID;
+        private ushort _gameplayID;
+
+        public IMessenger<uint, PB_MsgData> Messenger => _messenger;
+
         // private byte[] sendBuffer = new byte[1024];
 
-        public void OnInit()
+        public void OnInit(object data)
         {
+            _gameplayID = (ushort)data;
             AndroidBehaviour.I.LockAcquire();
             MonoBehaviourEvent.I.UpdateListener+=Update;
             UdpBroadcastUtility.Init();
             UdpBroadcastUtility.OnReceive += onReceive;
-            var _loopTask = new Thread(loopCheck);
-            _loopTask.Start();
+            
+            loopCheck();
         }
 
         public void OnRelease()
@@ -61,7 +61,7 @@ namespace FGUFW.Core
             _enable = true;
         }
 
-        private void loopCheck()
+        private async void loopCheck()
         {
             // Debug.Log("1");
             while (true)
@@ -72,7 +72,8 @@ namespace FGUFW.Core
             // Debug.Log("2");
                     sendMsg();
                 }
-                Thread.Sleep(1000*1/30);
+                // Thread.Sleep(1000*1/30);
+                await Task.Delay(1000*1/60);
             }
         }
 
@@ -161,17 +162,19 @@ namespace FGUFW.Core
                 }
 
                 ushort gameplayID = BitConverter.ToUInt16(buffer,index);
+                if(gameplayID!=_gameplayID)
+                {//数据包不完整
+                    // Debug.LogWarning("数据包不完整");
+                    return;
+                }
+
                 index += NetworkConfig.PACK_GAMEPLAY_LENGTH;
                 
                 msgData = PB_MsgData.Parser.ParseFrom(buffer,index,buffer.Length-index);
 
                 lock(_receiveDataLock)
                 {
-                    _reveiveDataQueue.Enqueue(new ReceiveUnit()
-                    {
-                        GamePlayID=gameplayID,
-                        MsgData=msgData,
-                    });
+                    _reveiveDataQueue.Enqueue(msgData);
                 }
             }
             catch (System.Exception)
@@ -190,16 +193,15 @@ namespace FGUFW.Core
                     while (_reveiveDataQueue.Count>0)
                     {
                         var unit = _reveiveDataQueue.Dequeue();
-                        broadCaseMsg(unit.GamePlayID,unit.MsgData);
+                        broadCaseMsg(unit);
                     }
                 }
             }
         }
 
-        void broadCaseMsg(ushort gameplayID,PB_MsgData msgData)
+        void broadCaseMsg(PB_MsgData msgData)
         {
-            UnityEngine.Debug.Log("cmd "+msgData.Cmd);
-            Messenger.Broadcast(gameplayID,msgData);
+            Messenger.Broadcast(msgData.Cmd,msgData);
         }
 
     }

@@ -8,6 +8,8 @@ namespace #NAMESPACE#
 {
     public class #CLASSNAME# : PlayManager
     {
+        public IMessenger<string,object> Messenger = new Messenger<string,object>();
+        
         public override void Create()
         {
             base.Create();

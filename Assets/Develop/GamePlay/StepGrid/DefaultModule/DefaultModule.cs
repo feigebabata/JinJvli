@@ -101,7 +101,6 @@ namespace GamePlay.StepGrid
                 data.GridValues[i] = (byte)UnityEngine.Random.Range(0,4);
             }
 
-            data.LineColor = new Color[]{Color.yellow};
             return data;
         }
 
@@ -139,6 +138,5 @@ namespace GamePlay.StepGrid
     public class GridListData
     {
         public byte[] GridValues;
-        public Color[] LineColor;
     }
 }
