@@ -2,7 +2,7 @@ namespace FGUFW.Core
 {
     public interface ISystem
     {
-        void OnInit(object data);
+        void OnInit(params object[] datas);
         void OnRelease();
         void OnEnable();
         void OnDisable();

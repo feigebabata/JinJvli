@@ -12,28 +12,29 @@ namespace FGUFW.Core
         public class SendUnit
         {
             public ushort GamePlayID;
-            public int PlayerID;
             public uint Cmd;
             public Google.Protobuf.IMessage Msg;
         }
 
-        private IMessenger<uint,PB_MsgData> _messenger = new Messenger<uint,PB_MsgData>();
+        private IMessenger<uint,ByteString> _messenger = new Messenger<uint,ByteString>();
 
         private bool _enable;
         private Queue<SendUnit> _sendDataQueue = new Queue<SendUnit>();
         private object _sendDataLock = new object();
-        private Queue<PB_MsgData> _reveiveDataQueue = new Queue<PB_MsgData>();
+        private Queue<PB_Frame> _reveiveDataQueue = new Queue<PB_Frame>();
         private object _receiveDataLock = new object();
-        private int _playerID;
+        private int _playerID=1;
         private ushort _gameplayID;
+        private int _frameIndex=-1;
 
-        public IMessenger<uint, PB_MsgData> Messenger => _messenger;
+        public IMessenger<uint, ByteString> Messenger => _messenger;
 
         // private byte[] sendBuffer = new byte[1024];
 
-        public void OnInit(object data)
+        public void OnInit(params object[] datas)
         {
-            _gameplayID = (ushort)data;
+            _gameplayID = (ushort)datas[0];
+            _playerID = (int)datas[1];
             AndroidBehaviour.I.LockAcquire();
             MonoBehaviourEvent.I.UpdateListener+=Update;
             UdpBroadcastUtility.Init();
@@ -49,6 +50,8 @@ namespace FGUFW.Core
             UdpBroadcastUtility.OnReceive -= onReceive;
             UdpBroadcastUtility.Release();
             AndroidBehaviour.I.LockAcquire();
+            Millisecond=0;
+            printTimeDic.Clear();
         }
 
         public void OnDisable()
@@ -67,60 +70,61 @@ namespace FGUFW.Core
             while (true)
             {
             // Debug.Log(_enable);
-                if(_enable)
+                if(_enable && Application.isPlaying)
                 {
             // Debug.Log("2");
-                    sendMsg();
+                    sendFrameData();
                 }
                 // Thread.Sleep(1000*1/30);
                 await Task.Delay(1000*1/60);
             }
         }
 
-        void sendMsg()
+        void sendFrameData()
         {
-            PB_MsgData msg = new PB_MsgData();
-            msg.Cmd = 0;
-            msg.PlayerID = _playerID; 
+            _frameIndex++;
+            int f_idx = _frameIndex;
+            PB_Frame frame = new PB_Frame();
+            frame.PlayerID = _playerID; 
+            frame.Index = f_idx;
+
             lock(_sendDataLock)
             {
                 while(_sendDataQueue.Count>0)
                 {
                     SendUnit sendUnit = _sendDataQueue.Dequeue();
-                    if(sendUnit.Msg!=null)
-                    {
-                        msg.MsgData = sendUnit.Msg.ToByteString();
-                    }
-                    msg.Cmd = sendUnit.Cmd;
-                    byte[] msgBuffer = msg.ToByteArray();
-                    ushort bufferLength = (ushort)(msgBuffer.Length+NetworkConfig.PACK_HEAD_LENGTH);
-                    byte[] sendBuffer = new byte[bufferLength];
-                    byte[] appIDBuffer = BitConverter.GetBytes(NetworkConfig.APP_ID);
-                    byte[] gpIDBuffer = BitConverter.GetBytes(sendUnit.GamePlayID);
-                    byte[] lengthBuffer = BitConverter.GetBytes(bufferLength);
-
-                    int index = 0,length=0;
-
-                    length = appIDBuffer.Length;
-                    Array.Copy(appIDBuffer,0,sendBuffer,index,length);
-                    index+=length;
-
-                    length = lengthBuffer.Length;
-                    Array.Copy(lengthBuffer,0,sendBuffer,index,length);
-                    index+=length;
-
-                    length = gpIDBuffer.Length;
-                    Array.Copy(gpIDBuffer,0,sendBuffer,index,length);
-                    index+=length;
-
-                    length = msgBuffer.Length;
-                    Array.Copy(msgBuffer,0,sendBuffer,index,length);
-                    index+=length;
-                    for (int i = 0; i < NetworkConfig.BROADCAST_COUNT; i++)
-                    {
-                        UdpBroadcastUtility.Send(sendBuffer);
-                    }
+                    frame.Cmds=sendUnit.Cmd;
+                    frame.MsgDatas=sendUnit.Msg.ToByteString();
                 }
+            }
+            byte[] msgBuffer = frame.ToByteArray();
+            ushort bufferLength = (ushort)(msgBuffer.Length+NetworkConfig.PACK_HEAD_LENGTH);
+            byte[] sendBuffer = new byte[bufferLength];
+            byte[] appIDBuffer = BitConverter.GetBytes(NetworkConfig.APP_ID);
+            byte[] gpIDBuffer = BitConverter.GetBytes(_gameplayID);
+            byte[] lengthBuffer = BitConverter.GetBytes(bufferLength);
+
+            int index = 0,length=0;
+
+            length = appIDBuffer.Length;
+            Array.Copy(appIDBuffer,0,sendBuffer,index,length);
+            index+=length;
+
+            length = lengthBuffer.Length;
+            Array.Copy(lengthBuffer,0,sendBuffer,index,length);
+            index+=length;
+
+            length = gpIDBuffer.Length;
+            Array.Copy(gpIDBuffer,0,sendBuffer,index,length);
+            index+=length;
+
+            length = msgBuffer.Length;
+            Array.Copy(msgBuffer,0,sendBuffer,index,length);
+            index+=length;
+            printTimeDic.Add(f_idx,DateTime.Now.Millisecond);
+            for (int i = 0; i < NetworkConfig.BROADCAST_COUNT; i++)
+            {
+                UdpBroadcastUtility.Send(sendBuffer);
             }
         }
 
@@ -139,7 +143,7 @@ namespace FGUFW.Core
 
         private void onReceive(byte[] buffer)
         {
-            PB_MsgData msgData=null;
+            PB_Frame frame = null;
             try
             {
                 int index=0;
@@ -170,16 +174,17 @@ namespace FGUFW.Core
 
                 index += NetworkConfig.PACK_GAMEPLAY_LENGTH;
                 
-                msgData = PB_MsgData.Parser.ParseFrom(buffer,index,buffer.Length-index);
-
+                frame = PB_Frame.Parser.ParseFrom(buffer,index,buffer.Length-index);
+                
+                Millisecond = DateTime.Now.Millisecond-printTimeDic[frame.Index];
                 lock(_receiveDataLock)
                 {
-                    _reveiveDataQueue.Enqueue(msgData);
+                    _reveiveDataQueue.Enqueue(frame);
                 }
             }
-            catch (System.Exception)
+            catch (System.Exception ex)
             {
-                
+                Debug.LogError(ex);
                 throw;
             }
         }
@@ -199,10 +204,18 @@ namespace FGUFW.Core
             }
         }
 
-        void broadCaseMsg(PB_MsgData msgData)
+        void broadCaseMsg(PB_Frame frame)
         {
-            Messenger.Broadcast(msgData.Cmd,msgData);
+            // for (int i = 0; i < frame.Cmds.Count; i++)
+            // {
+            //     Messenger.Broadcast(frame.Cmds[i],frame.MsgDatas[i]);
+            // }
+            Messenger.Broadcast(frame.Cmds,frame.MsgDatas);
         }
+
+        static Dictionary<int,int> printTimeDic = new Dictionary<int, int>();
+        public static int Millisecond;
+
 
     }
 }

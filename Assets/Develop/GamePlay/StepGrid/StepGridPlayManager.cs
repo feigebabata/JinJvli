@@ -18,13 +18,11 @@ namespace GamePlay.StepGrid
             ScreenHelper.Portrait();
             base.Create();
             NetworkSyncSystem = new NetworkSyncSystem();
-            NetworkSyncSystem.OnInit(GamePlayID);
+            NetworkSyncSystem.OnInit(GamePlayID,0);
             NetworkSyncSystem.OnEnable();
 
 
             loadScene();
-
-            testCor = test().Start();
         }
 
         public override void Destroy()
@@ -35,7 +33,6 @@ namespace GamePlay.StepGrid
             NetworkSyncSystem=null;
 
             ScreenHelper.Landscape();
-            testCor.Stop();
         }
 
         async void loadScene()
@@ -45,16 +42,6 @@ namespace GamePlay.StepGrid
 
             Module<DefaultModule>().OnInit(this);
             Module<DefaultModule>().OnShow();
-        }
-
-        Coroutine testCor;
-        IEnumerator test()
-        {
-            while (true)
-            {
-                yield return null;
-                NetworkSyncSystem.SendMsg((uint)UnityEngine.Random.Range(1,int.MaxValue),1,null);
-            }
         }
 
 

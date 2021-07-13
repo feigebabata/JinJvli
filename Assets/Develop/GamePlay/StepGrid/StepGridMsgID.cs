@@ -3,7 +3,7 @@ namespace GamePlay.StepGrid
 
     public enum StepGridMsgID
     {
-        ClickGrid,
+        ClickGrid=1,
         GridDestroy,
         Start,
         Stop,

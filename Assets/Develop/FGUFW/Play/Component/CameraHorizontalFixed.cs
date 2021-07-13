@@ -19,11 +19,12 @@ using UnityEngine;
     
         void Start()
         {
+            var newViewingCone = new Vector2(Screen.height,Screen.width);
             #if UNITY_EDITOR
-                ViewingCone = new Vector2(Screen.width,Screen.height);
+                newViewingCone = new Vector2(Screen.width,Screen.height);
             #endif
             Camera camera = GetComponent<Camera>();
-            setCameraPos(ViewingCone,new Vector2(Screen.width,Screen.height),camera.fieldOfView,Distance,transform.eulerAngles.x);
+            transform.position = SetCameraPos(ViewingCone,newViewingCone,camera.fieldOfView,Distance,transform.eulerAngles.x,transform.forward,transform.position);
         }
     
         /// <summary>
@@ -34,8 +35,9 @@ using UnityEngine;
         /// <param name="viewingConeAngle">视锥纵向夹角</param>
         /// <param name="viewingConeHeight">视锥与对象高度差</param>
         /// <param name="viewingConeEulerX">视锥X轴旋转</param>
-        void setCameraPos(Vector2 oldViewingCone,Vector2 newViewingCone,float viewingConeAngle,float viewingConeHeight,float viewingConeEulerX)
+        public static Vector3 SetCameraPos(Vector2 oldViewingCone,Vector2 newViewingCone,float viewingConeAngle,float viewingConeHeight,float viewingConeEulerX,Vector3 forward,Vector3 oldPos)
         {
+            Debug.Log($"[FG] 相机位置调整 {oldViewingCone} {newViewingCone} {viewingConeAngle} {viewingConeHeight} {viewingConeEulerX} {forward} {oldPos}");
             float oldAngle = viewingConeHorizontalAngle(oldViewingCone,viewingConeAngle);
             float newAngle = viewingConeHorizontalAngle(newViewingCone,viewingConeAngle);
     
@@ -51,12 +53,11 @@ using UnityEngine;
     
             float length = height - h2;
     
-            Vector3 forward = transform.forward;
             forward = Quaternion.Euler(viewingConeAngle/2,0,0)*forward;
             
-            Vector3 pos = transform.position+forward.normalized*length;
-            transform.position = pos;
-            // Debug.Log(pos);
+            Vector3 pos = oldPos+forward.normalized*length;
+            Debug.Log($"[FG]相机位置 {pos}");
+            return pos;
         }
     
         /// <summary>
@@ -66,7 +67,7 @@ using UnityEngine;
         /// <param name="angle"></param>
         /// <param name="distance"></param>
         /// <returns></returns>
-        Vector2 viewingConeSize(Vector2 viewingCone,float angle,float distance)
+        static Vector2 viewingConeSize(Vector2 viewingCone,float angle,float distance)
         {
             float tan = Mathf.Tan(Mathf.Deg2Rad*angle/2);
             Vector2 size = Vector2.zero;
@@ -81,7 +82,7 @@ using UnityEngine;
         /// <param name="viewingCone"></param>
         /// <param name="angle"></param>
         /// <returns></returns>
-        float viewingConeHorizontalAngle(Vector2 viewingCone,float angle)
+        static float viewingConeHorizontalAngle(Vector2 viewingCone,float angle)
         {
             float h_angle=0;
             float distance=1;
@@ -91,3 +92,5 @@ using UnityEngine;
         }
     }
  }
+ //[FG] 相机位置调整 (1080.0, 2160.0) (1080.0, 2160.0) 60 7.8 45 (0.0, -0.7, 0.7) (0.0, 7.8, -2.1)
+ //[FG]相机位置 (0.0, 7.8, -2.1)

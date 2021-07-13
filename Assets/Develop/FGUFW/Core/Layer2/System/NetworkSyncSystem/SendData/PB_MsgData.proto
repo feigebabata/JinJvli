@@ -17,3 +17,11 @@ message PB_MsgData
     uint32 Cmd=2;
     bytes MsgData=3;
 }
+
+message PB_Frame
+{
+    int32 Index=1;
+    int32 PlayerID=2;
+    uint32 Cmds=3;
+    bytes MsgDatas=4;
+}

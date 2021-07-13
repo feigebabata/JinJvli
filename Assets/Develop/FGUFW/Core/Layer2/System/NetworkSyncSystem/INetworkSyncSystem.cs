@@ -1,9 +1,11 @@
+using Google.Protobuf;
+
 namespace FGUFW.Core
 {
     public interface INetworkSyncSystem : ISystem
     {
         void SendMsg(uint cmd,ushort gameplayID,object msg);
-        IMessenger<uint,PB_MsgData> Messenger{get;}
+        IMessenger<uint,ByteString> Messenger{get;}
     }
 
     static public class NetworkConfig

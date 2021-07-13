@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using FGUFW.Core;
 using FGUFW.Play;
+using Google.Protobuf;
 
 namespace GamePlay.StepGrid
 {
@@ -112,9 +113,9 @@ namespace GamePlay.StepGrid
             _playManager.Messenger.Broadcast(StepGridMsgID.Restart,null);
         }
 
-        private void onClickGrid(PB_MsgData obj)
+        private void onClickGrid(ByteString obj)
         {
-            var clickGrid = PB_ClickGrid.Parser.ParseFrom(obj.MsgData);
+            var clickGrid = PB_ClickGrid.Parser.ParseFrom(obj);
             _playManager.Messenger.Broadcast(StepGridMsgID.ClickGrid,clickGrid.Index);
         }
     }
