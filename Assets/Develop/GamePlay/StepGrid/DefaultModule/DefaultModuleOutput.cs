@@ -61,7 +61,7 @@ namespace GamePlay.StepGrid
                 _gridComps[i] = gridsT.GetChild(i).GetComponent<GridComp>();
                 _gridComps[i].Index = i;
             }
-            _offsetY = 4 * (_stepGridConfig.GridSize.y+_stepGridConfig.Spacing.y);
+            _offsetY = _stepGridConfig.OffsetLine * (_stepGridConfig.GridSize.y+_stepGridConfig.Spacing.y);
             setGridsPos();
             
             
@@ -86,7 +86,7 @@ namespace GamePlay.StepGrid
             while (true)
             {
                 yield return new WaitForEndOfFrame();
-                _offsetY = -getMovingDistance(_stepGridConfig.StartSpeed,_stepGridConfig.Acceleration,Time.time-startTime) + 4 * (_stepGridConfig.GridSize.y+_stepGridConfig.Spacing.y);
+                _offsetY = -getMovingDistance(_stepGridConfig.StartSpeed,_stepGridConfig.Acceleration,Time.time-startTime) + _stepGridConfig.OffsetLine * (_stepGridConfig.GridSize.y+_stepGridConfig.Spacing.y);
                 setGridsPos();
                 checkGridIndex();
             }

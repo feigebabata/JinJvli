@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using UnityEngine.AddressableAssets;
+using FGUFW.Core;
 
 namespace GamePlay.GameLobby
 {
@@ -41,7 +42,9 @@ namespace GamePlay.GameLobby
 
         public IEnumerator ShowItemList()
         {
-            var datas = GameLobbyPlayManager.GameItemDatas.Datas;
+            var loader = Addressables.LoadAssetAsync<GameItemDatas>("GamePlay.GameLobby.GameDatas");
+            yield return loader;
+            var datas = loader.Result.Datas;
             bool ignore = false;
             for (int i = 0; i < datas.Length; i++)
             {
@@ -91,6 +94,21 @@ namespace GamePlay.GameLobby
             var selfDirUp = new Vector3(_mainCamera.transform.forward.x,0,_mainCamera.transform.forward.z).normalized*v2.y*_speed; 
             var selfDirRight = new Vector3(_mainCamera.transform.right.x,0,_mainCamera.transform.right.z).normalized*v2.x*_speed;
             _characterController.SimpleMove(selfDirRight+selfDirUp);
+        }
+
+        private void onClickOnlineGame()
+        {
+
+        }
+
+        void enterOnlineGame()
+        {
+            var endPos = new Vector3(-4,1,-6);
+            var endAngle = new Vector3(-10,0,-90);
+            float aniTime = 2;
+            var character = GameObject.Find("character").transform;
+            character.MoveLocal(endPos,aniTime);
+            Camera.main.transform.RotateLocal(endAngle,aniTime);
         }
 
     }

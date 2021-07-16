@@ -102,5 +102,24 @@ namespace GamePlay.GameLobby
         {
             _playManager.Messenger.Broadcast(GameLobbyMsgID.OnMove,obj);
         }
+
+        public void SetCharacterCtrl(bool enable)
+        {
+            switch (Application.platform)
+            {
+                case RuntimePlatform.Android:
+                {
+                    _mainCamera.gameObject.GetComponent<GyroRotateCtrl>().enabled=enable;
+                    _mainCamera.gameObject.GetComponent<TouchMoveCtrl>().enabled=enable;
+                }
+                break;
+                default:
+                {
+                    _mainCamera.gameObject.GetComponent<MouseRotateCtrl>().enabled=enable;
+                    _mainCamera.gameObject.GetComponent<KeyboardMoveCtrl>().enabled=enable;
+                }
+                break;
+            }
+        }
     }
 }

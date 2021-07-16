@@ -10,7 +10,6 @@ namespace FGUFW.Play
     {
 
         private Dictionary<Type,IPlayModule> _modelDict = new Dictionary<Type, IPlayModule>();
-        private ushort _gameplayID = ushort.MaxValue;
 
         public U Module<U>() where U : IPlayModule
         {
@@ -37,16 +36,7 @@ namespace FGUFW.Play
             SceneLoading.I.Show();
         }
 
-        public ushort GamePlayID
-        {
-            get
-            {
-                if(_gameplayID==ushort.MaxValue)
-                {
-                    _gameplayID = GamePlay.GameLobby.GameLobbyPlayManager.GetGamePlayID(this.GetType().FullName);
-                }
-                return _gameplayID;
-            }
-        }
+        public ushort GamePlayID{get;protected set;}
+
     }
 }

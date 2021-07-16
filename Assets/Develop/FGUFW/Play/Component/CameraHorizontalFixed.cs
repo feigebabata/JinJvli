@@ -17,12 +17,13 @@ using UnityEngine;
         [Header("垂直距离")]
         public float Distance;
     
-        void Start()
+        IEnumerator Start()
         {
-            var newViewingCone = new Vector2(Screen.height,Screen.width);
-            #if UNITY_EDITOR
-                newViewingCone = new Vector2(Screen.width,Screen.height);
-            #endif
+            yield return null;
+            var newViewingCone = new Vector2(Screen.width,Screen.height);
+            // #if UNITY_EDITOR
+            //     newViewingCone = new Vector2(Screen.width,Screen.height);
+            // #endif
             Camera camera = GetComponent<Camera>();
             transform.position = SetCameraPos(ViewingCone,newViewingCone,camera.fieldOfView,Distance,transform.eulerAngles.x,transform.forward,transform.position);
         }

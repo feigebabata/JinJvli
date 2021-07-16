@@ -18,6 +18,9 @@ namespace GamePlay.StepGrid
         [Header("横向格子数")]
         public int GridGroupWidth = 4;
         
+        [Header("起始偏移距离")]
+        public int OffsetLine = 4;
+        
         [Header("移动加速度")]
         public float Acceleration=0.1f;
         

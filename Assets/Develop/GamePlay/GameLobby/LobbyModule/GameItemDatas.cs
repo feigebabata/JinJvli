@@ -14,6 +14,7 @@ namespace GamePlay.GameLobby
     [System.Serializable]
     public struct GameItemData
     {
+        public string Name;
         public string TypeName;
         public Sprite Icon;
         public Vector3 Scale;

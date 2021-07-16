@@ -17,6 +17,7 @@ namespace GamePlay.StepGrid
         {
             ScreenHelper.Portrait();
             base.Create();
+            GamePlayID=12;
             NetworkSyncSystem = new NetworkSyncSystem();
             NetworkSyncSystem.OnInit(GamePlayID,0);
             NetworkSyncSystem.OnEnable();

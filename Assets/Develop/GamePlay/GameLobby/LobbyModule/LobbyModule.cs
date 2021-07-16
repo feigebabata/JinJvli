@@ -29,6 +29,7 @@ namespace GamePlay.GameLobby
             //code
             _playManager.Messenger.Add(GameLobbyMsgID.OnEnterGame,onEnterGame);
             GlobalMessenger.M.Add(GlobalMsgID.OnBackKey,onClickBack);
+            RaycastEvent.I.AddListener(RaycastEventType.Click,onRaycastClick);
 
 
             GameObject.Find("cameraAnim").GetComponent<PlayableDirector>().stopped += onStartAniStop;
@@ -45,6 +46,7 @@ namespace GamePlay.GameLobby
             //code
             _playManager.Messenger.Remove(GameLobbyMsgID.OnEnterGame,onEnterGame);
             GlobalMessenger.M.Remove(GlobalMsgID.OnBackKey,onClickBack);
+            RaycastEvent.I.RemoveListener(RaycastEventType.Click,onRaycastClick);
 
             _moduleInput.Dispose();
             _moduleOutput.Dispose();
@@ -83,6 +85,16 @@ namespace GamePlay.GameLobby
         private void onStartAniStop(PlayableDirector obj)
         {
             _playManager.Messenger.Broadcast(GameLobbyMsgID.OnStartAniStop,null);
+        }
+
+        private void onRaycastClick(RaycastHit obj)
+        {
+            // Debug.Log(obj.transform.name);
+            if(obj.transform.name=="UINode")
+            {
+                _moduleInput.SetCharacterCtrl(false);
+                _playManager.Messenger.Broadcast(GameLobbyMsgID.OnEnterOnlineGame,obj.transform.Find("onlineGameUI"));
+            }
         }
 
     }
