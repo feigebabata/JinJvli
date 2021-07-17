@@ -41,8 +41,7 @@ namespace GamePlay.StepGrid
             await Addressables.LoadSceneAsync("GamePlay.StepGrid").Task;
             Debug.Log(Screen.orientation);
 
-            Module<DefaultModule>().OnInit(this);
-            Module<DefaultModule>().OnShow();
+            Module<DefaultModule>().OnEnable();
         }
 
 

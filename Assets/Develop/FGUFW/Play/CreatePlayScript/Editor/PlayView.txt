@@ -9,6 +9,7 @@ namespace GamePlay.#NAMESPACE#
     public class #CLASSNAME# : IUIPanel
     {
        #NAMESPACE#PlayManager _playManager;
+       
         public string GetPanelAssetPath()
         {//返回UI预制件地址
             return "";

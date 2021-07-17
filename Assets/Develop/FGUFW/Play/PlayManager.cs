@@ -11,12 +11,12 @@ namespace FGUFW.Play
 
         private Dictionary<Type,IPlayModule> _modelDict = new Dictionary<Type, IPlayModule>();
 
-        public U Module<U>() where U : IPlayModule
+        public U Module<U>() where U : PlayModule
         {
             Type type = typeof(U);
             if(!_modelDict.ContainsKey(type))
             {
-                IPlayModule client = Activator.CreateInstance(type) as IPlayModule;
+                PlayModule client = Activator.CreateInstance(type,this) as PlayModule;
                 _modelDict[type]=client;
             }
             return (U)_modelDict[type];
@@ -26,7 +26,8 @@ namespace FGUFW.Play
         {
             foreach (var item in _modelDict)
             {
-                item.Value.OnRelease();
+                item.Value.OnDisable();
+                item.Value.Dispose();
             }
             _modelDict.Clear();
         }

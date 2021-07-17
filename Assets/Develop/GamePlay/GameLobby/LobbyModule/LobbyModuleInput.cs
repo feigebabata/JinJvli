@@ -8,7 +8,7 @@ using FGUFW.Play;
 
 namespace GamePlay.GameLobby
 {
-    public class LobbyModuleInput : IDisposable
+    public class LobbyModuleInput : IModuleInput
     {
         GameLobbyPlayManager _playManager;
         private Camera _mainCamera;
@@ -20,16 +20,26 @@ namespace GamePlay.GameLobby
 
             _mainCamera = GameObject.Find("character/Main Camera").GetComponent<Camera>();
 
-            MonoBehaviourEvent.I.UpdateListener += Update;
-            _playManager.Messenger.Add(GameLobbyMsgID.OnStartAniStop,onStartAniStop);
         }
 
         public void Dispose()
         {
-            MonoBehaviourEvent.I.UpdateListener -= Update;
-            _playManager.Messenger.Remove(GameLobbyMsgID.OnStartAniStop,onStartAniStop);
             _playManager = null;
             _mainCamera=null;
+        }
+
+        public void OnEnable()
+        {
+            MonoBehaviourEvent.I.UpdateListener += Update;
+            _playManager.Messenger.Add(GameLobbyMsgID.OnStartAniStop,onStartAniStop);
+            SetCharacterCtrl(true);
+        }
+
+        public void OnDisable()
+        {
+            MonoBehaviourEvent.I.UpdateListener -= Update;
+            _playManager.Messenger.Remove(GameLobbyMsgID.OnStartAniStop,onStartAniStop);
+            SetCharacterCtrl(false);
         }
 
         private void Update()
@@ -109,14 +119,26 @@ namespace GamePlay.GameLobby
             {
                 case RuntimePlatform.Android:
                 {
-                    _mainCamera.gameObject.GetComponent<GyroRotateCtrl>().enabled=enable;
-                    _mainCamera.gameObject.GetComponent<TouchMoveCtrl>().enabled=enable;
+                    if(_mainCamera.gameObject.GetComponent<GyroRotateCtrl>())
+                    {
+                        _mainCamera.gameObject.GetComponent<GyroRotateCtrl>().enabled = enable;
+                    }
+                    if(_mainCamera.gameObject.GetComponent<TouchMoveCtrl>())
+                    {
+                        _mainCamera.gameObject.GetComponent<TouchMoveCtrl>().enabled = enable;
+                    }
                 }
                 break;
                 default:
                 {
-                    _mainCamera.gameObject.GetComponent<MouseRotateCtrl>().enabled=enable;
-                    _mainCamera.gameObject.GetComponent<KeyboardMoveCtrl>().enabled=enable;
+                    if(_mainCamera.gameObject.GetComponent<MouseRotateCtrl>())
+                    {
+                        _mainCamera.gameObject.GetComponent<MouseRotateCtrl>().enabled = enable;
+                    }
+                    if(_mainCamera.gameObject.GetComponent<KeyboardMoveCtrl>())
+                    {
+                        _mainCamera.gameObject.GetComponent<KeyboardMoveCtrl>().enabled = enable;
+                    }
                 }
                 break;
             }

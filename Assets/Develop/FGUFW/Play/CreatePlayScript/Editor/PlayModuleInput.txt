@@ -7,17 +7,42 @@ using FGUFW.Play;
 
 namespace GamePlay.#NAMESPACE#
 {
-    public class #CLASSNAME# : IDisposable
+    public class #CLASSNAME# : IModuleInput
     {
-        #NAMESPACE#PlayManager _playManager;
+        private #NAMESPACE#PlayManager _playManager;
+        
         public #CLASSNAME#(#NAMESPACE#PlayManager playManager)
         {
             _playManager = playManager;
+            //code
+            
         }
         
         public void Dispose()
         {
+            //code
+
             _playManager = null;
+        }
+
+        public void OnEnable()
+        {
+            addListener();
+
+        }
+
+        public void OnDisable()
+        {
+            removeListener();
+            
+        }
+
+        private void addListener()
+        {
+        }
+
+        private void removeListener()
+        {
         }
 
     }

@@ -14,7 +14,8 @@ namespace FGUFW.Core
         {
             if(_eventDict.ContainsKey(msgID))
             {
-                if(Array.IndexOf(_eventDict[msgID].GetInvocationList(),callback) != -1)
+                var array = _eventDict[msgID].GetInvocationList();
+                if(array!=null && Array.IndexOf(array,callback) != -1)
                 {
                     Logger.w($"[Messenger.Add] msgID={msgID},消息重复监听");
                 }
@@ -47,6 +48,10 @@ namespace FGUFW.Core
             if(_eventDict.ContainsKey(msgID))
             {
                 _eventDict[msgID] -= callback;
+                if(_eventDict[msgID]==null)
+                {
+                    _eventDict.Remove(msgID);
+                }
             }
         }
     }

@@ -22,9 +22,9 @@ MonoBehaviour:
   GridSize: {x: 1, y: 3}
   Spacing: {x: 0.1, y: 0.2}
   GridGroupWidth: 4
-  OffsetLine: 4
+  OffsetLine: 6
   Acceleration: 0.08
-  StartSpeed: 6
+  StartSpeed: 4
   DefCol: {r: 1, g: 1, b: 1, a: 1}
   SelectCol: {r: 0, g: 1, b: 0, a: 1}
   ErrCol: {r: 1, g: 0, b: 0, a: 1}

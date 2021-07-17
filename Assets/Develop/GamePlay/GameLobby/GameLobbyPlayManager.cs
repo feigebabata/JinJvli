@@ -11,6 +11,8 @@ namespace GamePlay.GameLobby
     public class GameLobbyPlayManager : PlayManager
     {
         public IMessenger<string,object> Messenger = new Messenger<string,object>();
+        public GameItemDatas GameDatas;
+
         public override void Create()
         {
             base.Create();
@@ -30,10 +32,11 @@ namespace GamePlay.GameLobby
             Debug.Log("Addressables.BuildPath:"+Addressables.BuildPath);
             Debug.Log("Addressables.RuntimePath:"+Addressables.RuntimePath);
             await Addressables.LoadSceneAsync("GamePlay.GameLobby").Task;
+            GameDatas = await Addressables.LoadAssetAsync<GameItemDatas>("GamePlay.GameLobby.GameDatas").Task;
             SceneLoading.I.Hide();
 
-            Module<LobbyModule>().OnInit(this);
-            Module<OnlineGameModule>().OnInit(this);
+            Module<LobbyModule>().OnEnable();
+            Module<OnlineGameModule>();
         }
     }
 }

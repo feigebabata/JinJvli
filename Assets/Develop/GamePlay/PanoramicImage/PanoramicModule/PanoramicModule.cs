@@ -10,47 +10,22 @@ namespace GamePlay.PanoramicImage
     {
         private  PanoramicModuleInput _moduleInput;
         private  PanoramicModuleOutput _moduleOutput;
-        public override void OnInit(PlayManager playManager)
+
+        public PanoramicModule(PlayManager playManager) : base(playManager)
         {
-            if(IsInit)
-            {
-                return;
-            }
-            base.OnInit(playManager);
             Cursor.lockState = CursorLockMode.Locked;
-            //code
             _moduleInput = new  PanoramicModuleInput(_playManager);
             _moduleOutput = new  PanoramicModuleOutput(_playManager);
             GlobalMessenger.M.Add(GlobalMsgID.OnBackKey,onClickBack);
-
         }
 
-        public override void OnRelease()
+        public override void Dispose()
         {
-            Cursor.lockState = CursorLockMode.None;
-
-            if(!IsInit)
-            {
-                return;
-            }
-            //code
             GlobalMessenger.M.Remove(GlobalMsgID.OnBackKey,onClickBack);
 
             _moduleInput.Dispose();
             _moduleOutput.Dispose();
-            base.OnRelease();
-        }
-
-        public override void OnShow()
-        {
-            base.OnShow();
-            //code
-        }
-
-        public override void OnHide()
-        {
-            base.OnHide();
-            //code
+            base.Dispose();
         }
 
         private void onClickBack(object data)

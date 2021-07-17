@@ -70,7 +70,8 @@ namespace FGUFW.Core
 
         void castEvent(RaycastEventType type)
         {
-            foreach (var listener in _listeners)
+            var list = _listeners.ToArray();
+            foreach (var listener in list)
             {
                 if(type==listener.Type)
                 {
@@ -95,6 +96,7 @@ namespace FGUFW.Core
 
         void castEnd()
         {
+            _clickPoss.Clear();
             _cast=false;
         }
 

@@ -14,14 +14,8 @@ namespace GamePlay.StepGrid
         public GridListData GridListData{get;private set;}
         private HashSet<int> _clickGrids = new HashSet<int>();
 
-        public override void OnInit(PlayManager playManager)
+        public DefaultModule(PlayManager playManager) : base(playManager)
         {
-            if(IsInit)
-            {
-                return;
-            }
-            base.OnInit(playManager);
-            //code
             _moduleInput = new  DefaultModuleInput(_playManager);
             _moduleOutput = new  DefaultModuleOutput(_playManager);
 
@@ -31,17 +25,10 @@ namespace GamePlay.StepGrid
             _playManager.Messenger.Add(StepGridMsgID.Exit,onClickBack);
 
             GridListData = createGridListData(666);
-
         }
 
-        public override void OnRelease()
+        public override void Dispose()
         {
-            if(!IsInit)
-            {
-                return;
-            }
-            //code
-
             GridListData=null;
             GlobalMessenger.M.Remove(GlobalMsgID.OnBackKey,onClickBack);
             _playManager.Messenger.Remove(StepGridMsgID.ClickGrid,onClickGrid);
@@ -49,20 +36,7 @@ namespace GamePlay.StepGrid
             _playManager.Messenger.Remove(StepGridMsgID.Exit,onClickBack);
             _moduleInput.Dispose();
             _moduleOutput.Dispose();
-            base.OnRelease();
-        }
-
-        public override void OnShow()
-        {
-            base.OnShow();
-            //code
-            
-        }
-
-        public override void OnHide()
-        {
-            base.OnHide();
-            //code
+            base.Dispose();
         }
 
         private void onClickBack(object data)

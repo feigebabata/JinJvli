@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using FGUFW.Core;
 using FGUFW.Play;
+using System;
 
 namespace GamePlay.GameLobby
 {
@@ -10,41 +11,33 @@ namespace GamePlay.GameLobby
     {
         private  OnlineGameModuleInput _moduleInput;
         private  OnlineGameModuleOutput _moduleOutput;
-        public override void OnInit(PlayManager playManager)
+
+        public OnlineGameModule(PlayManager playManager) : base(playManager)
         {
-            if(IsInit)
-            {
-                return;
-            }
-            base.OnInit(playManager);
-            //code
             _moduleOutput = new  OnlineGameModuleOutput(_playManager);
             _moduleInput = new  OnlineGameModuleInput(_playManager);
         }
 
-        public override void OnRelease()
+        public override void Dispose()
         {
-            if(!IsInit)
-            {
-                return;
-            }
-            //code
-
             _moduleInput.Dispose();
             _moduleOutput.Dispose();
-            base.OnRelease();
         }
 
-        public override void OnShow()
+        public override void OnEnable()
         {
-            base.OnShow();
-            //code
+            GlobalMessenger.M.Add(GlobalMsgID.OnBackKey,onClickBack);
         }
 
-        public override void OnHide()
+        public override void OnDisable()
         {
-            base.OnHide();
-            //code
+            GlobalMessenger.M.Remove(GlobalMsgID.OnBackKey,onClickBack);
+        }
+
+        private void onClickBack(object obj)
+        {
+            OnDisable();
+            _playManager.Module<LobbyModule>().OnEnable();
         }
 
     }

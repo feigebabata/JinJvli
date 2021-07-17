@@ -10,42 +10,47 @@ namespace GamePlay.#NAMESPACE#
     {
         private  #CLASSNAME#Input _moduleInput;
         private  #CLASSNAME#Output _moduleOutput;
-        public override void OnInit(PlayManager playManager)
+
+        public #CLASSNAME#(PlayManager playManager) : base(playManager)
         {
-            if(IsInit)
-            {
-                return;
-            }
-            base.OnInit(playManager);
-            //code
             _moduleOutput = new  #CLASSNAME#Output(_playManager);
             _moduleInput = new  #CLASSNAME#Input(_playManager);
+            //code
+            
         }
 
-        public override void OnRelease()
+        public override void Dispose()
         {
-            if(!IsInit)
-            {
-                return;
-            }
-            //code
-
             _moduleInput.Dispose();
             _moduleOutput.Dispose();
-            base.OnRelease();
-        }
-
-        public override void OnShow()
-        {
-            base.OnShow();
             //code
+
         }
 
-        public override void OnHide()
+        public override void OnEnable()
         {
-            base.OnHide();
+            _moduleInput.OnEnable();
+            _moduleOutput.OnEnable();
+            addListener();
             //code
+
         }
 
+        public override void OnDisable()
+        {
+            _moduleInput.OnEnable();
+            _moduleOutput.OnEnable();
+            removeListener();
+            //code
+            
+        }
+
+        private void addListener()
+        {
+        }
+
+        private void removeListener()
+        {
+        }
     }
 }

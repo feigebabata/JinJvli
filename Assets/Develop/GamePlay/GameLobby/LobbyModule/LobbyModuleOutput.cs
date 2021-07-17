@@ -4,10 +4,11 @@ using UnityEngine;
 using System;
 using UnityEngine.AddressableAssets;
 using FGUFW.Core;
+using FGUFW.Play;
 
 namespace GamePlay.GameLobby
 {
-    public class LobbyModuleOutput : IDisposable
+    public class LobbyModuleOutput : IModuleOutput
     {
         GameLobbyPlayManager _playManager;
         private Transform _gameItemsParent;
@@ -40,11 +41,19 @@ namespace GamePlay.GameLobby
             _characterController = null;
         }
 
+        public void OnEnable()
+        {
+
+        }
+
+        public void OnDisable()
+        {
+            
+        }
+
         public IEnumerator ShowItemList()
         {
-            var loader = Addressables.LoadAssetAsync<GameItemDatas>("GamePlay.GameLobby.GameDatas");
-            yield return loader;
-            var datas = loader.Result.Datas;
+            var datas = _playManager.GameDatas.Datas;
             bool ignore = false;
             for (int i = 0; i < datas.Length; i++)
             {

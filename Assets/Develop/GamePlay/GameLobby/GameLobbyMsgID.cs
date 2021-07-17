@@ -9,5 +9,7 @@ namespace GamePlay.GameLobby
         public const string OnStartAniStop = "OnStartAniStop";
         public const string OnEnterOnlineGame = "OnEnterOnlineGame";
         public const string OnExitOnlineGame = "OnExitOnlineGame";
+        public const string OnClickCreateGameBtn = "OnClickCreateGameBtn";
+        public const string OnClickOnlineGameBtn = "OnClickOnlineGameBtn";
     }
 }

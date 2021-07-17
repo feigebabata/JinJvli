@@ -27,7 +27,7 @@ namespace GamePlay.PanoramicImage
         {
             await Addressables.LoadSceneAsync("GamePlay.PanoramicImage").Task;
             SceneLoading.I.Hide();
-            Module<PanoramicModule>().OnInit(this);
+            Module<PanoramicModule>().OnEnable();
         }
 
     }

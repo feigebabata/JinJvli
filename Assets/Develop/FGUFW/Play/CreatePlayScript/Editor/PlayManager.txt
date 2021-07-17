@@ -13,13 +13,15 @@ namespace #NAMESPACE#
         public override void Create()
         {
             base.Create();
+            //code
 
         }
         
         public override void Destroy()
         {
+            //code
+
             base.Destroy();
-            
         }
 
     }
