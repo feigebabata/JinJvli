@@ -40,6 +40,7 @@ namespace GamePlay.GameLobby
             _uiComps.Create.onClick.AddListener(onClickCreateBtn);
             _uiComps.Online.onClick.AddListener(onClickOnlineBtn);
             _uiComps.Start.onClick.AddListener(onClickStartBtn);
+            _uiComps.Exit.onClick.AddListener(onClickExitBtn);
         }
 
         void removeUIListener()
@@ -47,6 +48,7 @@ namespace GamePlay.GameLobby
             _uiComps.Create.onClick.RemoveAllListeners();
             _uiComps.Online.onClick.RemoveAllListeners();
             _uiComps.Start.onClick.RemoveAllListeners();
+            _uiComps.Exit.onClick.RemoveAllListeners();
         }
 
         private void onClickOnlineBtn()
@@ -62,6 +64,11 @@ namespace GamePlay.GameLobby
         private void onClickStartBtn()
         {
             _playManager.Messenger.Broadcast(GameLobbyMsgID.OnClickStartBtn,null);
+        }
+
+        private void onClickExitBtn()
+        {
+            _playManager.Messenger.Broadcast(GameLobbyMsgID.OnClickExitBtn,null);
         }
     }
 }

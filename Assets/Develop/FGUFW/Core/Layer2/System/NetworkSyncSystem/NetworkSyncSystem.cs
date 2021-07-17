@@ -98,31 +98,11 @@ namespace FGUFW.Core
                 }
             }
             byte[] msgBuffer = frame.ToByteArray();
-            ushort bufferLength = (ushort)(msgBuffer.Length+NetworkConfig.PACK_HEAD_LENGTH);
-            byte[] sendBuffer = new byte[bufferLength];
-            byte[] appIDBuffer = BitConverter.GetBytes(NetworkConfig.APP_ID);
-            byte[] gpIDBuffer = BitConverter.GetBytes(_gameplayID);
-            byte[] lengthBuffer = BitConverter.GetBytes(bufferLength);
 
-            int index = 0,length=0;
-
-            length = appIDBuffer.Length;
-            Array.Copy(appIDBuffer,0,sendBuffer,index,length);
-            index+=length;
-
-            length = lengthBuffer.Length;
-            Array.Copy(lengthBuffer,0,sendBuffer,index,length);
-            index+=length;
-
-            length = gpIDBuffer.Length;
-            Array.Copy(gpIDBuffer,0,sendBuffer,index,length);
-            index+=length;
-
-            length = msgBuffer.Length;
-            Array.Copy(msgBuffer,0,sendBuffer,index,length);
-            index+=length;
+            var sendBuffer = NetworkUtility.Encode(NetworkUtility.APP_ID,_gameplayID,msgBuffer);
+            
             printTimeDic.Add(f_idx,DateTime.Now.Millisecond);
-            for (int i = 0; i < NetworkConfig.BROADCAST_COUNT; i++)
+            for (int i = 0; i < NetworkUtility.BROADCAST_COUNT; i++)
             {
                 UdpBroadcastUtility.Send(sendBuffer);
             }
@@ -146,40 +126,16 @@ namespace FGUFW.Core
             PB_Frame frame = null;
             try
             {
-                int index=0;
-
-                int appID = BitConverter.ToUInt16(buffer,index);
-                index += NetworkConfig.PACK_APPID_LENGTH;
-
-                if(appID!=NetworkConfig.APP_ID)
-                {//不是这个应用的消息
-                    Debug.LogWarning("不是这个应用的消息");
-                    return;
-                }
-
-                ushort length = BitConverter.ToUInt16(buffer,index);
-                index += NetworkConfig.PACK_LEN_LENGTH;
-                if(length!=buffer.Length)
-                {//数据包不完整
-                    Debug.LogWarning("数据包不完整");
-                    return;
-                }
-
-                ushort gameplayID = BitConverter.ToUInt16(buffer,index);
-                if(gameplayID!=_gameplayID)
-                {//数据包不完整
-                    // Debug.LogWarning("数据包不完整");
-                    return;
-                }
-
-                index += NetworkConfig.PACK_GAMEPLAY_LENGTH;
-                
-                frame = PB_Frame.Parser.ParseFrom(buffer,index,buffer.Length-index);
-                
-                Millisecond = DateTime.Now.Millisecond-printTimeDic[frame.Index];
-                lock(_receiveDataLock)
+                ushort appID=0,length=0,gameplayID=0;
+                if(buffer.Length>=NetworkUtility.PACK_HEAD_LENGTH && NetworkUtility.Decode(buffer,ref appID,ref length,ref gameplayID))
                 {
-                    _reveiveDataQueue.Enqueue(frame);
+                    frame = PB_Frame.Parser.ParseFrom(buffer,NetworkUtility.PACK_HEAD_LENGTH,buffer.Length-NetworkUtility.PACK_HEAD_LENGTH);
+                    
+                    Millisecond = DateTime.Now.Millisecond-printTimeDic[frame.Index];
+                    lock(_receiveDataLock)
+                    {
+                        _reveiveDataQueue.Enqueue(frame);
+                    }
                 }
             }
             catch (System.Exception ex)

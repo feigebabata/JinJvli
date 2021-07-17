@@ -1,0 +1,27 @@
+﻿syntax = "proto3";
+
+/*
+引用库 同级目录文件 import "XXX.proto"; 
+类型proto>>C# 
+uint32:uint 
+sint32:int   含有负值时效率比int32高
+bytes:byte[] 字节数组
+集合关键字 repeated
+int无<32位
+*/
+
+package GamePlay.GameLobby;
+
+message PB_OnlineGame
+{
+    int32 GamePlayID = 1; //房间id
+    int32 GameID = 2;     //游戏id
+    PB_PlayerInfo Player = 3;
+    bool Ready = 4;
+}
+
+message PB_PlayerInfo
+{
+    string Nickname=1;
+    string ID=2;
+}

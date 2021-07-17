@@ -44,5 +44,10 @@ namespace GamePlay.GameLobby
             _playManager.Module<LobbyModule>().OnEnable();
         }
 
+        IEnumerator broadcastOnlineGame()
+        {
+            yield break;
+        }
+
     }
 }

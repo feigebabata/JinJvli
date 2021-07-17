@@ -53,33 +53,22 @@ namespace GamePlay.GameLobby
 
         public IEnumerator ShowItemList()
         {
-            var datas = _playManager.GameDatas.Datas;
             bool ignore = false;
-            for (int i = 0; i < datas.Length; i++)
+            int i = -1;
+            foreach (var gameData in _playManager.GameDatas)
             {
-                if(!Application.isEditor && Application.platform==RuntimePlatform.Android)
-                {
-                    ignore = !datas[i].AndroidPlatform;
-                }
-                else if(!Application.isEditor && Application.platform==RuntimePlatform.WebGLPlayer)
-                {
-                    ignore = !datas[i].WebPlatform;
-                }
-                else if(!Application.isEditor)
-                {
-                    ignore = !datas[i].PCPlatform;
-                }
-
+                i++;
+                ignore = !Application.isEditor && Array.IndexOf<RuntimePlatform>(gameData.Platform,Application.platform)!=-1;
                 if(!ignore)
                 {
                     Transform item = GameObject.Instantiate(_gameItemsParent.GetChild(0),_gameItemsParent,false);
-                    item.GetComponent<GameItem>().TypeName = datas[i].TypeName;
-                    item.GetChild(0).GetComponent<SpriteRenderer>().sprite = datas[i].Icon;
-                    item.GetChild(0).localScale = datas[i].Scale;
+                    item.GetComponent<GameItem>().TypeName = gameData.TypeName;
+                    item.GetChild(0).GetComponent<SpriteRenderer>().sprite = gameData.Icon;
+                    item.GetChild(0).localScale = gameData.Scale;
                     var space = item.localPosition*(1+i*0.02f);
                     item.localPosition = Quaternion.Euler(0,23*i,0) * space;
                     item.gameObject.SetActive(true);
-                    item.name = datas[i].TypeName;
+                    item.name = gameData.TypeName;
                 }
                 yield return new WaitForSeconds(1);
             }
