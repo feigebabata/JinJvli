@@ -26,11 +26,15 @@ namespace GamePlay.GameLobby
 
         public override void OnEnable()
         {
+            _moduleInput.OnEnable();
+            _moduleOutput.OnEnable();
             GlobalMessenger.M.Add(GlobalMsgID.OnBackKey,onClickBack);
         }
 
         public override void OnDisable()
         {
+            _moduleInput.OnDisable();
+            _moduleOutput.OnDisable();
             GlobalMessenger.M.Remove(GlobalMsgID.OnBackKey,onClickBack);
         }
 

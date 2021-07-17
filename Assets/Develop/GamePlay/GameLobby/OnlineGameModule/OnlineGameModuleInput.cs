@@ -8,55 +8,60 @@ using UnityEngine.UI;
 
 namespace GamePlay.GameLobby
 {
-    public class OnlineGameModuleInput : IDisposable
+    public class OnlineGameModuleInput : IModuleInput
     {
         private GameLobbyPlayManager _playManager;
-        private Transform _itemListNode;
-        private Button _createBtn,_onlineBtn; 
+        private OnlineGameUIComps _uiComps;
 
         public OnlineGameModuleInput(GameLobbyPlayManager playManager)
         {
             _playManager = playManager;
             
-            _playManager.Messenger.Add(GameLobbyMsgID.OnEnterOnlineGame,onEnterOnlineGame);
-
-            _itemListNode = GameObject.Find("UINode/onlineGameUI/itemlist/Viewport/Content").transform;
-            _createBtn = GameObject.Find("UINode/onlineGameUI/switch/online").GetComponent<Button>();
-            _onlineBtn = GameObject.Find("UINode/onlineGameUI/switch/create").GetComponent<Button>();
+            _uiComps = GameObject.Find("UINode/onlineGameUI").GetComponent<OnlineGameUIComps>();
         }
 
         public void Dispose()
         {
-            _playManager.Messenger.Remove(GameLobbyMsgID.OnEnterOnlineGame,onEnterOnlineGame);
             _playManager = null;
         }
 
-        void addUIListener()
-        {
-            _createBtn.onClick.AddListener(onClickCreateBtn);
-            _onlineBtn.onClick.AddListener(onClickOnlineBtn);
-        }
-
-        void removeUIListener()
-        {
-            _createBtn.onClick.RemoveAllListeners();
-            _onlineBtn.onClick.RemoveAllListeners();
-        }
-
-        private void onClickOnlineBtn()
-        {
-            _playManager.Messenger.Broadcast(GameLobbyMsgID.OnClickCreateGameBtn,null);
-        }
-
-        private void onClickCreateBtn()
-        {
-            _playManager.Messenger.Broadcast(GameLobbyMsgID.OnClickOnlineGameBtn,null);
-        }
-
-        private void onEnterOnlineGame(object obj)
+        public void OnEnable()
         {
             addUIListener();
         }
 
+        public void OnDisable()
+        {
+            removeUIListener();
+        } 
+
+        void addUIListener()
+        {
+            _uiComps.Create.onClick.AddListener(onClickCreateBtn);
+            _uiComps.Online.onClick.AddListener(onClickOnlineBtn);
+            _uiComps.Start.onClick.AddListener(onClickStartBtn);
+        }
+
+        void removeUIListener()
+        {
+            _uiComps.Create.onClick.RemoveAllListeners();
+            _uiComps.Online.onClick.RemoveAllListeners();
+            _uiComps.Start.onClick.RemoveAllListeners();
+        }
+
+        private void onClickOnlineBtn()
+        {
+            _playManager.Messenger.Broadcast(GameLobbyMsgID.OnClickOnlineGameBtn,null);
+        }
+
+        private void onClickCreateBtn()
+        {
+            _playManager.Messenger.Broadcast(GameLobbyMsgID.OnClickCreateGameBtn,null);
+        }
+
+        private void onClickStartBtn()
+        {
+            _playManager.Messenger.Broadcast(GameLobbyMsgID.OnClickStartBtn,null);
+        }
     }
 }
