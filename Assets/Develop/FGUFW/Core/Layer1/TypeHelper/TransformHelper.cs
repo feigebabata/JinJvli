@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace FGUFW.Core
@@ -63,6 +64,52 @@ namespace FGUFW.Core
                 yield return null;
             }
             transform.rotation = rotation;
+        }
+
+        static public void ResetListItem(this Transform transform,int count,Action<int,Transform> callback)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                Transform item_t = null;
+                if(i<transform.childCount)
+                {
+                    item_t = transform.GetChild(i);
+                }
+                else
+                {
+                    item_t = GameObject.Instantiate(transform.GetChild(0).gameObject,transform).transform;
+                }
+                callback(i,item_t);
+                item_t.gameObject.SetActive(true);
+            }
+            for (int i = count; i < transform.childCount; i++)
+            {
+                transform.GetChild(i).gameObject.SetActive(false);
+            }
+        }
+
+        static public void ResetListItem<T>(this Transform transform,IEnumerator<T> list,Action<T,Transform> callback)
+        {
+            int idx = 0;
+            while (list.MoveNext())
+            {
+                Transform item_t = null;
+                if(idx<transform.childCount)
+                {
+                    item_t = transform.GetChild(idx);
+                }
+                else
+                {
+                    item_t = GameObject.Instantiate(transform.GetChild(0).gameObject,transform).transform;
+                }
+                callback(list.Current,item_t);
+                item_t.gameObject.SetActive(true);
+                idx++;
+            }
+            for (int i = idx; i < transform.childCount; i++)
+            {
+                transform.GetChild(i).gameObject.SetActive(false);
+            }
         }
     }
 }

@@ -14,5 +14,13 @@ namespace FGUFW.Core
                 GlobalMessenger.M.Broadcast(GlobalMsgID.OnBackKey,null);
             }
         }
+
+        /// <summary>
+        /// Callback sent to all game objects before the application is quit.
+        /// </summary>
+        void OnApplicationQuit()
+        {
+            GlobalMessenger.M.Broadcast(GlobalMsgID.OnApplicationQuit,null);
+        }
     }
 }

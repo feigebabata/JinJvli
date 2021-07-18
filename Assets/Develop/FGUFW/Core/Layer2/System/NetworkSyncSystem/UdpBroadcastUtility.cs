@@ -58,7 +58,7 @@ namespace FGUFW.Core
             }
             catch (System.Exception ex)
             {
-                Debug.LogError(ex);
+                // Debug.LogError(ex);
             }
 
             if(receiveBuffer!=null)

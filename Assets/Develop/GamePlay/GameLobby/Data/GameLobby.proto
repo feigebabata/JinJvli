@@ -14,7 +14,7 @@ package GamePlay.GameLobby;
 
 message PB_OnlineGame
 {
-    int32 GamePlayID = 1; //房间id
+    int64 GamePlayID = 1; //房间id
     int32 GameID = 2;     //游戏id
     PB_PlayerInfo Player = 3;
     bool Ready = 4;

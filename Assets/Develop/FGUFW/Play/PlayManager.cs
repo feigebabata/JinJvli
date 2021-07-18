@@ -30,14 +30,21 @@ namespace FGUFW.Play
                 item.Value.Dispose();
             }
             _modelDict.Clear();
+            GlobalMessenger.M.Remove(GlobalMsgID.OnApplicationQuit,onApplicationQuit);
         }
 
         public virtual void Create()
         {
             SceneLoading.I.Show();
+            GlobalMessenger.M.Add(GlobalMsgID.OnApplicationQuit,onApplicationQuit);
         }
 
         public ushort GamePlayID{get;protected set;}
+
+        private void onApplicationQuit(object obj)
+        {
+            Destroy();
+        }
 
     }
 }

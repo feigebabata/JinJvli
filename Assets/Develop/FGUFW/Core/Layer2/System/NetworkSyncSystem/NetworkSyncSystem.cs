@@ -101,7 +101,7 @@ namespace FGUFW.Core
 
             var sendBuffer = NetworkUtility.Encode(NetworkUtility.APP_ID,_gameplayID,msgBuffer);
             
-            printTimeDic.Add(f_idx,DateTime.Now.Millisecond);
+            printTimeDic.Add(f_idx,DateTime.Now.UnixMilliseconds());
             for (int i = 0; i < NetworkUtility.BROADCAST_COUNT; i++)
             {
                 UdpBroadcastUtility.Send(sendBuffer);
@@ -131,7 +131,7 @@ namespace FGUFW.Core
                 {
                     frame = PB_Frame.Parser.ParseFrom(buffer,NetworkUtility.PACK_HEAD_LENGTH,buffer.Length-NetworkUtility.PACK_HEAD_LENGTH);
                     
-                    Millisecond = DateTime.Now.Millisecond-printTimeDic[frame.Index];
+                    Millisecond = DateTime.Now.UnixMilliseconds()-printTimeDic[frame.Index];
                     lock(_receiveDataLock)
                     {
                         _reveiveDataQueue.Enqueue(frame);
@@ -169,8 +169,8 @@ namespace FGUFW.Core
             Messenger.Broadcast(frame.Cmds,frame.MsgDatas);
         }
 
-        static Dictionary<int,int> printTimeDic = new Dictionary<int, int>();
-        public static int Millisecond;
+        static Dictionary<int,long> printTimeDic = new Dictionary<int, long>();
+        public static long Millisecond;
 
 
     }

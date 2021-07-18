@@ -25,7 +25,7 @@ namespace GamePlay.GameLobby {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Cg9HYW1lTG9iYnkucHJvdG8SEkdhbWVQbGF5LkdhbWVMb2JieSJ1Cg1QQl9P",
-            "bmxpbmVHYW1lEhIKCkdhbWVQbGF5SUQYASABKAUSDgoGR2FtZUlEGAIgASgF",
+            "bmxpbmVHYW1lEhIKCkdhbWVQbGF5SUQYASABKAMSDgoGR2FtZUlEGAIgASgF",
             "EjEKBlBsYXllchgDIAEoCzIhLkdhbWVQbGF5LkdhbWVMb2JieS5QQl9QbGF5",
             "ZXJJbmZvEg0KBVJlYWR5GAQgASgIIi0KDVBCX1BsYXllckluZm8SEAoITmlj",
             "a25hbWUYASABKAkSCgoCSUQYAiABKAliBnByb3RvMw=="));
@@ -79,12 +79,12 @@ namespace GamePlay.GameLobby {
 
     /// <summary>Field number for the "GamePlayID" field.</summary>
     public const int GamePlayIDFieldNumber = 1;
-    private int gamePlayID_;
+    private long gamePlayID_;
     /// <summary>
     ///房间id
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int GamePlayID {
+    public long GamePlayID {
       get { return gamePlayID_; }
       set {
         gamePlayID_ = value;
@@ -150,7 +150,7 @@ namespace GamePlay.GameLobby {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (GamePlayID != 0) hash ^= GamePlayID.GetHashCode();
+      if (GamePlayID != 0L) hash ^= GamePlayID.GetHashCode();
       if (GameID != 0) hash ^= GameID.GetHashCode();
       if (player_ != null) hash ^= Player.GetHashCode();
       if (Ready != false) hash ^= Ready.GetHashCode();
@@ -167,9 +167,9 @@ namespace GamePlay.GameLobby {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (GamePlayID != 0) {
+      if (GamePlayID != 0L) {
         output.WriteRawTag(8);
-        output.WriteInt32(GamePlayID);
+        output.WriteInt64(GamePlayID);
       }
       if (GameID != 0) {
         output.WriteRawTag(16);
@@ -191,8 +191,8 @@ namespace GamePlay.GameLobby {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (GamePlayID != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(GamePlayID);
+      if (GamePlayID != 0L) {
+        size += 1 + pb::CodedOutputStream.ComputeInt64Size(GamePlayID);
       }
       if (GameID != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(GameID);
@@ -214,7 +214,7 @@ namespace GamePlay.GameLobby {
       if (other == null) {
         return;
       }
-      if (other.GamePlayID != 0) {
+      if (other.GamePlayID != 0L) {
         GamePlayID = other.GamePlayID;
       }
       if (other.GameID != 0) {
@@ -241,7 +241,7 @@ namespace GamePlay.GameLobby {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 8: {
-            GamePlayID = input.ReadInt32();
+            GamePlayID = input.ReadInt64();
             break;
           }
           case 16: {

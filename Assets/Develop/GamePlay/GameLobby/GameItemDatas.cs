@@ -50,6 +50,7 @@ namespace GamePlay.GameLobby
     public class GameItemData
     {
         public int ID;
+        public int PlayerMaxCount=1;
         public string Name;
         public string TypeName;
         public Sprite Icon;

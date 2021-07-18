@@ -8,5 +8,6 @@ namespace GamePlay.GameLobby
         public Transform ItemList;
         public Button Create,Start,Online,Exit;
         public InputField Nickname;
+        public GameObject NoList;
     }
 }

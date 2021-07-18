@@ -58,7 +58,7 @@ namespace GamePlay.GameLobby
             foreach (var gameData in _playManager.GameDatas)
             {
                 i++;
-                ignore = !Application.isEditor && Array.IndexOf<RuntimePlatform>(gameData.Platform,Application.platform)!=-1;
+                ignore = !Application.isEditor && Array.IndexOf<RuntimePlatform>(gameData.Platform,Application.platform)==-1;
                 if(!ignore)
                 {
                     Transform item = GameObject.Instantiate(_gameItemsParent.GetChild(0),_gameItemsParent,false);

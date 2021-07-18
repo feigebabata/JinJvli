@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Google.Protobuf;
 
 namespace FGUFW.Core
 {
@@ -11,6 +12,7 @@ namespace FGUFW.Core
         public const ushort PACK_APPID_LENGTH = 2;
         public const ushort PACK_LEN_LENGTH = 2;
         public const int BROADCAST_COUNT = 1;
+        public const int GAMELOBBY_GPID = 0;
 
         /// <summary>
         /// 数据包[ appid 2 | length 2 | gameplayid 2 | msgdata ]
@@ -61,5 +63,6 @@ namespace FGUFW.Core
             
             return true;
         }
+        
     }
 }

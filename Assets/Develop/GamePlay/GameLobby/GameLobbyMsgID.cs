@@ -13,5 +13,6 @@ namespace GamePlay.GameLobby
         public const string OnClickOnlineGameBtn = "OnClickOnlineGameBtn";
         public const string OnClickStartBtn = "OnClickStartBtn";
         public const string OnClickExitBtn = "OnClickExitBtn";
+        public const string OnCreateGame = "OnCreateGame";
     }
 }
