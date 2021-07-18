@@ -26,6 +26,7 @@ namespace FGUFW.Core
         private int _playerID=1;
         private ushort _gameplayID;
         private int _frameIndex=-1;
+        private const uint FRAME_CMD = 11;
 
         public IMessenger<uint, ByteString> Messenger => _messenger;
 
@@ -93,14 +94,13 @@ namespace FGUFW.Core
                 while(_sendDataQueue.Count>0)
                 {
                     SendUnit sendUnit = _sendDataQueue.Dequeue();
-                    frame.Cmds=sendUnit.Cmd;
-                    frame.MsgDatas=sendUnit.Msg.ToByteString();
+                    frame.Cmds.Add(sendUnit.Cmd);
+                    frame.MsgDatas.Add(sendUnit.Msg.ToByteString());
                 }
             }
             byte[] msgBuffer = frame.ToByteArray();
 
-            var sendBuffer = NetworkUtility.Encode(NetworkUtility.APP_ID,_gameplayID,msgBuffer);
-            
+            var sendBuffer = NetworkUtility.Encode(NetworkUtility.APP_ID,_gameplayID,FRAME_CMD,msgBuffer);
             printTimeDic.Add(f_idx,DateTime.Now.UnixMilliseconds());
             for (int i = 0; i < NetworkUtility.BROADCAST_COUNT; i++)
             {
@@ -127,14 +127,19 @@ namespace FGUFW.Core
             try
             {
                 ushort appID=0,length=0,gameplayID=0;
-                if(buffer.Length>=NetworkUtility.PACK_HEAD_LENGTH && NetworkUtility.Decode(buffer,ref appID,ref length,ref gameplayID))
+                uint cmd=0;
+                if(buffer.Length>=NetworkUtility.PACK_HEAD_LENGTH && NetworkUtility.Decode(buffer,ref appID,ref length,ref gameplayID,ref cmd))
                 {
-                    frame = PB_Frame.Parser.ParseFrom(buffer,NetworkUtility.PACK_HEAD_LENGTH,buffer.Length-NetworkUtility.PACK_HEAD_LENGTH);
-                    
-                    Millisecond = DateTime.Now.UnixMilliseconds()-printTimeDic[frame.Index];
-                    lock(_receiveDataLock)
+                    // Debug.Log("cmd "+cmd);
+                    if(cmd==FRAME_CMD)
                     {
-                        _reveiveDataQueue.Enqueue(frame);
+                        frame = PB_Frame.Parser.ParseFrom(buffer,NetworkUtility.PACK_HEAD_LENGTH,buffer.Length-NetworkUtility.PACK_HEAD_LENGTH);
+                        // Debug.Log(frame.Index);
+                        Millisecond = DateTime.Now.UnixMilliseconds()-printTimeDic[frame.Index];
+                        lock(_receiveDataLock)
+                        {
+                            _reveiveDataQueue.Enqueue(frame);
+                        }
                     }
                 }
             }
@@ -162,11 +167,11 @@ namespace FGUFW.Core
 
         void broadCaseMsg(PB_Frame frame)
         {
-            // for (int i = 0; i < frame.Cmds.Count; i++)
-            // {
-            //     Messenger.Broadcast(frame.Cmds[i],frame.MsgDatas[i]);
-            // }
-            Messenger.Broadcast(frame.Cmds,frame.MsgDatas);
+            for (int i = 0; i < frame.Cmds.Count; i++)
+            {
+                Messenger.Broadcast(frame.Cmds[i],frame.MsgDatas[i]);
+            }
+            // Messenger.Broadcast(frame.Cmds,frame.MsgDatas);
         }
 
         static Dictionary<int,long> printTimeDic = new Dictionary<int, long>();

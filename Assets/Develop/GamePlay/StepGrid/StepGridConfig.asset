@@ -24,7 +24,7 @@ MonoBehaviour:
   GridGroupWidth: 4
   OffsetLine: 6
   Acceleration: 0.08
-  StartSpeed: 4
+  StartSpeed: 3
   DefCol: {r: 1, g: 1, b: 1, a: 1}
   SelectCol: {r: 0, g: 1, b: 0, a: 1}
   ErrCol: {r: 1, g: 0, b: 0, a: 1}

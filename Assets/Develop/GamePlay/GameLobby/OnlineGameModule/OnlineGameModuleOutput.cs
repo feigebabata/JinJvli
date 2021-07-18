@@ -16,7 +16,7 @@ namespace GamePlay.GameLobby
         GameLobbyPlayManager _playManager;
         private GameItemDatas _gameItemDatas;
         private OnlineGameUIComps _uiComps;
-        private UIListType _currentList = UIListType.CreateGame;
+        private UIListType _currentList = UIListType.OnlineGame;
         private long _selectGamePlayID;
         private Coroutine _resetListItem;
 
@@ -26,7 +26,6 @@ namespace GamePlay.GameLobby
             _playManager.Messenger.Add(GameLobbyMsgID.OnEnterOnlineGame,onEnterOnlineGame);
             _playManager.Messenger.Add(GameLobbyMsgID.OnClickCreateGameBtn,onClickCreateGameBtn);
             _playManager.Messenger.Add(GameLobbyMsgID.OnClickOnlineGameBtn,onClickOnlineGameBtn);
-            _playManager.Messenger.Add(GameLobbyMsgID.OnClickStartBtn,onClickStartBtn);
             _playManager.Messenger.Add(GameLobbyMsgID.OnClickExitBtn,onClickExitBtn);
 
             _uiComps = GameObject.Find("UINode/onlineGameUI").GetComponent<OnlineGameUIComps>();
@@ -42,7 +41,6 @@ namespace GamePlay.GameLobby
             _playManager.Messenger.Remove(GameLobbyMsgID.OnEnterOnlineGame,onEnterOnlineGame);
             _playManager.Messenger.Remove(GameLobbyMsgID.OnClickCreateGameBtn,onClickCreateGameBtn);
             _playManager.Messenger.Remove(GameLobbyMsgID.OnClickOnlineGameBtn,onClickOnlineGameBtn);
-            _playManager.Messenger.Remove(GameLobbyMsgID.OnClickStartBtn,onClickStartBtn);
             _playManager.Messenger.Remove(GameLobbyMsgID.OnClickExitBtn,onClickExitBtn);
             _playManager = null;
         }
@@ -53,6 +51,7 @@ namespace GamePlay.GameLobby
 
         public void OnDisable()
         {
+            GlobalMessenger.M.Remove(GlobalMsgID.OnBackKey,onClickExitBtn);
         }
 
         private void onEnterOnlineGame(object obj)
@@ -65,6 +64,12 @@ namespace GamePlay.GameLobby
             Camera.main.transform.RotateLocal(endAngle,aniTime).Start();
             
             Cursor.lockState = CursorLockMode.None;
+
+            if(obj!=null)
+            {
+                var gamedata = obj as GameItemData;
+                createGamePlay(gamedata);
+            }
         }
 
         private void showGameDataList()
@@ -94,13 +99,9 @@ namespace GamePlay.GameLobby
         {
             PB_OnlineGame gameplay = new PB_OnlineGame();
             gameplay.GameID = data.ID;
-            gameplay.Ready = false;
-            gameplay.Player = new PB_PlayerInfo()
-            {
-                Nickname = ConfigDatabase.GetConfig("nickname",SystemInfo.deviceName),
-                ID = SystemInfo.deviceUniqueIdentifier,
-            };
+            gameplay.Player = _playManager.Module<OnlineGameModule>().SelfInfo;
             gameplay.GamePlayID = DateTime.Now.UnixMilliseconds();
+            gameplay.JoinTime = DateTime.Now.UnixMilliseconds();
 
             _selectGamePlayID = gameplay.GamePlayID;
             showOnlineGameInfo();
@@ -125,7 +126,7 @@ namespace GamePlay.GameLobby
                 {
                     //离线3秒 认为退出
                     // Debug.Log($"{Time.time}  {item.Key}");
-                    if(Time.time-item.Key>3)
+                    if(Time.time-item.Key>1)
                     {
                         removes.Add(item.Key);
                     }
@@ -145,7 +146,7 @@ namespace GamePlay.GameLobby
                     {
                         dataDic.Add(item.Value.GamePlayID,new List<PB_OnlineGame>(){item.Value});
                     }
-                    dataDic[item.Value.GamePlayID].Sort((l,r)=>{return (int)(l.GamePlayID-r.GamePlayID);});
+                    dataDic[item.Value.GamePlayID].Sort((l,r)=>{return (int)(l.JoinTime-r.JoinTime);});
                 }
 
             }
@@ -165,11 +166,19 @@ namespace GamePlay.GameLobby
             }
             content = content + Color.yellow.RichText($"({list.Value.Count}/{gamedata.PlayerMaxCount})");
 
-            item_t.GetChild(0).GetComponent<Image>().sprite = null;
+            item_t.GetChild(0).GetComponent<Image>().sprite = gamedata.Icon;
             item_t.GetChild(1).GetComponent<Text>().text = content;
             item_t.GetComponent<Button>().onClick.RemoveAllListeners();
             item_t.GetComponent<Button>().onClick.AddListener(()=>
             {
+                PB_OnlineGame gameplay = new PB_OnlineGame();
+                gameplay.GameID = list.Value[0].GameID;
+                gameplay.GamePlayID = list.Value[0].GamePlayID;
+                gameplay.JoinTime = DateTime.Now.UnixMilliseconds();
+                gameplay.Player = _playManager.Module<OnlineGameModule>().SelfInfo;
+                _playManager.Messenger.Broadcast(GameLobbyMsgID.OnJoinGame,gameplay);
+
+                _selectGamePlayID = list.Key;
                 showOnlineGameInfo();
             });
         }
@@ -189,19 +198,16 @@ namespace GamePlay.GameLobby
             GlobalMessenger.M.Abort(GlobalMsgID.OnBackKey);
             showOnlineGameList();
             GlobalMessenger.M.Remove(GlobalMsgID.OnBackKey,onClickExitBtn);
-        }
-
-        private void onClickStartBtn(object obj)
-        {
-            
+            _playManager.Messenger.Broadcast(GameLobbyMsgID.OnExitGame,null);
         }
 
         private void onNicknameEndEdit(string arg0)
         {
             if(string.IsNullOrEmpty(arg0) || string.IsNullOrWhiteSpace(arg0))
             {
-                _uiComps.Nickname.text = SystemInfo.deviceName;
+                _uiComps.Nickname.text = _playManager.Module<OnlineGameModule>().SelfInfo.Nickname;
             }
+            _playManager.Module<OnlineGameModule>().SelfInfo.Nickname = _uiComps.Nickname.text;
             ConfigDatabase.SetConfig("nickname",_uiComps.Nickname.text);
         }
 
@@ -222,17 +228,19 @@ namespace GamePlay.GameLobby
                     datas.Add(item.Value);
                 }
             }
+            datas.Sort((l,r)=>{return (int)(l.JoinTime-r.JoinTime);});
             _uiComps.ItemList.ResetListItem<PB_OnlineGame>(datas.GetEnumerator(),resetOnlineGameInfoItem);
         }
 
         private void resetOnlineGameInfoItem(PB_OnlineGame data,Transform item_t)
         {
-            item_t.GetChild(0).GetComponent<Image>().sprite = null;
+            item_t.GetChild(0).GetComponent<Image>().sprite = _playManager.GameDatas[data.GameID].Icon;
             item_t.GetChild(1).GetComponent<Text>().text = data.Player.Nickname;
         }
 
         IEnumerator resetListItem()
         {
+            yield return null;
             while (true)
             {
                 switch (_currentList)
@@ -247,7 +255,7 @@ namespace GamePlay.GameLobby
                         showOnlineGameInfo();
                     break;
                 }
-                yield return new WaitForSeconds(1);
+                yield return new WaitForSeconds(0.5f);
             }
         }
 

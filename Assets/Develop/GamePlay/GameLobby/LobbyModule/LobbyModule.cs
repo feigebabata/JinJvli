@@ -52,14 +52,14 @@ namespace GamePlay.GameLobby
 
         private void addListener()
         {
-            _playManager.Messenger.Add(GameLobbyMsgID.OnEnterGame,onEnterGame);
+            _playManager.Messenger.Add(GameLobbyMsgID.OnEnterSelectGame,onEnterSelectGame);
             GlobalMessenger.M.Add(GlobalMsgID.OnBackKey,onClickBack);
             RaycastEvent.I.AddListener(RaycastEventType.Click,onRaycastClick);
         }
 
         private void removeListener()
         {
-            _playManager.Messenger.Remove(GameLobbyMsgID.OnEnterGame,onEnterGame);
+            _playManager.Messenger.Remove(GameLobbyMsgID.OnEnterSelectGame,onEnterSelectGame);
             GlobalMessenger.M.Remove(GlobalMsgID.OnBackKey,onClickBack);
             RaycastEvent.I.RemoveListener(RaycastEventType.Click,onRaycastClick);
         }
@@ -69,14 +69,14 @@ namespace GamePlay.GameLobby
             Application.Quit();
         }
 
-        private void onEnterGame(object obj)
+        private void onEnterSelectGame(object obj)
         {
-            var typeName = obj as string;
-            Assembly assembly = Assembly.GetExecutingAssembly(); // 获取当前程序集 
-            var playManager = assembly.CreateInstance(typeName) as PlayManager; 
 
-            _playManager.Destroy();
-            playManager.Create();
+            var typeName = obj as string;
+            
+            OnDisable();
+            _playManager.Module<OnlineGameModule>().OnEnable();
+            _playManager.Messenger.Broadcast(GameLobbyMsgID.OnEnterOnlineGame,_playManager.GameDatas[typeName]);
         }
 
         private void onStartAniStop(PlayableDirector obj)

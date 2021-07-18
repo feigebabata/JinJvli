@@ -22,6 +22,6 @@ message PB_Frame
 {
     int32 Index=1;
     int32 PlayerID=2;
-    uint32 Cmds=3;
-    bytes MsgDatas=4;
+    repeated uint32 Cmds=3;
+    repeated bytes MsgDatas=4;
 }

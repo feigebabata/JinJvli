@@ -13,7 +13,7 @@ namespace GamePlay.StepGrid
         public IMessenger<StepGridMsgID,object> Messenger = new Messenger<StepGridMsgID,object>();
         public INetworkSyncSystem NetworkSyncSystem;
 
-        public override void Create()
+        public override void Create(params object[] datas)
         {
             ScreenHelper.Portrait();
             base.Create();

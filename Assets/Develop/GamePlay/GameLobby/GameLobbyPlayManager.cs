@@ -13,7 +13,7 @@ namespace GamePlay.GameLobby
         public IMessenger<string,object> Messenger = new Messenger<string,object>();
         public GameItemDatas GameDatas;
 
-        public override void Create()
+        public override void Create(params object[] datas)
         {
             base.Create();
             loadScene();

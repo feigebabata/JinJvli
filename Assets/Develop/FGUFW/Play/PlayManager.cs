@@ -33,7 +33,7 @@ namespace FGUFW.Play
             GlobalMessenger.M.Remove(GlobalMsgID.OnApplicationQuit,onApplicationQuit);
         }
 
-        public virtual void Create()
+        public virtual void Create(params object[] datas)
         {
             SceneLoading.I.Show();
             GlobalMessenger.M.Add(GlobalMsgID.OnApplicationQuit,onApplicationQuit);

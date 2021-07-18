@@ -50,7 +50,7 @@ namespace GamePlay.GameLobby
             {
                 if(_currectSelect!=null)
                 {
-                    _playManager.Messenger.Broadcast(GameLobbyMsgID.OnEnterGame,_currectSelect.TypeName);
+                    _playManager.Messenger.Broadcast(GameLobbyMsgID.OnEnterSelectGame,_currectSelect.TypeName);
                 }
             }
 

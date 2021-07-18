@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace FGUFW.Core
@@ -29,5 +30,53 @@ namespace FGUFW.Core
 		{
 			return CoroutineCore.I.StartIO(self);
 		}
+
+		static public void Enqueue(this IEnumerator self,int queueID=0)
+		{
+			lock(queueDicLock)
+			{
+				if(runTable==null)
+				{
+					runTable = new HashSet<int>();
+					MonoBehaviourEvent.I.UpdateListener+=Update;
+				}
+				if(!queueDic.ContainsKey(queueID))
+				{
+					queueDic.Add(queueID,new Queue<IEnumerator>());
+				}
+				queueDic[queueID].Enqueue(self);
+			}
+		}
+
+		private static Dictionary<int,Queue<IEnumerator>> queueDic = new Dictionary<int, Queue<IEnumerator>>();
+		private static object queueDicLock = new object();
+		private static HashSet<int> runTable;
+		private static IEnumerator queueCor(IEnumerator cor,int queueID)
+		{
+			runTable.Add(queueID);
+			yield return cor;
+			runTable.Remove(queueID);
+		}
+
+		private static void Update()
+		{
+			int removeKey=int.MinValue;
+			foreach (var item in queueDic)
+			{
+				if(!runTable.Contains(item.Key))
+				{
+					queueCor(item.Value.Dequeue(),item.Key).Start();
+					if(item.Value.Count==0)
+					{
+						removeKey = item.Key;
+					}
+				}
+			}
+			if(removeKey!=int.MinValue)
+			{
+				queueDic.Remove(removeKey);
+			}
+		}
+
     }    
 }

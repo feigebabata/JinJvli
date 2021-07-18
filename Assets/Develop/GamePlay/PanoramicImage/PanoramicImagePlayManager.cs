@@ -10,7 +10,7 @@ namespace GamePlay.PanoramicImage
 {
     public class PanoramicImagePlayManager : PlayManager
     {
-        public override void Create()
+        public override void Create(params object[] datas)
         {
             base.Create();
 

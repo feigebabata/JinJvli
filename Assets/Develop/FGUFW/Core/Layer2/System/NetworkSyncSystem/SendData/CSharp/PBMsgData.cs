@@ -27,7 +27,7 @@ namespace FGUFW.Core {
             "ChBQQl9Nc2dEYXRhLnByb3RvEgpGR1VGVy5Db3JlIjwKClBCX01zZ0RhdGES",
             "EAoIUGxheWVySUQYASABKAUSCwoDQ21kGAIgASgNEg8KB01zZ0RhdGEYAyAB",
             "KAwiSwoIUEJfRnJhbWUSDQoFSW5kZXgYASABKAUSEAoIUGxheWVySUQYAiAB",
-            "KAUSDAoEQ21kcxgDIAEoDRIQCghNc2dEYXRhcxgEIAEoDGIGcHJvdG8z"));
+            "KAUSDAoEQ21kcxgDIAMoDRIQCghNc2dEYXRhcxgEIAMoDGIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
@@ -251,8 +251,8 @@ namespace FGUFW.Core {
     public PB_Frame(PB_Frame other) : this() {
       index_ = other.index_;
       playerID_ = other.playerID_;
-      cmds_ = other.cmds_;
-      msgDatas_ = other.msgDatas_;
+      cmds_ = other.cmds_.Clone();
+      msgDatas_ = other.msgDatas_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -285,24 +285,22 @@ namespace FGUFW.Core {
 
     /// <summary>Field number for the "Cmds" field.</summary>
     public const int CmdsFieldNumber = 3;
-    private uint cmds_;
+    private static readonly pb::FieldCodec<uint> _repeated_cmds_codec
+        = pb::FieldCodec.ForUInt32(26);
+    private readonly pbc::RepeatedField<uint> cmds_ = new pbc::RepeatedField<uint>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public uint Cmds {
+    public pbc::RepeatedField<uint> Cmds {
       get { return cmds_; }
-      set {
-        cmds_ = value;
-      }
     }
 
     /// <summary>Field number for the "MsgDatas" field.</summary>
     public const int MsgDatasFieldNumber = 4;
-    private pb::ByteString msgDatas_ = pb::ByteString.Empty;
+    private static readonly pb::FieldCodec<pb::ByteString> _repeated_msgDatas_codec
+        = pb::FieldCodec.ForBytes(34);
+    private readonly pbc::RepeatedField<pb::ByteString> msgDatas_ = new pbc::RepeatedField<pb::ByteString>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pb::ByteString MsgDatas {
+    public pbc::RepeatedField<pb::ByteString> MsgDatas {
       get { return msgDatas_; }
-      set {
-        msgDatas_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -320,8 +318,8 @@ namespace FGUFW.Core {
       }
       if (Index != other.Index) return false;
       if (PlayerID != other.PlayerID) return false;
-      if (Cmds != other.Cmds) return false;
-      if (MsgDatas != other.MsgDatas) return false;
+      if(!cmds_.Equals(other.cmds_)) return false;
+      if(!msgDatas_.Equals(other.msgDatas_)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -330,8 +328,8 @@ namespace FGUFW.Core {
       int hash = 1;
       if (Index != 0) hash ^= Index.GetHashCode();
       if (PlayerID != 0) hash ^= PlayerID.GetHashCode();
-      if (Cmds != 0) hash ^= Cmds.GetHashCode();
-      if (MsgDatas.Length != 0) hash ^= MsgDatas.GetHashCode();
+      hash ^= cmds_.GetHashCode();
+      hash ^= msgDatas_.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -353,14 +351,8 @@ namespace FGUFW.Core {
         output.WriteRawTag(16);
         output.WriteInt32(PlayerID);
       }
-      if (Cmds != 0) {
-        output.WriteRawTag(24);
-        output.WriteUInt32(Cmds);
-      }
-      if (MsgDatas.Length != 0) {
-        output.WriteRawTag(34);
-        output.WriteBytes(MsgDatas);
-      }
+      cmds_.WriteTo(output, _repeated_cmds_codec);
+      msgDatas_.WriteTo(output, _repeated_msgDatas_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -375,12 +367,8 @@ namespace FGUFW.Core {
       if (PlayerID != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(PlayerID);
       }
-      if (Cmds != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(Cmds);
-      }
-      if (MsgDatas.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeBytesSize(MsgDatas);
-      }
+      size += cmds_.CalculateSize(_repeated_cmds_codec);
+      size += msgDatas_.CalculateSize(_repeated_msgDatas_codec);
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -398,12 +386,8 @@ namespace FGUFW.Core {
       if (other.PlayerID != 0) {
         PlayerID = other.PlayerID;
       }
-      if (other.Cmds != 0) {
-        Cmds = other.Cmds;
-      }
-      if (other.MsgDatas.Length != 0) {
-        MsgDatas = other.MsgDatas;
-      }
+      cmds_.Add(other.cmds_);
+      msgDatas_.Add(other.msgDatas_);
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -423,12 +407,13 @@ namespace FGUFW.Core {
             PlayerID = input.ReadInt32();
             break;
           }
+          case 26:
           case 24: {
-            Cmds = input.ReadUInt32();
+            cmds_.AddEntriesFrom(input, _repeated_cmds_codec);
             break;
           }
           case 34: {
-            MsgDatas = input.ReadBytes();
+            msgDatas_.AddEntriesFrom(input, _repeated_msgDatas_codec);
             break;
           }
         }

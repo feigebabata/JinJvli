@@ -3,7 +3,7 @@ namespace GamePlay.GameLobby
     public static class GameLobbyMsgID
     {
         public const string OnMove = "OnMove";
-        public const string OnEnterGame = "OnEnterGame";
+        public const string OnEnterSelectGame = "OnEnterSelectGame";
         public const string OnSelectGameItem = "OnSelectGameItem";
         public const string OnUnSelectGameItem = "OnUnSelectGameItem";
         public const string OnStartAniStop = "OnStartAniStop";
@@ -14,5 +14,7 @@ namespace GamePlay.GameLobby
         public const string OnClickStartBtn = "OnClickStartBtn";
         public const string OnClickExitBtn = "OnClickExitBtn";
         public const string OnCreateGame = "OnCreateGame";
+        public const string OnJoinGame = "OnJoinGame";
+        public const string OnExitGame = "OnExitGame";
     }
 }
