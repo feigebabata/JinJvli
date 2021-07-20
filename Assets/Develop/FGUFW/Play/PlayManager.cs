@@ -39,7 +39,7 @@ namespace FGUFW.Play
             GlobalMessenger.M.Add(GlobalMsgID.OnApplicationQuit,onApplicationQuit);
         }
 
-        public ushort GamePlayID{get;protected set;}
+        public long GamePlayID{get;protected set;}
 
         private void onApplicationQuit(object obj)
         {

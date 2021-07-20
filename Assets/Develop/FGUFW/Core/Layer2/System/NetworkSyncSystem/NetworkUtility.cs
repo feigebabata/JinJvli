@@ -7,8 +7,8 @@ namespace FGUFW.Core
     static public class NetworkUtility
     {
         public const ushort APP_ID = 333;
-        public const ushort PACK_HEAD_LENGTH = 10;
-        public const ushort PACK_GAMEPLAY_LENGTH = 2;
+        public const ushort PACK_HEAD_LENGTH = 16;
+        public const ushort PACK_GAMEPLAY_LENGTH = 8;
         public const ushort PACK_APPID_LENGTH = 2;
         public const ushort PACK_LEN_LENGTH = 2;
         public const ushort PACK_CMD_LENGTH = 4;
@@ -17,9 +17,9 @@ namespace FGUFW.Core
         public const uint GAMESTART_CMD=1;
 
         /// <summary>
-        /// 数据包[ appid 2 | length 2 | gameplayid 2 |cmd 2| msgdata ]
+        /// 数据包[ appid 2 | length 2 | gameplayid 8 |cmd 4| msgdata ]
         /// </summary>
-        static public byte[] Encode(ushort appID,ushort gameplayID,uint cmd,byte[] msgData)
+        static public byte[] Encode(ushort appID,long gameplayID,uint cmd,byte[] msgData)
         {
             ushort bufferLength = (ushort)(msgData.Length+NetworkUtility.PACK_HEAD_LENGTH);
             byte[] sendBuffer = new byte[bufferLength];
@@ -52,7 +52,7 @@ namespace FGUFW.Core
             return sendBuffer;
         }
 
-        static public bool Decode(byte[] buffer,ref ushort appID,ref ushort length,ref ushort gameplayID,ref uint cmd)
+        static public bool Decode(byte[] buffer,ref ushort appID,ref ushort length,ref long gameplayID,ref uint cmd)
         {
             if(buffer!=null && buffer.Length<NetworkUtility.PACK_HEAD_LENGTH)
             {
@@ -65,7 +65,7 @@ namespace FGUFW.Core
             length = BitConverter.ToUInt16(buffer,index);
             index += NetworkUtility.PACK_LEN_LENGTH;
 
-            gameplayID = BitConverter.ToUInt16(buffer,index);
+            gameplayID = BitConverter.ToInt64(buffer,index);
             index += NetworkUtility.PACK_GAMEPLAY_LENGTH;
 
             cmd = BitConverter.ToUInt32(buffer,index);

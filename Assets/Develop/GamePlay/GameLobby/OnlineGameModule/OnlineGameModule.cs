@@ -110,8 +110,9 @@ namespace GamePlay.GameLobby
         private void onReceive(byte[] obj)
         {
             // Debug.Log(obj.Length);
-            ushort appID=0,length=0,gameplayID=0;
+            ushort appID=0,length=0;
             uint cmd=0;
+            long gameplayID=0;
             if(obj.Length>=NetworkUtility.PACK_HEAD_LENGTH && NetworkUtility.Decode(obj,ref appID,ref length,ref gameplayID,ref cmd))
             {
                 if(appID==NetworkUtility.APP_ID && length==obj.Length && gameplayID==NetworkUtility.GAMELOBBY_GPID)

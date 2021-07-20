@@ -116,13 +116,13 @@ namespace GamePlay.StepGrid
 
         private void onClickGrid(object obj)
         {
-            int index = (int)obj;
+            PB_ClickGrid clickGrid = obj as PB_ClickGrid;
             var girdComp = Array.Find<GridComp>(_gridComps,(g)=>
             {
-                return g.Index == index;
+                return g.Index == clickGrid.Index;
             });
 
-            girdComp.GetComponent<MeshRenderer>().material.color = DefaultModule.GridIsTarget(index,_playManager.Module<DefaultModule>().GridListData,_stepGridConfig.GridGroupWidth)?_stepGridConfig.SelectCol:_stepGridConfig.ErrCol;
+            girdComp.GetComponent<MeshRenderer>().material.color = DefaultModule.GridIsTarget(clickGrid.Index,_playManager.Module<DefaultModule>().GridListData,_stepGridConfig.GridGroupWidth)?_stepGridConfig.SelectCol:_stepGridConfig.ErrCol;
         }
 
         private void setGridColor(GridComp grid,GridListData gridListData)
@@ -132,7 +132,8 @@ namespace GamePlay.StepGrid
             {
                 int line = grid.Index/_stepGridConfig.GridGroupWidth;
                 // color = gridListData.LineColor[line%gridListData.LineColor.Length];
-                color = _stepGridConfig.Setas[line%_stepGridConfig.Setas.Length].Color;
+                int placeID = line%_playManager.GameStart.Players.Count;
+                color = _stepGridConfig.Setas[placeID].Color;
             }
             grid.GetComponent<MeshRenderer>().material.color = color;
         }
@@ -146,7 +147,6 @@ namespace GamePlay.StepGrid
 
         private void onPlayStart(object obj)
         {
-
             for (int i = 0; i < _gridComps.Length; i++)
             {
                 setGridColor(_gridComps[i],_playManager.Module<DefaultModule>().GridListData);

@@ -11,7 +11,7 @@ namespace FGUFW.Core
     {
         public class SendUnit
         {
-            public ushort GamePlayID;
+            public long GamePlayID;
             public uint Cmd;
             public Google.Protobuf.IMessage Msg;
         }
@@ -24,7 +24,7 @@ namespace FGUFW.Core
         private Queue<PB_Frame> _reveiveDataQueue = new Queue<PB_Frame>();
         private object _receiveDataLock = new object();
         private int _playerID=1;
-        private ushort _gameplayID;
+        private long _gameplayID;
         private int _frameIndex=-1;
         private const uint FRAME_CMD = 11;
 
@@ -34,7 +34,7 @@ namespace FGUFW.Core
 
         public void OnInit(params object[] datas)
         {
-            _gameplayID = (ushort)datas[0];
+            _gameplayID = (long)datas[0];
             _playerID = (int)datas[1];
             AndroidBehaviour.I.LockAcquire();
             MonoBehaviourEvent.I.UpdateListener+=Update;
@@ -108,7 +108,7 @@ namespace FGUFW.Core
             }
         }
 
-        public void SendMsg(uint cmd,ushort gameplayID,object msg)
+        public void SendMsg(uint cmd,long gameplayID,object msg)
         {
             lock(_sendDataLock)
             {
@@ -126,8 +126,9 @@ namespace FGUFW.Core
             PB_Frame frame = null;
             try
             {
-                ushort appID=0,length=0,gameplayID=0;
+                ushort appID=0,length=0;
                 uint cmd=0;
+                long gameplayID=0;
                 if(buffer.Length>=NetworkUtility.PACK_HEAD_LENGTH && NetworkUtility.Decode(buffer,ref appID,ref length,ref gameplayID,ref cmd))
                 {
                     // Debug.Log("cmd "+cmd);

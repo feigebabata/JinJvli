@@ -88,12 +88,12 @@ namespace GamePlay.StepGrid
 
         private void onClickGrid(object obj)
         {
-            int index = (int)obj;
-            if(!GridIsTarget(index,GridListData,4))
+            PB_ClickGrid clickGrid = obj as PB_ClickGrid;
+            if(!GridIsTarget(clickGrid.Index,GridListData,4) || clickGrid.PlaceIndex!=_playManager.SelfInfo.PlaceIndex)
             {
                 _playManager.Messenger.Broadcast(StepGridMsgID.Stop,null);
             }
-            _clickGrids.Add(index);
+            _clickGrids.Add(clickGrid.Index);
         }
 
         private void onGridDestroy(object obj)

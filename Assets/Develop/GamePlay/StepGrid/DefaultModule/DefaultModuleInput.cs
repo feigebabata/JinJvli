@@ -66,6 +66,7 @@ namespace GamePlay.StepGrid
             var clickGrid = new PB_ClickGrid()
             {
                 Index = gridIndex,
+                PlaceIndex = _playManager.SelfInfo.PlaceIndex,
             };
             _playManager.NetworkSyncSystem.SendMsg((uint)StepGridMsgID.ClickGrid,_playManager.GamePlayID,clickGrid);
         }
@@ -116,7 +117,7 @@ namespace GamePlay.StepGrid
         private void onClickGrid(ByteString obj)
         {
             var clickGrid = PB_ClickGrid.Parser.ParseFrom(obj);
-            _playManager.Messenger.Broadcast(StepGridMsgID.ClickGrid,clickGrid.Index);
+            _playManager.Messenger.Broadcast(StepGridMsgID.ClickGrid,clickGrid);
         }
     }
 }

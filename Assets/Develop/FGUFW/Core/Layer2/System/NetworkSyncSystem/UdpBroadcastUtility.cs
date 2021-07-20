@@ -31,7 +31,7 @@ namespace FGUFW.Core
         }
 
         /// <summary>
-        /// 发送数据 [ appid 2 | length 2 | gameplayid 2 |cmd 2| msgdata ]
+        /// 发送数据 [ appid 2 | length 2 | gameplayid 8 |cmd 4| msgdata ]
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
