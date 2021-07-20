@@ -9,6 +9,7 @@ bytes:byte[] 字节数组
 集合关键字 repeated
 int无<32位
 */
+import "Develop/FGUFW/Core/Layer2/System/NetworkSyncSystem/Data/MsgData.proto"; 
 
 package GamePlay.GameLobby;
 
@@ -16,26 +17,6 @@ message PB_OnlineGame
 {
     int64 GamePlayID = 1; //房间id
     int32 GameID = 2;     //游戏id
-    PB_PlayerInfo Player = 3;
+    FGUFW.Core.PB_PlayerInfo Player = 3;
     int64 JoinTime = 4;
-}
-
-message PB_PlayerInfo
-{
-    string Nickname=1;
-    string ID=2;
-}
-
-message PB_Player
-{
-    PB_PlayerInfo PlayerInfo=1;
-    int32 PlaceIndex = 2;
-}
-
-message PB_GameStart
-{
-    int64 GamePlayID = 1; //房间id
-    int32 GameID = 2;     //游戏id
-    repeated PB_Player Players = 3;
-
 }

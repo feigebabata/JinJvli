@@ -19,6 +19,8 @@ namespace GamePlay.GameLobby
         private UIListType _currentList = UIListType.OnlineGame;
         private long _selectGamePlayID;
         private Coroutine _resetListItem;
+        private Coroutine _characterMoveCor;
+        private Coroutine _characterRotateCor;
 
         public OnlineGameModuleOutput(GameLobbyPlayManager playManager)
         {
@@ -52,6 +54,8 @@ namespace GamePlay.GameLobby
         public void OnDisable()
         {
             GlobalMessenger.M.Remove(GlobalMsgID.OnBackKey,onClickExitBtn);
+            _characterMoveCor?.Stop();
+            _characterRotateCor?.Stop();
         }
 
         private void onEnterOnlineGame(object obj)
@@ -60,8 +64,8 @@ namespace GamePlay.GameLobby
             var endAngle = new Vector3(-10,-90,0);
             float aniTime = 2;
             var character = GameObject.Find("character").transform;
-            character.MoveLocal(endPos,aniTime).Start();
-            Camera.main.transform.RotateLocal(endAngle,aniTime).Start();
+            _characterMoveCor = character.MoveLocal(endPos,aniTime).Start();
+            _characterRotateCor = Camera.main.transform.RotateLocal(endAngle,aniTime).Start();
             
             Cursor.lockState = CursorLockMode.None;
 

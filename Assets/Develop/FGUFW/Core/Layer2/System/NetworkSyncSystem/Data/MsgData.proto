@@ -11,17 +11,30 @@ bytes:byte[] 字节数组
 
 package FGUFW.Core;
 
-message PB_MsgData
-{
-    int32 PlayerID=1;
-    uint32 Cmd=2;
-    bytes MsgData=3;
-}
-
 message PB_Frame
 {
     int32 Index=1;
     int32 PlayerID=2;
     repeated uint32 Cmds=3;
     repeated bytes MsgDatas=4;
+}
+
+message PB_PlayerInfo
+{
+    string Nickname=1;
+    string ID=2;
+}
+
+message PB_Player
+{
+    PB_PlayerInfo PlayerInfo=1;
+    int32 PlaceIndex = 2;
+}
+
+message PB_GameStart
+{
+    int64 GamePlayID = 1; //房间id
+    int32 GameID = 2;     //游戏id
+    repeated PB_Player Players = 3;
+
 }

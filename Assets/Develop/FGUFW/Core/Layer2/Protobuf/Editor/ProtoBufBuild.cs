@@ -9,7 +9,7 @@ using UnityEngine;
 public class ProtoBufBuild : Editor
 {
     const string Extension = ".proto";
-    const string ProtocPath = "/Develop/FGUFW/Core/Layer2/Protobuf/Editor/protoc-3.7.1-win64/protoc.exe";
+    const string PROTOC_LOCAL_PATH = "/Develop/FGUFW/Core/Layer2/Protobuf/Editor/protoc-3.7.1-win64/protoc.exe";
 
     [MenuItem("Assets/Build Proto")]
     public static void Build()
@@ -20,23 +20,22 @@ public class ProtoBufBuild : Editor
             UnityEngine.Debug.LogWarning("[ProtoBufBuild.Build]没有选择文件");
             return;
         }
-        string protocPath = Application.dataPath+ProtocPath;
+        string protocPath = Application.dataPath+PROTOC_LOCAL_PATH;
         if(!File.Exists(protocPath))
         {
             UnityEngine.Debug.LogError("[ProtoBufBuild.Build] ProtocPath路径错误");
             return;
         }
         List<string> protoFilePaths = new List<string>();
-        string localPath,filePath;
+        string fileLocalPath;
         for (int i = 0; i < objects.Length; i++)
         {
-            localPath = AssetDatabase.GetAssetPath(objects[i]);
-            if(!string.IsNullOrEmpty(localPath))
+            fileLocalPath = AssetDatabase.GetAssetPath(objects[i]);
+            if(!string.IsNullOrEmpty(fileLocalPath))
             {
-                filePath = Application.dataPath.Replace("Assets",localPath);
-                if(Path.GetExtension(filePath)==Extension)
+                if(Path.GetExtension(fileLocalPath)==Extension)
                 {
-                    protoFilePaths.Add(filePath);
+                    protoFilePaths.Add(fileLocalPath.Replace("Assets/",""));
                 }
             }
         }
@@ -48,16 +47,21 @@ public class ProtoBufBuild : Editor
             // UnityEngine.Debug.LogWarning($"[ProtoBufBuild.Build]等待转换脚本结束 {path}");
             protoName = Path.GetFileName(path);
             csharpDir = path.Replace(protoName,"CSharp");
-            if(!Directory.Exists(csharpDir))
+            string csharpDirFull = $"{Application.dataPath}/{csharpDir}";
+            if(!Directory.Exists(csharpDirFull))
             {
-                Directory.CreateDirectory(csharpDir);
+                Directory.CreateDirectory(csharpDirFull);
             }
             cmds = new List<string>();
-            cmd = $"\n{Path.GetPathRoot(path)}";
+            cmd = $"set ASSETS={Application.dataPath}";
             cmds.Add(cmd);
-            cmd = $"\ncd {path.Replace(protoName,"")}";
+            cmd = $"set PROTOC={PROTOC_LOCAL_PATH}";
             cmds.Add(cmd);
-            cmd = $"\n{protocPath} ./{protoName}  --csharp_out ./CSharp";
+            cmd = $"set FILE={path}";
+            cmds.Add(cmd);
+            cmd = $"set CSHARP={csharpDir}";
+            cmds.Add(cmd);
+            cmd = "%ASSETS%%PROTOC% %FILE% --proto_path=%ASSETS% --csharp_out %ASSETS%/%CSHARP%";
             cmds.Add(cmd);
             var outText = RunCmd(cmds);
            
