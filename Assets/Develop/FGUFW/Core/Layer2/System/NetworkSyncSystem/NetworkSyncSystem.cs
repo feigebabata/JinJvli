@@ -23,7 +23,7 @@ namespace FGUFW.Core
         private object _sendDataLock = new object();
         private Queue<PB_Frame> _reveiveDataQueue = new Queue<PB_Frame>();
         private object _receiveDataLock = new object();
-        private int _playerID=1;
+        private int _placeIndex=0;
         private long _gameplayID;
         private int _frameIndex=-1;
         private const uint FRAME_CMD = 11;
@@ -35,7 +35,7 @@ namespace FGUFW.Core
         public void OnInit(params object[] datas)
         {
             _gameplayID = (long)datas[0];
-            _playerID = (int)datas[1];
+            _placeIndex = (int)datas[1];
             AndroidBehaviour.I.LockAcquire();
             MonoBehaviourEvent.I.UpdateListener+=Update;
             UdpBroadcastUtility.Init();
@@ -86,7 +86,7 @@ namespace FGUFW.Core
             _frameIndex++;
             int f_idx = _frameIndex;
             PB_Frame frame = new PB_Frame();
-            frame.PlayerID = _playerID; 
+            frame.PlaceIndex = _placeIndex; 
             frame.Index = f_idx;
 
             lock(_sendDataLock)
@@ -101,6 +101,7 @@ namespace FGUFW.Core
             byte[] msgBuffer = frame.ToByteArray();
 
             var sendBuffer = NetworkUtility.Encode(NetworkUtility.APP_ID,_gameplayID,FRAME_CMD,msgBuffer);
+            // Debug.LogWarning(f_idx);
             printTimeDic.Add(f_idx,DateTime.Now.UnixMilliseconds());
             for (int i = 0; i < NetworkUtility.BROADCAST_COUNT; i++)
             {
@@ -136,7 +137,10 @@ namespace FGUFW.Core
                     {
                         frame = PB_Frame.Parser.ParseFrom(buffer,NetworkUtility.PACK_HEAD_LENGTH,buffer.Length-NetworkUtility.PACK_HEAD_LENGTH);
                         // Debug.Log(frame.Index);
-                        Millisecond = DateTime.Now.UnixMilliseconds()-printTimeDic[frame.Index];
+                        if(_placeIndex==frame.PlaceIndex)
+                        {
+                            Millisecond = DateTime.Now.UnixMilliseconds()-printTimeDic[frame.Index];
+                        }
                         lock(_receiveDataLock)
                         {
                             _reveiveDataQueue.Enqueue(frame);
@@ -175,7 +179,8 @@ namespace FGUFW.Core
             // Messenger.Broadcast(frame.Cmds,frame.MsgDatas);
         }
 
-        static Dictionary<int,long> printTimeDic = new Dictionary<int, long>();
+        private static Dictionary<int,long> printTimeDic = new Dictionary<int, long>();
+        private static object printTimeLock = new object();
         public static long Millisecond;
 
 

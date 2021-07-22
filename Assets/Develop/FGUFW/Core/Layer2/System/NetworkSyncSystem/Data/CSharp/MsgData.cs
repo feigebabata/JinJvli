@@ -25,18 +25,18 @@ namespace FGUFW.Core {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CkVEZXZlbG9wL0ZHVUZXL0NvcmUvTGF5ZXIyL1N5c3RlbS9OZXR3b3JrU3lu",
-            "Y1N5c3RlbS9EYXRhL01zZ0RhdGEucHJvdG8SCkZHVUZXLkNvcmUiSwoIUEJf",
-            "RnJhbWUSDQoFSW5kZXgYASABKAUSEAoIUGxheWVySUQYAiABKAUSDAoEQ21k",
-            "cxgDIAMoDRIQCghNc2dEYXRhcxgEIAMoDCItCg1QQl9QbGF5ZXJJbmZvEhAK",
-            "CE5pY2tuYW1lGAEgASgJEgoKAklEGAIgASgJIk4KCVBCX1BsYXllchItCgpQ",
-            "bGF5ZXJJbmZvGAEgASgLMhkuRkdVRlcuQ29yZS5QQl9QbGF5ZXJJbmZvEhIK",
-            "ClBsYWNlSW5kZXgYAiABKAUiWgoMUEJfR2FtZVN0YXJ0EhIKCkdhbWVQbGF5",
-            "SUQYASABKAMSDgoGR2FtZUlEGAIgASgFEiYKB1BsYXllcnMYAyADKAsyFS5G",
-            "R1VGVy5Db3JlLlBCX1BsYXllcmIGcHJvdG8z"));
+            "Y1N5c3RlbS9EYXRhL01zZ0RhdGEucHJvdG8SCkZHVUZXLkNvcmUiTQoIUEJf",
+            "RnJhbWUSDQoFSW5kZXgYASABKAUSEgoKUGxhY2VJbmRleBgCIAEoBRIMCgRD",
+            "bWRzGAMgAygNEhAKCE1zZ0RhdGFzGAQgAygMIi0KDVBCX1BsYXllckluZm8S",
+            "EAoITmlja25hbWUYASABKAkSCgoCSUQYAiABKAkiTgoJUEJfUGxheWVyEi0K",
+            "ClBsYXllckluZm8YASABKAsyGS5GR1VGVy5Db3JlLlBCX1BsYXllckluZm8S",
+            "EgoKUGxhY2VJbmRleBgCIAEoBSJaCgxQQl9HYW1lU3RhcnQSEgoKR2FtZVBs",
+            "YXlJRBgBIAEoAxIOCgZHYW1lSUQYAiABKAUSJgoHUGxheWVycxgDIAMoCzIV",
+            "LkZHVUZXLkNvcmUuUEJfUGxheWVyYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::FGUFW.Core.PB_Frame), global::FGUFW.Core.PB_Frame.Parser, new[]{ "Index", "PlayerID", "Cmds", "MsgDatas" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::FGUFW.Core.PB_Frame), global::FGUFW.Core.PB_Frame.Parser, new[]{ "Index", "PlaceIndex", "Cmds", "MsgDatas" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::FGUFW.Core.PB_PlayerInfo), global::FGUFW.Core.PB_PlayerInfo.Parser, new[]{ "Nickname", "ID" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::FGUFW.Core.PB_Player), global::FGUFW.Core.PB_Player.Parser, new[]{ "PlayerInfo", "PlaceIndex" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::FGUFW.Core.PB_GameStart), global::FGUFW.Core.PB_GameStart.Parser, new[]{ "GamePlayID", "GameID", "Players" }, null, null, null)
@@ -72,7 +72,7 @@ namespace FGUFW.Core {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public PB_Frame(PB_Frame other) : this() {
       index_ = other.index_;
-      playerID_ = other.playerID_;
+      placeIndex_ = other.placeIndex_;
       cmds_ = other.cmds_.Clone();
       msgDatas_ = other.msgDatas_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -94,14 +94,14 @@ namespace FGUFW.Core {
       }
     }
 
-    /// <summary>Field number for the "PlayerID" field.</summary>
-    public const int PlayerIDFieldNumber = 2;
-    private int playerID_;
+    /// <summary>Field number for the "PlaceIndex" field.</summary>
+    public const int PlaceIndexFieldNumber = 2;
+    private int placeIndex_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int PlayerID {
-      get { return playerID_; }
+    public int PlaceIndex {
+      get { return placeIndex_; }
       set {
-        playerID_ = value;
+        placeIndex_ = value;
       }
     }
 
@@ -139,7 +139,7 @@ namespace FGUFW.Core {
         return true;
       }
       if (Index != other.Index) return false;
-      if (PlayerID != other.PlayerID) return false;
+      if (PlaceIndex != other.PlaceIndex) return false;
       if(!cmds_.Equals(other.cmds_)) return false;
       if(!msgDatas_.Equals(other.msgDatas_)) return false;
       return Equals(_unknownFields, other._unknownFields);
@@ -149,7 +149,7 @@ namespace FGUFW.Core {
     public override int GetHashCode() {
       int hash = 1;
       if (Index != 0) hash ^= Index.GetHashCode();
-      if (PlayerID != 0) hash ^= PlayerID.GetHashCode();
+      if (PlaceIndex != 0) hash ^= PlaceIndex.GetHashCode();
       hash ^= cmds_.GetHashCode();
       hash ^= msgDatas_.GetHashCode();
       if (_unknownFields != null) {
@@ -169,9 +169,9 @@ namespace FGUFW.Core {
         output.WriteRawTag(8);
         output.WriteInt32(Index);
       }
-      if (PlayerID != 0) {
+      if (PlaceIndex != 0) {
         output.WriteRawTag(16);
-        output.WriteInt32(PlayerID);
+        output.WriteInt32(PlaceIndex);
       }
       cmds_.WriteTo(output, _repeated_cmds_codec);
       msgDatas_.WriteTo(output, _repeated_msgDatas_codec);
@@ -186,8 +186,8 @@ namespace FGUFW.Core {
       if (Index != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(Index);
       }
-      if (PlayerID != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(PlayerID);
+      if (PlaceIndex != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(PlaceIndex);
       }
       size += cmds_.CalculateSize(_repeated_cmds_codec);
       size += msgDatas_.CalculateSize(_repeated_msgDatas_codec);
@@ -205,8 +205,8 @@ namespace FGUFW.Core {
       if (other.Index != 0) {
         Index = other.Index;
       }
-      if (other.PlayerID != 0) {
-        PlayerID = other.PlayerID;
+      if (other.PlaceIndex != 0) {
+        PlaceIndex = other.PlaceIndex;
       }
       cmds_.Add(other.cmds_);
       msgDatas_.Add(other.msgDatas_);
@@ -226,7 +226,7 @@ namespace FGUFW.Core {
             break;
           }
           case 16: {
-            PlayerID = input.ReadInt32();
+            PlaceIndex = input.ReadInt32();
             break;
           }
           case 26:

@@ -80,18 +80,31 @@ namespace GamePlay.StepGrid
 
         public static bool GridIsTarget(int index,GridListData gridListData,int gridGroupWidth)
         {
-            int line = index/gridGroupWidth;
+            int line = Index2Line(index,gridGroupWidth);
             int x_i = index%gridGroupWidth;
             int val = gridListData.GridValues[line%gridListData.GridValues.Length];
             return val==x_i;
         }
 
+        public static int Index2Line(int index,int gridGroupWidth)
+        {
+            return index/gridGroupWidth;
+        }
+
+        public static int Index2PlaceID(int index,int gridGroupWidth,int playerCount)
+        {
+            int line = Index2Line(index,gridGroupWidth);
+            return line%playerCount;
+        }
+
         private void onClickGrid(object obj)
         {
             PB_ClickGrid clickGrid = obj as PB_ClickGrid;
-            if(!GridIsTarget(clickGrid.Index,GridListData,4) || clickGrid.PlaceIndex!=_playManager.SelfInfo.PlaceIndex)
+            int placeID = Index2PlaceID(clickGrid.Index,_playManager.StepGridConfig.GridGroupWidth,_playManager.GameStart.Players.Count);
+            Debug.LogWarning(placeID);
+            if(!GridIsTarget(clickGrid.Index,GridListData,_playManager.StepGridConfig.GridGroupWidth) || clickGrid.PlaceIndex!=placeID)
             {
-                _playManager.Messenger.Broadcast(StepGridMsgID.Stop,null);
+                _playManager.Messenger.Broadcast(StepGridMsgID.Stop,placeID);
             }
             _clickGrids.Add(clickGrid.Index);
         }
@@ -99,9 +112,11 @@ namespace GamePlay.StepGrid
         private void onGridDestroy(object obj)
         {
             int index = (int)obj;
+            int line = index/_playManager.StepGridConfig.GridGroupWidth;
+            int placeID = line%_playManager.GameStart.Players.Count;
             if(GridIsTarget(index,GridListData,4) && !_clickGrids.Contains(index))
             {
-                _playManager.Messenger.Broadcast(StepGridMsgID.Stop,null);
+                _playManager.Messenger.Broadcast(StepGridMsgID.Stop,placeID);
             }
             _clickGrids.Remove(index);
         }

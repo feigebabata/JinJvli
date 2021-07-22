@@ -148,7 +148,7 @@ namespace GamePlay.GameLobby
             var playManager = assembly.CreateInstance(gameData.TypeName) as PlayManager; 
 
             _playManager.Destroy();
-            playManager.Create(gameStart);
+            playManager.Create(gameStart,SelfInfo);
         }
 
         private void addOnlineGame(float time,PB_OnlineGame onlineGame)

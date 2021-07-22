@@ -12,7 +12,6 @@ namespace GamePlay.StepGrid
     {
         private StepGridPlayManager _playManager;
         private GridComp[] _gridComps;
-        private StepGridConfig _stepGridConfig;
         private Coroutine _moveCor;
         private GameObject _startPanel,_stopPanel;
         private float _offsetY;
@@ -25,12 +24,7 @@ namespace GamePlay.StepGrid
             _playManager.Messenger.Add(StepGridMsgID.Start,onPlayStart);
             _playManager.Messenger.Add(StepGridMsgID.Stop,onPlayStop);
             _playManager.Messenger.Add(StepGridMsgID.Restart,onPlayRestart);
-            loadStepGridConfig();
-        }
-
-        private async void loadStepGridConfig()
-        {
-            _stepGridConfig = await Addressables.LoadAssetAsync<StepGridConfig>("GamePlay.StepGrid.StepGridConfig").Task;
+            
             initGrids();
 
             loadStartPanel();
@@ -61,7 +55,7 @@ namespace GamePlay.StepGrid
                 _gridComps[i] = gridsT.GetChild(i).GetComponent<GridComp>();
                 _gridComps[i].Index = i;
             }
-            _offsetY = _stepGridConfig.OffsetLine * (_stepGridConfig.GridSize.y+_stepGridConfig.Spacing.y);
+            _offsetY = _playManager.StepGridConfig.OffsetLine * (_playManager.StepGridConfig.GridSize.y+_playManager.StepGridConfig.Spacing.y);
             setGridsPos();
             
             
@@ -86,7 +80,7 @@ namespace GamePlay.StepGrid
             while (true)
             {
                 yield return new WaitForEndOfFrame();
-                _offsetY = -getMovingDistance(_stepGridConfig.StartSpeed,_stepGridConfig.Acceleration,Time.time-startTime) + _stepGridConfig.OffsetLine * (_stepGridConfig.GridSize.y+_stepGridConfig.Spacing.y);
+                _offsetY = -getMovingDistance(_playManager.StepGridConfig.StartSpeed,_playManager.StepGridConfig.Acceleration,Time.time-startTime) + _playManager.StepGridConfig.OffsetLine * (_playManager.StepGridConfig.GridSize.y+_playManager.StepGridConfig.Spacing.y);
                 setGridsPos();
                 checkGridIndex();
             }
@@ -96,7 +90,7 @@ namespace GamePlay.StepGrid
         {
             for (int i = 0; i < _gridComps.Length; i++)
             {
-                var pos = DefaultModule.GetGridPos(_gridComps[i].Index,_stepGridConfig.GridSize,_stepGridConfig.Spacing,_stepGridConfig.GridGroupWidth);
+                var pos = DefaultModule.GetGridPos(_gridComps[i].Index,_playManager.StepGridConfig.GridSize,_playManager.StepGridConfig.Spacing,_playManager.StepGridConfig.GridGroupWidth);
                 _gridComps[i].transform.localPosition = new Vector3(pos.x,0,pos.y+_offsetY);
             }
         }
@@ -105,7 +99,7 @@ namespace GamePlay.StepGrid
         {
             for (int i = 0; i < _gridComps.Length; i++)
             {
-                if(_gridComps[i].transform.localPosition.z<_stepGridConfig.GridSize.y*-0.5f)
+                if(_gridComps[i].transform.localPosition.z<_playManager.StepGridConfig.GridSize.y*-0.5f)
                 {
                     _playManager.Messenger.Broadcast(StepGridMsgID.GridDestroy,_gridComps[i].Index);
                     _gridComps[i].Index+=_gridComps.Length;
@@ -122,24 +116,24 @@ namespace GamePlay.StepGrid
                 return g.Index == clickGrid.Index;
             });
 
-            girdComp.GetComponent<MeshRenderer>().material.color = DefaultModule.GridIsTarget(clickGrid.Index,_playManager.Module<DefaultModule>().GridListData,_stepGridConfig.GridGroupWidth)?_stepGridConfig.SelectCol:_stepGridConfig.ErrCol;
+            girdComp.GetComponent<MeshRenderer>().material.color = DefaultModule.GridIsTarget(clickGrid.Index,_playManager.Module<DefaultModule>().GridListData,_playManager.StepGridConfig.GridGroupWidth)?_playManager.StepGridConfig.SelectCol:_playManager.StepGridConfig.ErrCol;
         }
 
         private void setGridColor(GridComp grid,GridListData gridListData)
         {
-            Color color = _stepGridConfig.DefCol;
-            if(DefaultModule.GridIsTarget(grid.Index,gridListData,_stepGridConfig.GridGroupWidth))
+            Color color = _playManager.StepGridConfig.DefCol;
+            if(DefaultModule.GridIsTarget(grid.Index,gridListData,_playManager.StepGridConfig.GridGroupWidth))
             {
-                int line = grid.Index/_stepGridConfig.GridGroupWidth;
-                // color = gridListData.LineColor[line%gridListData.LineColor.Length];
-                int placeID = line%_playManager.GameStart.Players.Count;
-                color = _stepGridConfig.Setas[placeID].Color;
+                int placeID = DefaultModule.Index2PlaceID(grid.Index,_playManager.StepGridConfig.GridGroupWidth,_playManager.GameStart.Players.Count);
+                color = _playManager.StepGridConfig.Setas[placeID].Color;
             }
             grid.GetComponent<MeshRenderer>().material.color = color;
         }
 
         private void onPlayStop(object obj)
         {
+            int placeID = (int)obj;
+            Debug.LogWarning(_playManager.GameStart.Players[placeID].PlayerInfo.Nickname+" 输了");
             _moveCor.Stop();
             _moveCor=null;
             loadStopPanel();

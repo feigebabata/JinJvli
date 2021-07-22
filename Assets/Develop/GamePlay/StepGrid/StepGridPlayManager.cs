@@ -14,6 +14,7 @@ namespace GamePlay.StepGrid
         public INetworkSyncSystem NetworkSyncSystem;
         public PB_GameStart GameStart{get; private set;}
         public PB_Player SelfInfo{get; private set;}
+        public StepGridConfig StepGridConfig;
 
         public override void Create(params object[] datas)
         {
@@ -21,18 +22,20 @@ namespace GamePlay.StepGrid
 
             GameStart = datas[0] as PB_GameStart;
             GamePlayID=GameStart.GamePlayID;
-            foreach (var item in GameStart.Players)
+            var playerInfo = datas[1] as PB_PlayerInfo;
+
+            foreach (var player in GameStart.Players)
             {
-                if(item.PlayerInfo.ID==SystemInfo.deviceUniqueIdentifier)
+                if(player.PlayerInfo.ID==playerInfo.ID)
                 {
-                    SelfInfo = item;
+                    SelfInfo = player;
                     break;
                 }
             }
 
             ScreenHelper.Portrait();
             NetworkSyncSystem = new NetworkSyncSystem();
-            NetworkSyncSystem.OnInit(GamePlayID,0);
+            NetworkSyncSystem.OnInit(GamePlayID,SelfInfo.PlaceIndex);
             NetworkSyncSystem.OnEnable();
 
 
@@ -52,6 +55,7 @@ namespace GamePlay.StepGrid
         async void loadScene()
         {
             await Addressables.LoadSceneAsync("GamePlay.StepGrid").Task;
+            StepGridConfig = await Addressables.LoadAssetAsync<StepGridConfig>("GamePlay.StepGrid.StepGridConfig").Task;
             Debug.Log(Screen.orientation);
 
             Module<DefaultModule>().OnEnable();
