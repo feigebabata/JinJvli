@@ -101,7 +101,7 @@ namespace GamePlay.StepGrid
         {
             PB_ClickGrid clickGrid = obj as PB_ClickGrid;
             int placeID = Index2PlaceID(clickGrid.Index,_playManager.StepGridConfig.GridGroupWidth,_playManager.GameStart.Players.Count);
-            Debug.LogWarning(placeID);
+            // Debug.LogWarning(placeID);
             if(!GridIsTarget(clickGrid.Index,GridListData,_playManager.StepGridConfig.GridGroupWidth) || clickGrid.PlaceIndex!=placeID)
             {
                 _playManager.Messenger.Broadcast(StepGridMsgID.Stop,placeID);

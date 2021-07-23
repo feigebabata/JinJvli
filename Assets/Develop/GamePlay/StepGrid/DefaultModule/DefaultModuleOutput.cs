@@ -5,6 +5,7 @@ using System;
 using FGUFW.Core;
 using FGUFW.Play;
 using UnityEngine.AddressableAssets;
+using System.Text;
 
 namespace GamePlay.StepGrid
 {
@@ -14,6 +15,7 @@ namespace GamePlay.StepGrid
         private GridComp[] _gridComps;
         private Coroutine _moveCor;
         private GameObject _startPanel,_stopPanel;
+        private PlayPanelComps _playPanelComps;
         private float _offsetY;
 
         public DefaultModuleOutput(StepGridPlayManager playManager)
@@ -28,6 +30,7 @@ namespace GamePlay.StepGrid
             initGrids();
 
             loadStartPanel();
+            loadPlayPanel();
         }
 
         public void Dispose()
@@ -167,11 +170,30 @@ namespace GamePlay.StepGrid
             _playManager.Messenger.Broadcast(StepGridMsgID.PanelLoadComplete,_stopPanel);
         }
 
+        async void loadPlayPanel()
+        {
+            var go = await Addressables.InstantiateAsync("GamePlay.StepGrid.DefaultModule.PlayPanel",null,false).Task;
+            go.name = "PlayPanel";
+            _playPanelComps = go.GetComponent<PlayPanelComps>();
+            resetPlayPanel().Start();
+        }
+
         private void onPlayRestart(object obj)
         {
             _stopPanel.GetComponent<Canvas>().enabled=false;
             initGrids();
             _playManager.Messenger.Broadcast(StepGridMsgID.Start,null);
+        }
+
+        private IEnumerator resetPlayPanel()
+        {
+            StringBuilder sb=new StringBuilder();
+            foreach (var player in _playManager.GameStart.Players)
+            {
+                sb.AppendLine($"{_playManager.StepGridConfig.Setas[player.PlaceIndex].Color.RichText(player.PlayerInfo.Nickname)}");
+            }
+            _playPanelComps.Text.text = sb.ToString();
+            yield break;
         }
 
 

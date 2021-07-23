@@ -8,7 +8,7 @@ namespace FGUFW.Core
     {
         static public string RichText(this Color color,string text)
         {
-            return $"<color=#{ColorUtility.ToHtmlStringRGBA(color)}>{text}</color>";
+            return $"<color=#{ColorUtility.ToHtmlStringRGB(color)}>{text}</color>";
         }
     }
 }
