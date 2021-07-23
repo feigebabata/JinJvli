@@ -15,6 +15,7 @@ namespace GamePlay.StepGrid
         public PB_GameStart GameStart{get; private set;}
         public PB_Player SelfInfo{get; private set;}
         public StepGridConfig StepGridConfig;
+        public IFrameSyncSystem FrameSyncSystem;
 
         public override void Create(params object[] datas)
         {
@@ -38,8 +39,16 @@ namespace GamePlay.StepGrid
             NetworkSyncSystem.OnInit(GamePlayID,SelfInfo.PlaceIndex);
             NetworkSyncSystem.OnEnable();
 
+            FrameSyncSystem = new FrameSyncSystem();
+            FrameSyncSystem.OnInit(GameStart.Players.Count);
+            FrameSyncSystem.OnEnable();
 
             loadScene();
+        }
+
+        private void logicFrameUpdate(LogicFrame obj)
+        {
+            throw new NotImplementedException();
         }
 
         public override void Destroy()
