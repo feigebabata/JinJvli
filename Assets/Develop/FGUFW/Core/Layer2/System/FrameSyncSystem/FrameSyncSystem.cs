@@ -37,14 +37,14 @@ namespace FGUFW.Core
                 PlaceIndex = placeID,
             };
             UdpBroadcastUtility.Init();
-            UdpBroadcastUtility.OnReceive += onReceive;
+            UdpBroadcastUtility.OnReceive += onReceiveFrame;
 
             sendFrame();
         }
 
         public void OnRelease()
         {
-            UdpBroadcastUtility.OnReceive -= onReceive;
+            UdpBroadcastUtility.OnReceive -= onReceiveFrame;
             UdpBroadcastUtility.Release();
         }
 
@@ -77,6 +77,10 @@ namespace FGUFW.Core
                 {
 
                     Debug.Log($"send frame {_sendBuffer.Index}");
+                    lock (frameSendTimesLock)
+                    {
+                        frameSendTimes.Add(_sendBuffer.Index,DateTime.Now.UnixMilliseconds());
+                    }
                     byte[] msgBuffer = null;
                     lock(_sendBufferLock)
                     {
@@ -95,7 +99,7 @@ namespace FGUFW.Core
             }
         }
 
-        private void onReceive(byte[] buffer)
+        private void onReceiveFrame(byte[] buffer)
         {
             PB_Frame frame = null;
             try
@@ -133,7 +137,7 @@ namespace FGUFW.Core
                     var logicFrame = LogicFrames[frameIndex];
                     if(logicFrame.Frames[placeID]==null)
                     {
-                    Debug.Log($"receive placeID {placeID} , frameIndex {frameIndex}");
+                        Debug.Log($"receive placeID {placeID} , frameIndex {frameIndex}");
                         logicFrame.Frames[placeID]=frame;
 
                         if(OnLogicFrameUpdate!=null)
@@ -148,8 +152,14 @@ namespace FGUFW.Core
                             }
                             if(playerCount==_playerCount)
                             {
-                                Millisecond = DateTime.Now.UnixMilliseconds()-lastMS;
-                                lastMS = DateTime.Now.UnixMilliseconds();
+                                lock (frameSendTimesLock)
+                                {
+                                    if(frameSendTimes.ContainsKey(frameIndex))
+                                    {
+                                        DelayMS = DateTime.Now.UnixMilliseconds()-frameSendTimes[frameIndex];
+                                        frameSendTimes.Remove(frameIndex);
+                                    }
+                                }
                                 OnLogicFrameUpdate(logicFrame);
                             }
                         }
@@ -160,8 +170,10 @@ namespace FGUFW.Core
         }
 
         
-        public static long Millisecond;
-        private static long lastMS;
+        public static long DelayMS;
+        private static Dictionary<int,long> frameSendTimes = new Dictionary<int, long>();
+        private static object frameSendTimesLock = new object();
+
         
     }
 
