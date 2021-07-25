@@ -119,6 +119,7 @@ namespace FGUFW.Core
                 {
                     int frameIndex = frame.Index;
                     int placeID = frame.PlaceIndex;
+                    Debug.Log("placeID "+placeID);
                     while(frameIndex >= LogicFrames.Count)
                     {
                         LogicFrames.Add(new LogicFrame()

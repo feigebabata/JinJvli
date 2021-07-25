@@ -32,14 +32,16 @@ namespace FGUFW.Core {
             "ClBsYXllckluZm8YASABKAsyGS5GR1VGVy5Db3JlLlBCX1BsYXllckluZm8S",
             "EgoKUGxhY2VJbmRleBgCIAEoBSJaCgxQQl9HYW1lU3RhcnQSEgoKR2FtZVBs",
             "YXlJRBgBIAEoAxIOCgZHYW1lSUQYAiABKAUSJgoHUGxheWVycxgDIAMoCzIV",
-            "LkZHVUZXLkNvcmUuUEJfUGxheWVyYgZwcm90bzM="));
+            "LkZHVUZXLkNvcmUuUEJfUGxheWVyIiIKDFBCX0dhbWVSZWFkeRISCgpQbGFj",
+            "ZUluZGV4GAEgASgFYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::FGUFW.Core.PB_Frame), global::FGUFW.Core.PB_Frame.Parser, new[]{ "Index", "PlaceIndex", "Cmds", "MsgDatas" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::FGUFW.Core.PB_PlayerInfo), global::FGUFW.Core.PB_PlayerInfo.Parser, new[]{ "Nickname", "ID" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::FGUFW.Core.PB_Player), global::FGUFW.Core.PB_Player.Parser, new[]{ "PlayerInfo", "PlaceIndex" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::FGUFW.Core.PB_GameStart), global::FGUFW.Core.PB_GameStart.Parser, new[]{ "GamePlayID", "GameID", "Players" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::FGUFW.Core.PB_GameStart), global::FGUFW.Core.PB_GameStart.Parser, new[]{ "GamePlayID", "GameID", "Players" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::FGUFW.Core.PB_GameReady), global::FGUFW.Core.PB_GameReady.Parser, new[]{ "PlaceIndex" }, null, null, null)
           }));
     }
     #endregion
@@ -739,6 +741,138 @@ namespace FGUFW.Core {
           }
           case 26: {
             players_.AddEntriesFrom(input, _repeated_players_codec);
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///玩家准备 所有玩家准备才会开始
+  /// </summary>
+  public sealed partial class PB_GameReady : pb::IMessage<PB_GameReady> {
+    private static readonly pb::MessageParser<PB_GameReady> _parser = new pb::MessageParser<PB_GameReady>(() => new PB_GameReady());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<PB_GameReady> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::FGUFW.Core.MsgDataReflection.Descriptor.MessageTypes[4]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public PB_GameReady() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public PB_GameReady(PB_GameReady other) : this() {
+      placeIndex_ = other.placeIndex_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public PB_GameReady Clone() {
+      return new PB_GameReady(this);
+    }
+
+    /// <summary>Field number for the "PlaceIndex" field.</summary>
+    public const int PlaceIndexFieldNumber = 1;
+    private int placeIndex_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int PlaceIndex {
+      get { return placeIndex_; }
+      set {
+        placeIndex_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as PB_GameReady);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(PB_GameReady other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (PlaceIndex != other.PlaceIndex) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (PlaceIndex != 0) hash ^= PlaceIndex.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (PlaceIndex != 0) {
+        output.WriteRawTag(8);
+        output.WriteInt32(PlaceIndex);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (PlaceIndex != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(PlaceIndex);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(PB_GameReady other) {
+      if (other == null) {
+        return;
+      }
+      if (other.PlaceIndex != 0) {
+        PlaceIndex = other.PlaceIndex;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 8: {
+            PlaceIndex = input.ReadInt32();
             break;
           }
         }

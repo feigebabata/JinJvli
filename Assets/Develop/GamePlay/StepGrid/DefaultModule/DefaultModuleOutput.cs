@@ -17,6 +17,7 @@ namespace GamePlay.StepGrid
         private GameObject _startPanel,_stopPanel;
         private PlayPanelComps _playPanelComps;
         private float _offsetY;
+        private Coroutine _resetReadyState;
 
         public DefaultModuleOutput(StepGridPlayManager playManager)
         {
@@ -82,10 +83,10 @@ namespace GamePlay.StepGrid
             float startTime = Time.time;
             while (true)
             {
-                yield return new WaitForEndOfFrame();
                 _offsetY = -getMovingDistance(_playManager.StepGridConfig.StartSpeed,_playManager.StepGridConfig.Acceleration,Time.time-startTime) + _playManager.StepGridConfig.OffsetLine * (_playManager.StepGridConfig.GridSize.y+_playManager.StepGridConfig.Spacing.y);
                 setGridsPos();
                 checkGridIndex();
+                yield return new WaitForEndOfFrame();
             }
         }
 
@@ -151,6 +152,9 @@ namespace GamePlay.StepGrid
 
             _moveCor = moveGrid().Start();
             _startPanel.GetComponent<Canvas>().enabled = false;
+            _resetReadyState?.Stop();
+            _resetReadyState=null;
+            resetPlayPanel().Start();
         }
 
         async void loadStartPanel()
@@ -175,7 +179,7 @@ namespace GamePlay.StepGrid
             var go = await Addressables.InstantiateAsync("GamePlay.StepGrid.DefaultModule.PlayPanel",null,false).Task;
             go.name = "PlayPanel";
             _playPanelComps = go.GetComponent<PlayPanelComps>();
-            resetPlayPanel().Start();
+            _resetReadyState=resetReadyState().Start();
         }
 
         private void onPlayRestart(object obj)
@@ -194,6 +198,31 @@ namespace GamePlay.StepGrid
             }
             _playPanelComps.Text.text = sb.ToString();
             yield break;
+        }
+
+        private IEnumerator resetReadyState()
+        {
+            
+            StringBuilder sb=new StringBuilder();
+            while (true)
+            {
+                var readys = _playManager.Module<DefaultModule>().GameReadys;
+                for (int i = 0; i < readys.Length; i++)
+                {
+                    var player = _playManager.GameStart.Players[i];
+                    if(readys[i])
+                    {
+                        sb.AppendLine($"{_playManager.StepGridConfig.Setas[player.PlaceIndex].Color.RichText(player.PlayerInfo.Nickname)} 已准备");  
+                    }
+                    else
+                    {
+                        sb.AppendLine($"{_playManager.StepGridConfig.Setas[player.PlaceIndex].Color.RichText(player.PlayerInfo.Nickname)} 未准备");  
+                    } 
+                }
+                _playPanelComps.Text.text = sb.ToString();
+                sb.Clear();
+                yield return new WaitForSeconds(1);
+            }
         }
 
 

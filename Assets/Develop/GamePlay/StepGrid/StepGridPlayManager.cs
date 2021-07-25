@@ -11,7 +11,7 @@ namespace GamePlay.StepGrid
     public class StepGridPlayManager : PlayManager
     {
         public IMessenger<StepGridMsgID,object> Messenger = new Messenger<StepGridMsgID,object>();
-        public INetworkSyncSystem NetworkSyncSystem;
+        // public INetworkSyncSystem NetworkSyncSystem;
         public PB_GameStart GameStart{get; private set;}
         public PB_Player SelfInfo{get; private set;}
         public StepGridConfig StepGridConfig;
@@ -35,13 +35,12 @@ namespace GamePlay.StepGrid
             }
 
             ScreenHelper.Portrait();
-            NetworkSyncSystem = new NetworkSyncSystem();
-            NetworkSyncSystem.OnInit(GamePlayID,SelfInfo.PlaceIndex);
-            NetworkSyncSystem.OnEnable();
+            // NetworkSyncSystem = new NetworkSyncSystem();
+            // NetworkSyncSystem.OnInit(GamePlayID,SelfInfo.PlaceIndex);
+            // NetworkSyncSystem.OnEnable();
 
             FrameSyncSystem = new FrameSyncSystem();
-            FrameSyncSystem.OnInit(GameStart.Players.Count);
-            FrameSyncSystem.OnEnable();
+            FrameSyncSystem.OnInit(GameStart.Players.Count,SelfInfo.PlaceIndex,GamePlayID);
 
             loadScene();
         }
@@ -55,8 +54,8 @@ namespace GamePlay.StepGrid
         {
             base.Destroy();
 
-            NetworkSyncSystem.OnRelease();
-            NetworkSyncSystem=null;
+            FrameSyncSystem.OnRelease();
+            FrameSyncSystem=null;
 
             ScreenHelper.Landscape();
         }

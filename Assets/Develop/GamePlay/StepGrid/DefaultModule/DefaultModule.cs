@@ -4,6 +4,7 @@ using UnityEngine;
 using FGUFW.Core;
 using FGUFW.Play;
 using System;
+using Google.Protobuf;
 
 namespace GamePlay.StepGrid
 {
@@ -13,27 +14,38 @@ namespace GamePlay.StepGrid
         private  DefaultModuleOutput _moduleOutput;
         public GridListData GridListData{get;private set;}
         private HashSet<int> _clickGrids = new HashSet<int>();
+        public bool[] GameReadys;
+        private object _gameReadyLock = new object();
+        private int _frameIndex=0;
+
 
         public DefaultModule(PlayManager playManager) : base(playManager)
         {
             _moduleInput = new  DefaultModuleInput(_playManager);
             _moduleOutput = new  DefaultModuleOutput(_playManager);
+            UdpBroadcastUtility.OnReceive+=onGameReadyReceive;
 
             GlobalMessenger.M.Add(GlobalMsgID.OnBackKey,onClickBack);
             _playManager.Messenger.Add(StepGridMsgID.ClickGrid,onClickGrid);
             _playManager.Messenger.Add(StepGridMsgID.GridDestroy,onGridDestroy);
             _playManager.Messenger.Add(StepGridMsgID.Exit,onClickBack);
+            _playManager.Messenger.Add(StepGridMsgID.Restart,onClickRestart);
 
             GridListData = createGridListData(666);
+            GameReadys = new bool[_playManager.GameStart.Players.Count];
+            MonoBehaviourEvent.I.UpdateListener+=Update;
         }
 
         public override void Dispose()
         {
+            MonoBehaviourEvent.I.UpdateListener-=Update;
+            UdpBroadcastUtility.OnReceive-=onGameReadyReceive;
             GridListData=null;
             GlobalMessenger.M.Remove(GlobalMsgID.OnBackKey,onClickBack);
             _playManager.Messenger.Remove(StepGridMsgID.ClickGrid,onClickGrid);
             _playManager.Messenger.Remove(StepGridMsgID.GridDestroy,onGridDestroy);
             _playManager.Messenger.Remove(StepGridMsgID.Exit,onClickBack);
+            _playManager.Messenger.Remove(StepGridMsgID.Restart,onClickRestart);
             _moduleInput.Dispose();
             _moduleOutput.Dispose();
             base.Dispose();
@@ -121,6 +133,73 @@ namespace GamePlay.StepGrid
             _clickGrids.Remove(index);
         }
 
+        private void onClickRestart(object obj)
+        {
+            for (int i = 0; i < GameReadys.Length; i++)
+            {
+                GameReadys[i]=false;
+            }
+        }
+
+        private void onGameReadyReceive(byte[] buffer)
+        {
+            ushort appID=0,length=0;
+            uint cmd=0;
+            long gameplayID=0;
+            if(buffer.Length>=NetworkUtility.PACK_HEAD_LENGTH && NetworkUtility.Decode(buffer,ref appID,ref length,ref gameplayID,ref cmd))
+            {
+                if(appID==NetworkUtility.APP_ID && length==buffer.Length && gameplayID==_playManager.GamePlayID)
+                {
+                    // Debug.LogWarning("cmd "+cmd);
+                    if(cmd==NetworkUtility.GAMEREADY_CMD)
+                    {
+                        PB_GameReady ready = PB_GameReady.Parser.ParseFrom(buffer,NetworkUtility.PACK_HEAD_LENGTH,length-NetworkUtility.PACK_HEAD_LENGTH);
+                        lock(_gameReadyLock)
+                        {
+                            GameReadys[ready.PlaceIndex]=true;
+
+                            if(!Array.Exists<bool>(GameReadys,b=>{return !b;}))
+                            {
+                                allPlayerReady().Enqueue();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private IEnumerator allPlayerReady()
+        {
+            _playManager.Messenger.Broadcast(StepGridMsgID.Start,null);
+            _playManager.FrameSyncSystem.OnEnable();
+            yield break;
+        }
+
+        void Update()
+        {
+            while(_frameIndex<_playManager.FrameSyncSystem.LogicFrames.Count && _playManager.FrameSyncSystem.LogicFrames[_frameIndex].Complete)
+            {
+                var frames = _playManager.FrameSyncSystem.LogicFrames[_frameIndex].Frames;
+                for (int i = 0; i < frames.Length; i++)
+                {
+                    var frame = frames[i];
+                    for (int j = 0; j < frame.Cmds.Count; j++)
+                    {
+                        switch ((StepGridMsgID)frame.Cmds[j])
+                        {
+                            case StepGridMsgID.ClickGrid:
+                            {
+                                var msg = PB_ClickGrid.Parser.ParseFrom(frame.MsgDatas[j]);
+                                Debug.Log("click "+msg.PlaceIndex);
+                                _playManager.Messenger.Broadcast(StepGridMsgID.ClickGrid,msg);
+                            }
+                            break;
+                        }
+                    }
+                }
+                _frameIndex++;
+            }
+        }
 
     }
 

@@ -14,7 +14,9 @@ namespace FGUFW.Core
         public const ushort PACK_CMD_LENGTH = 4;
         public const int BROADCAST_COUNT = 1;
         public const int GAMELOBBY_GPID = 0;
+        
         public const uint GAMESTART_CMD=1;
+        public const uint GAMEREADY_CMD=2;
 
         /// <summary>
         /// 数据包[ appid 2 | length 2 | gameplayid 8 |cmd 4| msgdata ]

@@ -13,6 +13,7 @@ namespace GamePlay.StepGrid
         private StepGridPlayManager _playManager;
         private StartPanelComps _startPanelComps;
         private StopPanelComps _stopPanelComps;
+        private Coroutine _readyMsgBroadcast;
 
         public DefaultModuleInput(StepGridPlayManager playManager)
         {
@@ -20,7 +21,7 @@ namespace GamePlay.StepGrid
             _playManager.Messenger.Add(StepGridMsgID.Start,onPlayStart);
             _playManager.Messenger.Add(StepGridMsgID.Stop,onPlayStop);
             _playManager.Messenger.Add(StepGridMsgID.PanelLoadComplete,onPanelLoadComplete);
-            _playManager.NetworkSyncSystem.Messenger.Add((ushort)StepGridMsgID.ClickGrid,onClickGrid);
+            // _playManager.NetworkSyncSystem.Messenger.Add((ushort)StepGridMsgID.ClickGrid,onClickGrid);
         }
 
         public void Dispose()
@@ -69,7 +70,8 @@ namespace GamePlay.StepGrid
                 PlaceIndex = _playManager.SelfInfo.PlaceIndex,
             };
             // Debug.Log(_playManager.SelfInfo.PlaceIndex);
-            _playManager.NetworkSyncSystem.SendMsg((uint)StepGridMsgID.ClickGrid,_playManager.GamePlayID,clickGrid);
+            // _playManager.NetworkSyncSystem.SendMsg((uint)StepGridMsgID.ClickGrid,_playManager.GamePlayID,clickGrid);
+            _playManager.FrameSyncSystem.PushCmd((uint)StepGridMsgID.ClickGrid,clickGrid);
         }
 
         private void onPlayStop(object obj)
@@ -81,6 +83,8 @@ namespace GamePlay.StepGrid
         {
             initGrids();
             MonoBehaviourEvent.I.UpdateListener += Update;
+            _readyMsgBroadcast?.Stop();
+            _readyMsgBroadcast=null;
         }
 
         private void onPanelLoadComplete(object obj)
@@ -107,7 +111,10 @@ namespace GamePlay.StepGrid
 
         private void onClickStartBtn()
         {
-            _playManager.Messenger.Broadcast(StepGridMsgID.Start,null);
+            if(_readyMsgBroadcast==null)
+            {
+                _readyMsgBroadcast=readyMsgBroadcast().Start();
+            }
         }
 
         private void onClickRestartBtn()
@@ -115,10 +122,23 @@ namespace GamePlay.StepGrid
             _playManager.Messenger.Broadcast(StepGridMsgID.Restart,null);
         }
 
-        private void onClickGrid(ByteString obj)
+        // private void onClickGrid(ByteString obj)
+        // {
+        //     var clickGrid = PB_ClickGrid.Parser.ParseFrom(obj);
+        //     _playManager.Messenger.Broadcast(StepGridMsgID.ClickGrid,clickGrid);
+        // }
+
+        private IEnumerator readyMsgBroadcast()
         {
-            var clickGrid = PB_ClickGrid.Parser.ParseFrom(obj);
-            _playManager.Messenger.Broadcast(StepGridMsgID.ClickGrid,clickGrid);
+            PB_GameReady ready = new PB_GameReady{PlaceIndex=_playManager.SelfInfo.PlaceIndex,};
+            var msgBuffer = ready.ToByteArray();
+             var senddata = NetworkUtility.Encode(NetworkUtility.APP_ID,_playManager.GamePlayID,NetworkUtility.GAMEREADY_CMD,msgBuffer);
+            while (true)
+            {
+                UdpBroadcastUtility.Send(senddata);
+                yield return new WaitForSeconds(1);
+            }
         }
+
     }
 }
