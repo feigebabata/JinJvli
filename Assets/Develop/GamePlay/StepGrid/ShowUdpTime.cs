@@ -13,6 +13,6 @@ public class ShowUdpTime : MonoBehaviour
     /// </summary>
     void OnGUI()
     {
-        GUILayout.Label(NetworkSyncSystem.Millisecond+"ms",UIStyle);
+        GUILayout.Label(FrameSyncSystem.Millisecond+"ms",UIStyle);
     }
 }

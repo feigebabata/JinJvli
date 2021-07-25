@@ -13,11 +13,11 @@ namespace GamePlay.StepGrid
     {
         private StepGridPlayManager _playManager;
         private GridComp[] _gridComps;
-        private Coroutine _moveCor;
         private GameObject _startPanel,_stopPanel;
         private PlayPanelComps _playPanelComps;
         private float _offsetY;
         private Coroutine _resetReadyState;
+        private float _moveStartTime;
 
         public DefaultModuleOutput(StepGridPlayManager playManager)
         {
@@ -27,6 +27,7 @@ namespace GamePlay.StepGrid
             _playManager.Messenger.Add(StepGridMsgID.Start,onPlayStart);
             _playManager.Messenger.Add(StepGridMsgID.Stop,onPlayStop);
             _playManager.Messenger.Add(StepGridMsgID.Restart,onPlayRestart);
+            _playManager.FrameSyncSystem.OnLogicFrameUpdate+=onLogicFrameUpdate;
             
             initGrids();
 
@@ -40,13 +41,13 @@ namespace GamePlay.StepGrid
             _playManager.Messenger.Remove(StepGridMsgID.Start,onPlayStart);
             _playManager.Messenger.Remove(StepGridMsgID.Stop,onPlayStop);
             _playManager.Messenger.Remove(StepGridMsgID.Restart,onPlayRestart);
+            _playManager.FrameSyncSystem.OnLogicFrameUpdate-=onLogicFrameUpdate;
+            MonoBehaviourEvent.I.UpdateListener -= gridPosUpdate;
 
             _startPanel?.GetComponent<Canvas>().ClearSortOrder();
             GameObject.Destroy(_startPanel);
             _stopPanel?.GetComponent<Canvas>().ClearSortOrder();
             GameObject.Destroy(_stopPanel);
-            _moveCor?.Stop();
-            _moveCor=null;
             _playManager = null;
         }
 
@@ -78,18 +79,6 @@ namespace GamePlay.StepGrid
             return startSpeed*time+acceleration*time*time/2;
         }
 
-        IEnumerator moveGrid()
-        {
-            float startTime = Time.time;
-            while (true)
-            {
-                _offsetY = -getMovingDistance(_playManager.StepGridConfig.StartSpeed,_playManager.StepGridConfig.Acceleration,Time.time-startTime) + _playManager.StepGridConfig.OffsetLine * (_playManager.StepGridConfig.GridSize.y+_playManager.StepGridConfig.Spacing.y);
-                setGridsPos();
-                checkGridIndex();
-                yield return new WaitForEndOfFrame();
-            }
-        }
-
         void setGridsPos()
         {
             for (int i = 0; i < _gridComps.Length; i++)
@@ -115,11 +104,14 @@ namespace GamePlay.StepGrid
         private void onClickGrid(object obj)
         {
             PB_ClickGrid clickGrid = obj as PB_ClickGrid;
-            var girdComp = Array.Find<GridComp>(_gridComps,(g)=>
+            GridComp girdComp = Array.Find<GridComp>(_gridComps,(g)=>
             {
                 return g.Index == clickGrid.Index;
             });
-
+            if(!girdComp)
+            {
+                return;
+            }
             girdComp.GetComponent<MeshRenderer>().material.color = DefaultModule.GridIsTarget(clickGrid.Index,_playManager.Module<DefaultModule>().GridListData,_playManager.StepGridConfig.GridGroupWidth)?_playManager.StepGridConfig.SelectCol:_playManager.StepGridConfig.ErrCol;
         }
 
@@ -138,9 +130,9 @@ namespace GamePlay.StepGrid
         {
             int placeID = (int)obj;
             Debug.LogWarning(_playManager.GameStart.Players[placeID].PlayerInfo.Nickname+" 输了");
-            _moveCor.Stop();
-            _moveCor=null;
+            _playManager.FrameSyncSystem.OnDisable();
             loadStopPanel();
+            MonoBehaviourEvent.I.UpdateListener -= gridPosUpdate;
         }
 
         private void onPlayStart(object obj)
@@ -150,11 +142,12 @@ namespace GamePlay.StepGrid
                 setGridColor(_gridComps[i],_playManager.Module<DefaultModule>().GridListData);
             }
 
-            _moveCor = moveGrid().Start();
+            _moveStartTime = Time.time;
             _startPanel.GetComponent<Canvas>().enabled = false;
             _resetReadyState?.Stop();
             _resetReadyState=null;
             resetPlayPanel().Start();
+            MonoBehaviourEvent.I.UpdateListener += gridPosUpdate;
         }
 
         async void loadStartPanel()
@@ -222,6 +215,23 @@ namespace GamePlay.StepGrid
                 _playPanelComps.Text.text = sb.ToString();
                 sb.Clear();
                 yield return new WaitForSeconds(1);
+            }
+        }
+
+        private void onLogicFrameUpdate(LogicFrame obj)
+        {
+            
+            _offsetY = -getMovingDistance(_playManager.StepGridConfig.StartSpeed,_playManager.StepGridConfig.Acceleration,Time.time-_moveStartTime) + _playManager.StepGridConfig.OffsetLine * (_playManager.StepGridConfig.GridSize.y+_playManager.StepGridConfig.Spacing.y);
+            // setGridsPos();
+            checkGridIndex();
+        }   
+
+        private void gridPosUpdate()
+        {
+            for (int i = 0; i < _gridComps.Length; i++)
+            {
+                var pos = DefaultModule.GetGridPos(_gridComps[i].Index,_playManager.StepGridConfig.GridSize,_playManager.StepGridConfig.Spacing,_playManager.StepGridConfig.GridGroupWidth);
+                _gridComps[i].transform.localPosition = Vector3.Lerp(_gridComps[i].transform.localPosition,new Vector3(pos.x,0,pos.y+_offsetY),0.5f);
             }
         }
 

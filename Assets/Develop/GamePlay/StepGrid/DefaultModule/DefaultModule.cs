@@ -30,6 +30,7 @@ namespace GamePlay.StepGrid
             _playManager.Messenger.Add(StepGridMsgID.GridDestroy,onGridDestroy);
             _playManager.Messenger.Add(StepGridMsgID.Exit,onClickBack);
             _playManager.Messenger.Add(StepGridMsgID.Restart,onClickRestart);
+            _playManager.Messenger.Add(StepGridMsgID.Stop,onGameStop);
 
             GridListData = createGridListData(666);
             GameReadys = new bool[_playManager.GameStart.Players.Count];
@@ -46,9 +47,15 @@ namespace GamePlay.StepGrid
             _playManager.Messenger.Remove(StepGridMsgID.GridDestroy,onGridDestroy);
             _playManager.Messenger.Remove(StepGridMsgID.Exit,onClickBack);
             _playManager.Messenger.Remove(StepGridMsgID.Restart,onClickRestart);
+            _playManager.Messenger.Remove(StepGridMsgID.Stop,onGameStop);
             _moduleInput.Dispose();
             _moduleOutput.Dispose();
             base.Dispose();
+        }
+
+        private void onGameStop(object obj)
+        {
+            _frameIndex=0;
         }
 
         private void onClickBack(object data)
@@ -116,7 +123,7 @@ namespace GamePlay.StepGrid
             // Debug.LogWarning(placeID);
             if(!GridIsTarget(clickGrid.Index,GridListData,_playManager.StepGridConfig.GridGroupWidth) || clickGrid.PlaceIndex!=placeID)
             {
-                _playManager.Messenger.Broadcast(StepGridMsgID.Stop,placeID);
+                // _playManager.Messenger.Broadcast(StepGridMsgID.Stop,placeID);
             }
             _clickGrids.Add(clickGrid.Index);
         }
@@ -128,7 +135,7 @@ namespace GamePlay.StepGrid
             int placeID = line%_playManager.GameStart.Players.Count;
             if(GridIsTarget(index,GridListData,4) && !_clickGrids.Contains(index))
             {
-                _playManager.Messenger.Broadcast(StepGridMsgID.Stop,placeID);
+                // _playManager.Messenger.Broadcast(StepGridMsgID.Stop,placeID);
             }
             _clickGrids.Remove(index);
         }
@@ -179,6 +186,8 @@ namespace GamePlay.StepGrid
         {
             while(_frameIndex<_playManager.FrameSyncSystem.LogicFrames.Count && _playManager.FrameSyncSystem.LogicFrames[_frameIndex].Complete)
             {
+                
+                Debug.Log("Complete " +_frameIndex);
                 var frames = _playManager.FrameSyncSystem.LogicFrames[_frameIndex].Frames;
                 for (int i = 0; i < frames.Length; i++)
                 {

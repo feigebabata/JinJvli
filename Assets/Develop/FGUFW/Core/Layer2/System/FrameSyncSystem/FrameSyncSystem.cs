@@ -17,12 +17,13 @@ namespace FGUFW.Core
         public Action<LogicFrame> OnLogicFrameUpdate { get => _logicFrameUpdate;set => _logicFrameUpdate=value;}
         public List<LogicFrame> LogicFrames{get;private set;}
         private object logicFramesLock = new object();
-        private PB_Frame _sendBuffer;
+        public PB_Frame _sendBuffer;
         private object _sendBufferLock = new object();
         private bool _enable=false;
 
         private long _gameplayID;
         private const uint FRAME_CMD = 12;
+
 
         public void OnInit(params object[] datas)
         {
@@ -43,12 +44,15 @@ namespace FGUFW.Core
 
         public void OnRelease()
         {
-            
+            UdpBroadcastUtility.OnReceive -= onReceive;
+            UdpBroadcastUtility.Release();
         }
 
         public void OnDisable()
         {
             _enable = false;
+            _sendBuffer.Index=0;
+            LogicFrames.Clear();
         }
 
         public void OnEnable()
@@ -71,8 +75,8 @@ namespace FGUFW.Core
             {
                 if(_enable && Application.isPlaying)
                 {
-                    
 
+                    Debug.Log($"send frame {_sendBuffer.Index}");
                     byte[] msgBuffer = null;
                     lock(_sendBufferLock)
                     {
@@ -119,7 +123,6 @@ namespace FGUFW.Core
                 {
                     int frameIndex = frame.Index;
                     int placeID = frame.PlaceIndex;
-                    Debug.Log("placeID "+placeID);
                     while(frameIndex >= LogicFrames.Count)
                     {
                         LogicFrames.Add(new LogicFrame()
@@ -128,22 +131,37 @@ namespace FGUFW.Core
                         });
                     }
                     var logicFrame = LogicFrames[frameIndex];
-                    logicFrame.Frames[placeID]=frame;
-                    int frame_place_count = 0;
-                    for (int i = 0; i < _playerCount; i++)
+                    if(logicFrame.Frames[placeID]==null)
                     {
-                        if(logicFrame.Frames[placeID]!=null)
+                    Debug.Log($"receive placeID {placeID} , frameIndex {frameIndex}");
+                        logicFrame.Frames[placeID]=frame;
+
+                        if(OnLogicFrameUpdate!=null)
                         {
-                            frame_place_count++;
+                            int playerCount = 0;
+                            for (int i = 0; i < _playerCount; i++)
+                            {
+                                if(logicFrame.Frames[placeID]!=null)
+                                {
+                                    playerCount++;
+                                }
+                            }
+                            if(playerCount==_playerCount)
+                            {
+                                Millisecond = DateTime.Now.UnixMilliseconds()-lastMS;
+                                lastMS = DateTime.Now.UnixMilliseconds();
+                                OnLogicFrameUpdate(logicFrame);
+                            }
                         }
-                    }
-                    if(frame_place_count==_playerCount)
-                    {
-                        OnLogicFrameUpdate?.Invoke(logicFrame);
+
                     }
                 }
             }
         }
+
+        
+        public static long Millisecond;
+        private static long lastMS;
         
     }
 

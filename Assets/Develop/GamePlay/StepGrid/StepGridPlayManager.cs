@@ -45,15 +45,11 @@ namespace GamePlay.StepGrid
             loadScene();
         }
 
-        private void logicFrameUpdate(LogicFrame obj)
-        {
-            throw new NotImplementedException();
-        }
-
         public override void Destroy()
         {
             base.Destroy();
-
+            
+            FrameSyncSystem.OnDisable();
             FrameSyncSystem.OnRelease();
             FrameSyncSystem=null;
 

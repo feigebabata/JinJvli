@@ -69,7 +69,7 @@ namespace GamePlay.StepGrid
                 Index = gridIndex,
                 PlaceIndex = _playManager.SelfInfo.PlaceIndex,
             };
-            // Debug.Log(_playManager.SelfInfo.PlaceIndex);
+            Debug.LogWarning($"发送 {(_playManager.FrameSyncSystem as FrameSyncSystem)._sendBuffer.Index} {_playManager.SelfInfo.PlaceIndex}");
             // _playManager.NetworkSyncSystem.SendMsg((uint)StepGridMsgID.ClickGrid,_playManager.GamePlayID,clickGrid);
             _playManager.FrameSyncSystem.PushCmd((uint)StepGridMsgID.ClickGrid,clickGrid);
         }
