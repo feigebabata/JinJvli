@@ -153,7 +153,7 @@ namespace GamePlay.StepGrid
             ushort appID=0,length=0;
             uint cmd=0;
             long gameplayID=0;
-            if(buffer.Length>=NetworkUtility.PACK_HEAD_LENGTH && NetworkUtility.Decode(buffer,ref appID,ref length,ref gameplayID,ref cmd))
+            if(buffer.Length>=NetworkUtility.PACK_HEAD_LENGTH && NetworkUtility.DecodeU(ref appID,ref length,ref gameplayID,ref cmd,buffer,0,buffer.Length))
             {
                 if(appID==NetworkUtility.APP_ID && length==buffer.Length && gameplayID==_playManager.GamePlayID)
                 {

@@ -9,7 +9,7 @@ namespace FGUFW.Core
 {
     public class FrameSyncSystem : IFrameSyncSystem
     {
-        public const int FRAME_DELAY = 1000/30;
+        public const int FRAME_DELAY = 1000/60;
 
         private Action<LogicFrame> _logicFrameUpdate;
         private int _playerCount;
@@ -89,7 +89,7 @@ namespace FGUFW.Core
                         _sendBuffer.MsgDatas.Clear();
                         _sendBuffer.Index++;
                     }
-                    var sendBuffer = NetworkUtility.Encode(NetworkUtility.APP_ID,_gameplayID,FRAME_CMD,msgBuffer);
+                    var sendBuffer = NetworkUtility.EncodeU(NetworkUtility.APP_ID,_gameplayID,FRAME_CMD,msgBuffer);
                     for (int i = 0; i < NetworkUtility.BROADCAST_COUNT; i++)
                     {
                         UdpBroadcastUtility.Send(sendBuffer);
@@ -107,7 +107,7 @@ namespace FGUFW.Core
                 ushort appID=0,length=0;
                 uint cmd=0;
                 long gameplayID=0;
-                if(buffer.Length>=NetworkUtility.PACK_HEAD_LENGTH && NetworkUtility.Decode(buffer,ref appID,ref length,ref gameplayID,ref cmd))
+                if(buffer.Length>=NetworkUtility.PACK_HEAD_LENGTH && NetworkUtility.DecodeU(ref appID,ref length,ref gameplayID,ref cmd,buffer,0,buffer.Length))
                 {
                     // Debug.Log("cmd "+cmd);
                     if(cmd==FRAME_CMD)

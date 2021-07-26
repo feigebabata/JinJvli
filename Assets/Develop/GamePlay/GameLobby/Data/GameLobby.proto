@@ -19,4 +19,6 @@ message PB_OnlineGame
     int32 GameID = 2;     //游戏id
     FGUFW.Core.PB_PlayerInfo Player = 3;
     int64 JoinTime = 4;
+    string IP = 5;
+    int32 Port = 6;
 }

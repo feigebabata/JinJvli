@@ -132,7 +132,7 @@ namespace GamePlay.StepGrid
         {
             PB_GameReady ready = new PB_GameReady{PlaceIndex=_playManager.SelfInfo.PlaceIndex,};
             var msgBuffer = ready.ToByteArray();
-             var senddata = NetworkUtility.Encode(NetworkUtility.APP_ID,_playManager.GamePlayID,NetworkUtility.GAMEREADY_CMD,msgBuffer);
+             var senddata = NetworkUtility.EncodeU(NetworkUtility.APP_ID,_playManager.GamePlayID,NetworkUtility.GAMEREADY_CMD,msgBuffer);
             while (true)
             {
                 UdpBroadcastUtility.Send(senddata);

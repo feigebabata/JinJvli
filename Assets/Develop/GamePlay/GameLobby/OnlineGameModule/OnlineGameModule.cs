@@ -20,7 +20,8 @@ namespace GamePlay.GameLobby
         private  OnlineGameModuleOutput _moduleOutput;
         private long _selectGamePlayID;
         private Coroutine _broadcastGamePlay;
-        private bool isEnterGame=false;
+        private bool _isEnterGame=false;
+        private SyncClient _syncClient;
 
 
         public OnlineGameModule(PlayManager playManager) : base(playManager)
@@ -85,7 +86,8 @@ namespace GamePlay.GameLobby
 
         private void onCreateGame(object obj)
         {
-            var gameplay = obj as PB_OnlineGame;
+            var gameplayServer = obj as SyncServer;
+            var gameplay = gameplayServer.Data as PB_OnlineGame;
             _selectGamePlayID = gameplay.GamePlayID;
             _broadcastGamePlay?.Stop();
             _broadcastGamePlay = broadcastOnlineGame(gameplay).Start();
@@ -99,7 +101,7 @@ namespace GamePlay.GameLobby
 
         IEnumerator broadcastOnlineGame(PB_OnlineGame data)
         {
-            var sendData = NetworkUtility.Encode(NetworkUtility.APP_ID,NetworkUtility.GAMELOBBY_GPID,ONLINE_GAME_CMD,data.ToByteArray());
+            var sendData = NetworkUtility.EncodeU(NetworkUtility.APP_ID,NetworkUtility.GAMELOBBY_GPID,ONLINE_GAME_CMD,data.ToByteArray());
             while (true)
             {
                 UdpBroadcastUtility.Send(sendData);
@@ -113,7 +115,7 @@ namespace GamePlay.GameLobby
             ushort appID=0,length=0;
             uint cmd=0;
             long gameplayID=0;
-            if(obj.Length>=NetworkUtility.PACK_HEAD_LENGTH && NetworkUtility.Decode(obj,ref appID,ref length,ref gameplayID,ref cmd))
+            if(obj.Length>=NetworkUtility.PACK_HEAD_LENGTH && NetworkUtility.DecodeU(ref appID,ref length,ref gameplayID,ref cmd,obj,0,obj.Length))
             {
                 if(appID==NetworkUtility.APP_ID && length==obj.Length && gameplayID==NetworkUtility.GAMELOBBY_GPID)
                 {
@@ -125,23 +127,87 @@ namespace GamePlay.GameLobby
                         {
                             addOnlineGame(Time.time,onlineGame);
                         }
+                        if(onlineGame.Player.ID == SelfInfo.ID && _syncClient==null)
+                        {
+                            createSyncClient(onlineGame);
+                        }
                     }
-                    else if(cmd==NetworkUtility.GAMESTART_CMD)
-                    {
-                        PB_GameStart gameStart = PB_GameStart.Parser.ParseFrom(obj,NetworkUtility.PACK_HEAD_LENGTH,length-NetworkUtility.PACK_HEAD_LENGTH);
-                        enterGame(gameStart).Enqueue();
-                    }
+                    // else if(cmd==NetworkUtility.GAMESTART_CMD)
+                    // {
+                    //     PB_GameStart gameStart = PB_GameStart.Parser.ParseFrom(obj,NetworkUtility.PACK_HEAD_LENGTH,length-NetworkUtility.PACK_HEAD_LENGTH);
+                    //     enterGame(gameStart).Enqueue();
+                    // }
                 }
             }
         }
 
+        private void createSyncClient(PB_OnlineGame onlineGame)
+        {
+            _syncClient = new SyncClient(onlineGame.IP,onlineGame.Port);
+            _syncClient.OnConnect+=onConnectServer;
+            _syncClient.OnReceive+=onReceiveServer;
+        }
+
+        private int onReceiveServer(byte[] buffer, int bufLen)
+        {
+            ushort length=0;
+            uint cmd=0;
+            int index=0;
+            if(bufLen>=NetworkUtility.PACK_HEAD_LENGTH)
+            {
+                while (true)
+                {
+                    NetworkUtility.DecodeT(ref length,ref cmd,buffer,index,bufLen);
+                    if(length<=bufLen-index)
+                    {
+                        if(cmd==NetworkUtility.GAMESTART_CMD)
+                        {
+
+                        }
+                    }
+                }
+            }
+            // if(buffer.Length>=NetworkUtility.PACK_HEAD_LENGTH && NetworkUtility.DecodeU(ref appID,ref length,ref gameplayID,ref cmd,buffer,0,bufLen))
+            // {
+            //     if(appID==NetworkUtility.APP_ID && length==buffer.Length && gameplayID==NetworkUtility.GAMELOBBY_GPID)
+            //     {
+            //         // Debug.LogWarning("cmd "+cmd);
+            //         if(cmd==ONLINE_GAME_CMD)
+            //         {
+            //             PB_OnlineGame onlineGame = PB_OnlineGame.Parser.ParseFrom(buffer,NetworkUtility.PACK_HEAD_LENGTH,length-NetworkUtility.PACK_HEAD_LENGTH);
+            //             lock(OnlineGameDicLock)
+            //             {
+            //                 addOnlineGame(Time.time,onlineGame);
+            //             }
+            //             if(onlineGame.Player.ID == SelfInfo.ID && _syncClient==null)
+            //             {
+            //                 createSyncClient(onlineGame);
+            //             }
+            //         }
+            //         // else if(cmd==NetworkUtility.GAMESTART_CMD)
+            //         // {
+            //         //     PB_GameStart gameStart = PB_GameStart.Parser.ParseFrom(obj,NetworkUtility.PACK_HEAD_LENGTH,length-NetworkUtility.PACK_HEAD_LENGTH);
+            //         //     enterGame(gameStart).Enqueue();
+            //         // }
+            //     }
+            // }
+            return 0;
+        }
+
+        private void onConnectServer(string obj)
+        {
+            Debug.Log("服务器连接成功"+obj);
+        }
+
+        private 
+
         IEnumerator enterGame(PB_GameStart gameStart)
         {
-            if(isEnterGame)
+            if(_isEnterGame)
             {
                 yield break;
             }
-            isEnterGame=true;
+            _isEnterGame=true;
             var gameData = _playManager.GameDatas[gameStart.GameID];
             
             Assembly assembly = Assembly.GetExecutingAssembly(); // 获取当前程序集 
@@ -191,7 +257,7 @@ namespace GamePlay.GameLobby
                 });
             }
             
-            var sendData = NetworkUtility.Encode(NetworkUtility.APP_ID,NetworkUtility.GAMELOBBY_GPID,NetworkUtility.GAMESTART_CMD,gameStart.ToByteArray());
+            var sendData = NetworkUtility.EncodeU(NetworkUtility.APP_ID,NetworkUtility.GAMELOBBY_GPID,NetworkUtility.GAMESTART_CMD,gameStart.ToByteArray());
             UdpBroadcastUtility.Send(sendData);
             UdpBroadcastUtility.Send(sendData);
         }

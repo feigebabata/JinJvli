@@ -27,13 +27,14 @@ namespace GamePlay.GameLobby {
             "Ci9EZXZlbG9wL0dhbWVQbGF5L0dhbWVMb2JieS9EYXRhL0dhbWVMb2JieS5w",
             "cm90bxISR2FtZVBsYXkuR2FtZUxvYmJ5GkVEZXZlbG9wL0ZHVUZXL0NvcmUv",
             "TGF5ZXIyL1N5c3RlbS9OZXR3b3JrU3luY1N5c3RlbS9EYXRhL01zZ0RhdGEu",
-            "cHJvdG8icAoNUEJfT25saW5lR2FtZRISCgpHYW1lUGxheUlEGAEgASgDEg4K",
-            "BkdhbWVJRBgCIAEoBRIpCgZQbGF5ZXIYAyABKAsyGS5GR1VGVy5Db3JlLlBC",
-            "X1BsYXllckluZm8SEAoISm9pblRpbWUYBCABKANiBnByb3RvMw=="));
+            "cHJvdG8iigEKDVBCX09ubGluZUdhbWUSEgoKR2FtZVBsYXlJRBgBIAEoAxIO",
+            "CgZHYW1lSUQYAiABKAUSKQoGUGxheWVyGAMgASgLMhkuRkdVRlcuQ29yZS5Q",
+            "Ql9QbGF5ZXJJbmZvEhAKCEpvaW5UaW1lGAQgASgDEgoKAklQGAUgASgJEgwK",
+            "BFBvcnQYBiABKAViBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::FGUFW.Core.MsgDataReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::GamePlay.GameLobby.PB_OnlineGame), global::GamePlay.GameLobby.PB_OnlineGame.Parser, new[]{ "GamePlayID", "GameID", "Player", "JoinTime" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::GamePlay.GameLobby.PB_OnlineGame), global::GamePlay.GameLobby.PB_OnlineGame.Parser, new[]{ "GamePlayID", "GameID", "Player", "JoinTime", "IP", "Port" }, null, null, null)
           }));
     }
     #endregion
@@ -69,6 +70,8 @@ namespace GamePlay.GameLobby {
       gameID_ = other.gameID_;
       player_ = other.player_ != null ? other.player_.Clone() : null;
       joinTime_ = other.joinTime_;
+      iP_ = other.iP_;
+      port_ = other.port_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -127,6 +130,28 @@ namespace GamePlay.GameLobby {
       }
     }
 
+    /// <summary>Field number for the "IP" field.</summary>
+    public const int IPFieldNumber = 5;
+    private string iP_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string IP {
+      get { return iP_; }
+      set {
+        iP_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "Port" field.</summary>
+    public const int PortFieldNumber = 6;
+    private int port_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int Port {
+      get { return port_; }
+      set {
+        port_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as PB_OnlineGame);
@@ -144,6 +169,8 @@ namespace GamePlay.GameLobby {
       if (GameID != other.GameID) return false;
       if (!object.Equals(Player, other.Player)) return false;
       if (JoinTime != other.JoinTime) return false;
+      if (IP != other.IP) return false;
+      if (Port != other.Port) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -154,6 +181,8 @@ namespace GamePlay.GameLobby {
       if (GameID != 0) hash ^= GameID.GetHashCode();
       if (player_ != null) hash ^= Player.GetHashCode();
       if (JoinTime != 0L) hash ^= JoinTime.GetHashCode();
+      if (IP.Length != 0) hash ^= IP.GetHashCode();
+      if (Port != 0) hash ^= Port.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -183,6 +212,14 @@ namespace GamePlay.GameLobby {
         output.WriteRawTag(32);
         output.WriteInt64(JoinTime);
       }
+      if (IP.Length != 0) {
+        output.WriteRawTag(42);
+        output.WriteString(IP);
+      }
+      if (Port != 0) {
+        output.WriteRawTag(48);
+        output.WriteInt32(Port);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -202,6 +239,12 @@ namespace GamePlay.GameLobby {
       }
       if (JoinTime != 0L) {
         size += 1 + pb::CodedOutputStream.ComputeInt64Size(JoinTime);
+      }
+      if (IP.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(IP);
+      }
+      if (Port != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Port);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -228,6 +271,12 @@ namespace GamePlay.GameLobby {
       }
       if (other.JoinTime != 0L) {
         JoinTime = other.JoinTime;
+      }
+      if (other.IP.Length != 0) {
+        IP = other.IP;
+      }
+      if (other.Port != 0) {
+        Port = other.Port;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -257,6 +306,14 @@ namespace GamePlay.GameLobby {
           }
           case 32: {
             JoinTime = input.ReadInt64();
+            break;
+          }
+          case 42: {
+            IP = input.ReadString();
+            break;
+          }
+          case 48: {
+            Port = input.ReadInt32();
             break;
           }
         }

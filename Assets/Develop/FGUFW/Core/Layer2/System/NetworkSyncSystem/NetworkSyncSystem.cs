@@ -100,7 +100,7 @@ namespace FGUFW.Core
             }
             byte[] msgBuffer = frame.ToByteArray();
 
-            var sendBuffer = NetworkUtility.Encode(NetworkUtility.APP_ID,_gameplayID,FRAME_CMD,msgBuffer);
+            var sendBuffer = NetworkUtility.EncodeU(NetworkUtility.APP_ID,_gameplayID,FRAME_CMD,msgBuffer);
             // Debug.LogWarning(f_idx);
             printTimeDic.Add(f_idx,DateTime.Now.UnixMilliseconds());
             for (int i = 0; i < NetworkUtility.BROADCAST_COUNT; i++)
@@ -130,7 +130,7 @@ namespace FGUFW.Core
                 ushort appID=0,length=0;
                 uint cmd=0;
                 long gameplayID=0;
-                if(buffer.Length>=NetworkUtility.PACK_HEAD_LENGTH && NetworkUtility.Decode(buffer,ref appID,ref length,ref gameplayID,ref cmd))
+                if(buffer.Length>=NetworkUtility.PACK_HEAD_LENGTH && NetworkUtility.DecodeU(ref appID,ref length,ref gameplayID,ref cmd,buffer,0,buffer.Length))
                 {
                     // Debug.Log("cmd "+cmd);
                     if(cmd==FRAME_CMD)

@@ -101,15 +101,22 @@ namespace GamePlay.GameLobby
 
         private void createGamePlay(GameItemData data)
         {
+            var gameplayServer = new SyncServer(data.PlayerMaxCount);
+
             PB_OnlineGame gameplay = new PB_OnlineGame();
             gameplay.GameID = data.ID;
             gameplay.Player = _playManager.Module<OnlineGameModule>().SelfInfo;
             gameplay.GamePlayID = DateTime.Now.UnixMilliseconds();
             gameplay.JoinTime = DateTime.Now.UnixMilliseconds();
+            gameplay.IP = gameplayServer.LocalIPEndPoint.Address.ToString();
+            gameplay.Port = gameplayServer.LocalIPEndPoint.Port;
 
-            _selectGamePlayID = gameplay.GamePlayID;
-            showOnlineGameInfo();
-            _playManager.Messenger.Broadcast(GameLobbyMsgID.OnCreateGame,gameplay);
+            // _selectGamePlayID = gameplay.GamePlayID;
+            // showOnlineGameInfo();
+            // _playManager.Messenger.Broadcast(GameLobbyMsgID.OnCreateGame,gameplay);
+
+            gameplayServer.Data = gameplay;
+            _playManager.Messenger.Broadcast(GameLobbyMsgID.OnCreateGame,gameplayServer);
         }
 
         private void showOnlineGameList()
