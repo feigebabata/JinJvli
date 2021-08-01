@@ -12,7 +12,7 @@ namespace GamePlay.StepGrid
     {
         public IMessenger<StepGridMsgID,object> Messenger = new Messenger<StepGridMsgID,object>();
         // public INetworkSyncSystem NetworkSyncSystem;
-        public PB_GameStart GameStart{get; private set;}
+        public PB_OnlineGame OnlineGame{get; private set;}
         public PB_Player SelfInfo{get; private set;}
         public StepGridConfig StepGridConfig;
         public IFrameSyncSystem FrameSyncSystem;
@@ -21,11 +21,11 @@ namespace GamePlay.StepGrid
         {
             base.Create(datas);
 
-            GameStart = datas[0] as PB_GameStart;
-            GamePlayID=GameStart.GamePlayID;
+            OnlineGame = datas[0] as PB_OnlineGame;
+            GamePlayID=OnlineGame.GamePlayID;
             var playerInfo = datas[1] as PB_PlayerInfo;
 
-            foreach (var player in GameStart.Players)
+            foreach (var player in OnlineGame.Players)
             {
                 if(player.PlayerInfo.ID==playerInfo.ID)
                 {
@@ -40,7 +40,7 @@ namespace GamePlay.StepGrid
             // NetworkSyncSystem.OnEnable();
 
             FrameSyncSystem = new FrameSyncSystem();
-            FrameSyncSystem.OnInit(GameStart.Players.Count,SelfInfo.PlaceIndex,GamePlayID);
+            FrameSyncSystem.OnInit(OnlineGame.Players.Count,SelfInfo.PlaceIndex,GamePlayID);
 
             loadScene();
         }

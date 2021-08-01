@@ -48,30 +48,6 @@ namespace FGUFW.Core
             }
         }
 
-        // static async void receive()
-        // {
-        //     try
-        //     {
-        //         receiveBuffer = null;
-        //         var result = await receiveClient.ReceiveAsync(); 
-        //         receiveBuffer = result.Buffer;
-        //     }
-        //     catch// (System.Exception ex)
-        //     {
-        //         // Debug.LogError(ex);
-        //     }
-
-        //     if(receiveBuffer!=null)
-        //     {
-        //         OnReceive?.Invoke(receiveBuffer);
-        //     }
-
-        //     if(broadcastIEP!=null)
-        //     {
-        //         receive();
-        //     }
-        // }
-
         static async void receive()
         {
             while (broadcastIEP!=null)

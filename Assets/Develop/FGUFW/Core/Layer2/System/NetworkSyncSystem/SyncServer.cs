@@ -24,6 +24,7 @@ namespace FGUFW.Core
 
         public IPEndPoint LocalIPEndPoint => _server?.LocalEndpoint as IPEndPoint;
         private Dictionary<string,TcpClient> _clients = new Dictionary<string, TcpClient>();
+        private Dictionary<string,PB_Player> _players = new Dictionary<string, PB_Player>();
         private bool _acceptEnd=false;
         public object Data;
 
@@ -47,7 +48,6 @@ namespace FGUFW.Core
             }
             _server.Start();
             acceptClient(_server);
-            broadcast();
         }
 
         public void Dispose()
@@ -127,18 +127,7 @@ namespace FGUFW.Core
             }
         }
 
-        private async void broadcast()
-        {
-            await Task.Delay(500);
-            var data = Data as PB_OnlineGame; 
-            
-            var sendData = NetworkUtility.EncodeU(NetworkUtility.APP_ID,NetworkUtility.GAMELOBBY_GPID,ONLINE_GAME_CMD,data.ToByteArray());
-            while (!_acceptEnd)
-            {
-                UdpBroadcastUtility.Send(sendData);
-                await Task.Delay(500);
-            }
-        }
+
 
     }
 }

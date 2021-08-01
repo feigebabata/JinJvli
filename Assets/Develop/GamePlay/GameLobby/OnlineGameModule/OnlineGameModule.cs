@@ -17,8 +17,7 @@ namespace GamePlay.GameLobby
         
         private  OnlineGameModuleInput _moduleInput;
         private  OnlineGameModuleOutput _moduleOutput;
-        private long _selectGamePlayID;
-        private Coroutine _broadcastGamePlay;
+        public long SelectGamePlayID;
         private bool _isEnterGame=false;
         private SyncClient _syncClient;
 
@@ -39,8 +38,6 @@ namespace GamePlay.GameLobby
 
         public override void Dispose()
         {
-            _broadcastGamePlay?.Stop();
-            _broadcastGamePlay=null;
             UdpBroadcastUtility.OnReceive -= onReceiveBroadcast;
 
             
@@ -73,25 +70,31 @@ namespace GamePlay.GameLobby
 
         private void onExitGame(object obj)
         {
-            _broadcastGamePlay?.Stop();
-            _broadcastGamePlay = null;
         }
 
         private void onJoinGame(object obj)
         {
             var gameplay = obj as PB_OnlineGame;
-            _selectGamePlayID = gameplay.GamePlayID;
-            _broadcastGamePlay?.Stop();
-            // _broadcastGamePlay = broadcastOnlineGame(gameplay).Start();
+            SelectGamePlayID = gameplay.GamePlayID;
         }
 
         private void onCreateGame(object obj)
         {
-            var gameplayServer = obj as SyncServer;
-            var gameplay = gameplayServer.Data as PB_OnlineGame;
-            _selectGamePlayID = gameplay.GamePlayID;
-            _broadcastGamePlay?.Stop();
-            // _broadcastGamePlay = broadcastOnlineGame(gameplay).Start();
+            GameItemData gameItemData = obj as GameItemData;
+
+            var gameplayServer = new SyncServer(gameItemData.PlayerMaxCount);
+
+            PB_OnlineGame gameplay = new PB_OnlineGame();
+            gameplay.GameID = gameItemData.ID;
+            gameplay.GamePlayID = DateTime.Now.UnixMilliseconds();
+            gameplay.IP = gameplayServer.LocalIPEndPoint.Address.ToString();
+            gameplay.Port = gameplayServer.LocalIPEndPoint.Port;
+
+            gameplayServer.Data = gameplay;
+
+            SelectGamePlayID = gameplay.GamePlayID;
+            
+            createSyncClient(gameplay);
         }
 
         private void onClickBack(object obj)
@@ -179,24 +182,29 @@ namespace GamePlay.GameLobby
         private void onConnectServer(string obj)
         {
             Debug.Log("服务器连接成功"+obj);
+            PB_JoinGame joinGame = new PB_JoinGame
+            {
+                PlayerInfo = SelfInfo,
+            };
+            _syncClient.Send(joinGame.ToByteArray());
         }
 
         private 
 
-        IEnumerator enterGame(PB_GameStart gameStart)
+        IEnumerator enterGame(PB_OnlineGame onlineGame)
         {
             if(_isEnterGame)
             {
                 yield break;
             }
             _isEnterGame=true;
-            var gameData = _playManager.GameDatas[gameStart.GameID];
+            var gameData = _playManager.GameDatas[onlineGame.GameID];
             
             Assembly assembly = Assembly.GetExecutingAssembly(); // 获取当前程序集 
             var playManager = assembly.CreateInstance(gameData.TypeName) as PlayManager; 
 
             _playManager.Destroy();
-            playManager.Create(gameStart,SelfInfo);
+            playManager.Create(onlineGame,SelfInfo);
         }
 
         private void addOnlineGame(PB_OnlineGame onlineGame)

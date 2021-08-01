@@ -101,6 +101,7 @@ namespace FGUFW.Core
 
         private void onReceiveFrame(byte[] buffer)
         {
+            //玩家操作帧数据解析
             PB_Frame frame = null;
             try
             {
@@ -127,6 +128,7 @@ namespace FGUFW.Core
                 {
                     int frameIndex = frame.Index;
                     int placeID = frame.PlaceIndex;
+                    //LogicFrames 逻辑帧集合 
                     while(frameIndex >= LogicFrames.Count)
                     {
                         LogicFrames.Add(new LogicFrame()
@@ -135,6 +137,8 @@ namespace FGUFW.Core
                         });
                     }
                     var logicFrame = LogicFrames[frameIndex];
+
+                    //逻辑帧由所有所有玩家的操作帧组成
                     if(logicFrame.Frames[placeID]==null)
                     {
                         Debug.Log($"receive placeID {placeID} , frameIndex {frameIndex}");
@@ -150,6 +154,8 @@ namespace FGUFW.Core
                                     playerCount++;
                                 }
                             }
+
+                            //收到所有玩家输入 逻辑帧完成
                             if(playerCount==_playerCount)
                             {
                                 lock (frameSendTimesLock)
@@ -160,6 +166,7 @@ namespace FGUFW.Core
                                         frameSendTimes.Remove(frameIndex);
                                     }
                                 }
+                                //逻辑帧更新
                                 OnLogicFrameUpdate(logicFrame);
                             }
                         }

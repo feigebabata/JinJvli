@@ -16,6 +16,12 @@ namespace FGUFW.Core
         private List<Listener> _listeners = new List<Listener>();
         private Dictionary<string,RaycastHit> _selectDic = new Dictionary<string, RaycastHit>();
 
+
+        protected override bool IsDontDestroyOnLoad()
+        {
+            return true;
+        }
+        
         protected override void Init()
         {
             base.Init();

@@ -7,6 +7,12 @@ namespace FGUFW.Core
 {
     public class ApplicationEvent : MonoSingleton<ApplicationEvent>
     {
+
+        protected override bool IsDontDestroyOnLoad()
+        {
+            return true;
+        }
+        
         void Update()
         {
             if(Input.GetKeyDown(KeyCode.Escape))

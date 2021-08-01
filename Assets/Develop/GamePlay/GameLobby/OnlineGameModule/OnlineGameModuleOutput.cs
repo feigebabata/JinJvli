@@ -17,7 +17,6 @@ namespace GamePlay.GameLobby
         private GameItemDatas _gameItemDatas;
         private OnlineGameUIComps _uiComps;
         private UIListType _currentList = UIListType.OnlineGame;
-        private long _selectGamePlayID;
         private Coroutine _resetListItem;
         private Coroutine _characterMoveCor;
         private Coroutine _characterRotateCor;
@@ -101,20 +100,8 @@ namespace GamePlay.GameLobby
 
         private void createGamePlay(GameItemData data)
         {
-            var gameplayServer = new SyncServer(data.PlayerMaxCount);
-
-            PB_OnlineGame gameplay = new PB_OnlineGame();
-            gameplay.GameID = data.ID;
-            gameplay.GamePlayID = DateTime.Now.UnixMilliseconds();
-            gameplay.IP = gameplayServer.LocalIPEndPoint.Address.ToString();
-            gameplay.Port = gameplayServer.LocalIPEndPoint.Port;
-
-            // _selectGamePlayID = gameplay.GamePlayID;
-            // showOnlineGameInfo();
-            // _playManager.Messenger.Broadcast(GameLobbyMsgID.OnCreateGame,gameplay);
-
-            gameplayServer.Data = gameplay;
-            _playManager.Messenger.Broadcast(GameLobbyMsgID.OnCreateGame,gameplayServer);
+            _playManager.Messenger.Broadcast(GameLobbyMsgID.OnCreateGame,data);
+            showOnlineGameInfo();
         }
 
         private void showOnlineGameList()
@@ -151,7 +138,7 @@ namespace GamePlay.GameLobby
             {
                 _playManager.Messenger.Broadcast(GameLobbyMsgID.OnJoinGame,onlineGame);
 
-                _selectGamePlayID = onlineGame.GamePlayID;
+                _playManager.Module<OnlineGameModule>().SelectGamePlayID = onlineGame.GamePlayID;
                 showOnlineGameInfo();
             });
         }
@@ -186,15 +173,20 @@ namespace GamePlay.GameLobby
 
         private void showOnlineGameInfo()
         {
-            _uiComps.NoList.SetActive(false);
             _currentList = UIListType.GamePlay;
+            _uiComps.NoList.SetActive(true);
+            if(!_playManager.Module<OnlineGameModule>().OnlineGameDic.ContainsKey(_playManager.Module<OnlineGameModule>().SelectGamePlayID))
+            {
+                return;
+            }
+            _uiComps.NoList.SetActive(false);
             GlobalMessenger.M.Add(GlobalMsgID.OnBackKey,onClickExitBtn,1);
             _uiComps.Online.gameObject.SetActive(false);
             _uiComps.Create.gameObject.SetActive(false);
             _uiComps.Start.gameObject.SetActive(true);
             _uiComps.Exit.gameObject.SetActive(true);
             
-            var onlineGame = _playManager.Module<OnlineGameModule>().OnlineGameDic[_selectGamePlayID];
+            var onlineGame = _playManager.Module<OnlineGameModule>().OnlineGameDic[_playManager.Module<OnlineGameModule>().SelectGamePlayID];
             _uiComps.ItemList.ResetListItem<PB_Player>(onlineGame.Players.GetEnumerator(),resetOnlineGameInfoItem);
         }
 

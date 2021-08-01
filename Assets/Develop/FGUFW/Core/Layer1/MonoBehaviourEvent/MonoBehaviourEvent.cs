@@ -11,6 +11,12 @@ namespace FGUFW.Core
         public Action LateUpdateListener;
 
 
+        protected override bool IsDontDestroyOnLoad()
+        {
+            return true;
+        }
+        
+
         void Update()
         {
             UpdateListener?.Invoke();

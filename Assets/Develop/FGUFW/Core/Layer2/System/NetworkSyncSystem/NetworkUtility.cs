@@ -16,7 +16,7 @@ namespace FGUFW.Core
         public const ushort PACK_APPID_LENGTH = 2;
         public const ushort PACK_LEN_LENGTH = 2;
         public const ushort PACK_CMD_LENGTH = 4;
-        public const int BROADCAST_COUNT = 3;
+        public const int BROADCAST_COUNT = 1;
         public const int GAMELOBBY_GPID = 0;
         
         public const uint GAMESTART_CMD=1;

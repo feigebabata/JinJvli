@@ -120,7 +120,7 @@ namespace GamePlay.StepGrid
             Color color = _playManager.StepGridConfig.DefCol;
             if(DefaultModule.GridIsTarget(grid.Index,gridListData,_playManager.StepGridConfig.GridGroupWidth))
             {
-                int placeID = DefaultModule.Index2PlaceID(grid.Index,_playManager.StepGridConfig.GridGroupWidth,_playManager.GameStart.Players.Count);
+                int placeID = DefaultModule.Index2PlaceID(grid.Index,_playManager.StepGridConfig.GridGroupWidth,_playManager.OnlineGame.Players.Count);
                 color = _playManager.StepGridConfig.Setas[placeID].Color;
             }
             grid.GetComponent<MeshRenderer>().material.color = color;
@@ -129,7 +129,7 @@ namespace GamePlay.StepGrid
         private void onPlayStop(object obj)
         {
             int placeID = (int)obj;
-            Debug.LogWarning(_playManager.GameStart.Players[placeID].PlayerInfo.Nickname+" 输了");
+            Debug.LogWarning(_playManager.OnlineGame.Players[placeID].PlayerInfo.Nickname+" 输了");
             _playManager.FrameSyncSystem.OnDisable();
             loadStopPanel();
             MonoBehaviourEvent.I.UpdateListener -= gridPosUpdate;
@@ -185,7 +185,7 @@ namespace GamePlay.StepGrid
         private IEnumerator resetPlayPanel()
         {
             StringBuilder sb=new StringBuilder();
-            foreach (var player in _playManager.GameStart.Players)
+            foreach (var player in _playManager.OnlineGame.Players)
             {
                 sb.AppendLine($"{_playManager.StepGridConfig.Setas[player.PlaceIndex].Color.RichText(player.PlayerInfo.Nickname)}");
             }
@@ -202,7 +202,7 @@ namespace GamePlay.StepGrid
                 var readys = _playManager.Module<DefaultModule>().GameReadys;
                 for (int i = 0; i < readys.Length; i++)
                 {
-                    var player = _playManager.GameStart.Players[i];
+                    var player = _playManager.OnlineGame.Players[i];
                     if(readys[i])
                     {
                         sb.AppendLine($"{_playManager.StepGridConfig.Setas[player.PlaceIndex].Color.RichText(player.PlayerInfo.Nickname)} 已准备");  

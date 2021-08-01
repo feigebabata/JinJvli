@@ -7,6 +7,12 @@ namespace FGUFW.Core
 {
 	public class CoroutineCore:MonoSingleton<CoroutineCore> 
 	{
+
+        protected override bool IsDontDestroyOnLoad()
+        {
+            return true;
+        }
+		
 		public enum IOStatus
 		{
 			None,
@@ -104,6 +110,5 @@ namespace FGUFW.Core
 			_lastID++;
 			return _lastID;
 		}
-		
-	}
+    }
 }

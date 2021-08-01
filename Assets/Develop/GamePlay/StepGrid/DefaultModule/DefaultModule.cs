@@ -33,7 +33,7 @@ namespace GamePlay.StepGrid
             _playManager.Messenger.Add(StepGridMsgID.Stop,onGameStop);
 
             GridListData = createGridListData(666);
-            GameReadys = new bool[_playManager.GameStart.Players.Count];
+            GameReadys = new bool[_playManager.OnlineGame.Players.Count];
             MonoBehaviourEvent.I.UpdateListener+=Update;
         }
 
@@ -119,7 +119,7 @@ namespace GamePlay.StepGrid
         private void onClickGrid(object obj)
         {
             PB_ClickGrid clickGrid = obj as PB_ClickGrid;
-            int placeID = Index2PlaceID(clickGrid.Index,_playManager.StepGridConfig.GridGroupWidth,_playManager.GameStart.Players.Count);
+            int placeID = Index2PlaceID(clickGrid.Index,_playManager.StepGridConfig.GridGroupWidth,_playManager.OnlineGame.Players.Count);
             // Debug.LogWarning(placeID);
             if(!GridIsTarget(clickGrid.Index,GridListData,_playManager.StepGridConfig.GridGroupWidth) || clickGrid.PlaceIndex!=placeID)
             {
@@ -132,7 +132,7 @@ namespace GamePlay.StepGrid
         {
             int index = (int)obj;
             int line = index/_playManager.StepGridConfig.GridGroupWidth;
-            int placeID = line%_playManager.GameStart.Players.Count;
+            int placeID = line%_playManager.OnlineGame.Players.Count;
             if(GridIsTarget(index,GridListData,4) && !_clickGrids.Contains(index))
             {
                 // _playManager.Messenger.Broadcast(StepGridMsgID.Stop,placeID);

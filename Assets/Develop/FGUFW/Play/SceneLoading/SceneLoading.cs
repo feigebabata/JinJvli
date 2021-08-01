@@ -9,6 +9,12 @@ namespace FGUFW.Play
     {
         const float MIN_SHOW_TIME=1;
         float showTime;
+
+        protected override bool IsDontDestroyOnLoad()
+        {
+            return true;
+        }
+        
         public void Show()
         {
             gameObject.SetActive(true);
