@@ -5,6 +5,9 @@ using System.Net.Sockets;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using GamePlay.GameLobby;
+using System.Threading.Tasks;
+using Google.Protobuf;
 
 namespace FGUFW.Core
 {
@@ -13,6 +16,9 @@ namespace FGUFW.Core
         public const int PORT_MIN=33000;
         
         public const int PORT_MAX=33100;
+
+        public const int ONLINE_GAME_CMD = 3;
+
         private int _playerMaxCount;
         private TcpListener _server;
 
@@ -41,6 +47,7 @@ namespace FGUFW.Core
             }
             _server.Start();
             acceptClient(_server);
+            broadcast();
         }
 
         public void Dispose()
@@ -119,5 +126,19 @@ namespace FGUFW.Core
                 Debug.LogError(ex);
             }
         }
+
+        private async void broadcast()
+        {
+            await Task.Delay(500);
+            var data = Data as PB_OnlineGame; 
+            
+            var sendData = NetworkUtility.EncodeU(NetworkUtility.APP_ID,NetworkUtility.GAMELOBBY_GPID,ONLINE_GAME_CMD,data.ToByteArray());
+            while (!_acceptEnd)
+            {
+                UdpBroadcastUtility.Send(sendData);
+                await Task.Delay(500);
+            }
+        }
+
     }
 }

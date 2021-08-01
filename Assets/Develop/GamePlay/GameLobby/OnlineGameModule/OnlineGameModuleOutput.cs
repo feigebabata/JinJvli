@@ -105,9 +105,7 @@ namespace GamePlay.GameLobby
 
             PB_OnlineGame gameplay = new PB_OnlineGame();
             gameplay.GameID = data.ID;
-            gameplay.Player = _playManager.Module<OnlineGameModule>().SelfInfo;
             gameplay.GamePlayID = DateTime.Now.UnixMilliseconds();
-            gameplay.JoinTime = DateTime.Now.UnixMilliseconds();
             gameplay.IP = gameplayServer.LocalIPEndPoint.Address.ToString();
             gameplay.Port = gameplayServer.LocalIPEndPoint.Port;
 
@@ -128,68 +126,32 @@ namespace GamePlay.GameLobby
             _uiComps.Start.gameObject.SetActive(false);
             _uiComps.Exit.gameObject.SetActive(false);
             var module = _playManager.Module<OnlineGameModule>();
-            var dataDic = new Dictionary<long,List<PB_OnlineGame>>();
 
-            lock(module.OnlineGameDicLock)
-            {
-                List<float> removes = new List<float>();
-                foreach (var item in module.OnlineGameDic)
-                {
-                    //离线3秒 认为退出
-                    // Debug.Log($"{Time.time}  {item.Key}");
-                    if(Time.time-item.Key>1)
-                    {
-                        removes.Add(item.Key);
-                    }
-                }
-                foreach (var key in removes)
-                {
-                    module.OnlineGameDic.Remove(key);
-                }
-
-                foreach (var item in module.OnlineGameDic)
-                {
-                    if(dataDic.ContainsKey(item.Value.GamePlayID))
-                    {
-                        dataDic[item.Value.GamePlayID].Add(item.Value);
-                    }
-                    else
-                    {
-                        dataDic.Add(item.Value.GamePlayID,new List<PB_OnlineGame>(){item.Value});
-                    }
-                    dataDic[item.Value.GamePlayID].Sort((l,r)=>{return (int)(l.JoinTime-r.JoinTime);});
-                }
-
-            }
-            var dictSort = from kv in dataDic orderby kv.Key  descending select kv;
-            _uiComps.ItemList.ResetListItem<KeyValuePair<long, List<PB_OnlineGame>>>(dictSort.GetEnumerator(),resetOnlineGameItem);
+            var dictSort = from kv in module.OnlineGameDic orderby kv.Key  descending select kv;
+            _uiComps.ItemList.ResetListItem<KeyValuePair<long, PB_OnlineGame>>(dictSort.GetEnumerator(),resetOnlineGameItem);
 
         }
 
-        private void resetOnlineGameItem(KeyValuePair<long, List<PB_OnlineGame>> list,Transform item_t)
+        private void resetOnlineGameItem(KeyValuePair<long, PB_OnlineGame> kv,Transform item_t)
         {
             _uiComps.NoList.SetActive(false);
-            var gamedata = _playManager.GameDatas[list.Value[0].GameID];
+            var onlineGame = kv.Value;
+            var gamedata = _playManager.GameDatas[onlineGame.GameID];
             string content = gamedata.Name+" : ";
-            foreach (var onlineGame in list.Value)
+            foreach (var player in onlineGame.Players)
             {
-                content = content + onlineGame.Player.Nickname+" ";
+                content = content + player.PlayerInfo.Nickname+" ";
             }
-            content = content + Color.yellow.RichText($"({list.Value.Count}/{gamedata.PlayerMaxCount})");
+            content = content + Color.yellow.RichText($"({onlineGame.Players.Count}/{gamedata.PlayerMaxCount})");
 
             item_t.GetChild(0).GetComponent<Image>().sprite = gamedata.Icon;
             item_t.GetChild(1).GetComponent<Text>().text = content;
             item_t.GetComponent<Button>().onClick.RemoveAllListeners();
             item_t.GetComponent<Button>().onClick.AddListener(()=>
             {
-                PB_OnlineGame gameplay = new PB_OnlineGame();
-                gameplay.GameID = list.Value[0].GameID;
-                gameplay.GamePlayID = list.Value[0].GamePlayID;
-                gameplay.JoinTime = DateTime.Now.UnixMilliseconds();
-                gameplay.Player = _playManager.Module<OnlineGameModule>().SelfInfo;
-                _playManager.Messenger.Broadcast(GameLobbyMsgID.OnJoinGame,gameplay);
+                _playManager.Messenger.Broadcast(GameLobbyMsgID.OnJoinGame,onlineGame);
 
-                _selectGamePlayID = list.Key;
+                _selectGamePlayID = onlineGame.GamePlayID;
                 showOnlineGameInfo();
             });
         }
@@ -231,22 +193,15 @@ namespace GamePlay.GameLobby
             _uiComps.Create.gameObject.SetActive(false);
             _uiComps.Start.gameObject.SetActive(true);
             _uiComps.Exit.gameObject.SetActive(true);
-            var datas =new List<PB_OnlineGame>();
-            foreach (var item in _playManager.Module<OnlineGameModule>().OnlineGameDic)
-            {
-                if(item.Value.GamePlayID==_selectGamePlayID)
-                {
-                    datas.Add(item.Value);
-                }
-            }
-            datas.Sort((l,r)=>{return (int)(l.JoinTime-r.JoinTime);});
-            _uiComps.ItemList.ResetListItem<PB_OnlineGame>(datas.GetEnumerator(),resetOnlineGameInfoItem);
+            
+            var onlineGame = _playManager.Module<OnlineGameModule>().OnlineGameDic[_selectGamePlayID];
+            _uiComps.ItemList.ResetListItem<PB_Player>(onlineGame.Players.GetEnumerator(),resetOnlineGameInfoItem);
         }
 
-        private void resetOnlineGameInfoItem(PB_OnlineGame data,Transform item_t)
+        private void resetOnlineGameInfoItem(PB_Player player,Transform item_t)
         {
-            item_t.GetChild(0).GetComponent<Image>().sprite = _playManager.GameDatas[data.GameID].Icon;
-            item_t.GetChild(1).GetComponent<Text>().text = data.Player.Nickname;
+            item_t.GetChild(0).GetComponent<Image>().sprite = null;
+            item_t.GetChild(1).GetComponent<Text>().text = player.PlayerInfo.Nickname;
         }
 
         IEnumerator resetListItem()

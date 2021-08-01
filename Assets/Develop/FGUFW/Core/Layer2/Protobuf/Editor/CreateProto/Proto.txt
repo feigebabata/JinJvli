@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 /*
-引用库 同级目录文件 import "XXX.proto"; 
+引用库 例 import "Develop/FGUFW/Core/Layer2/System/NetworkSyncSystem/Data/MsgData.proto"; 
 类型proto>>C# 
 uint32:uint 
 sint32:int   含有负值时效率比int32高

@@ -33,7 +33,11 @@ namespace FGUFW.Core {
             "EgoKUGxhY2VJbmRleBgCIAEoBSJaCgxQQl9HYW1lU3RhcnQSEgoKR2FtZVBs",
             "YXlJRBgBIAEoAxIOCgZHYW1lSUQYAiABKAUSJgoHUGxheWVycxgDIAMoCzIV",
             "LkZHVUZXLkNvcmUuUEJfUGxheWVyIiIKDFBCX0dhbWVSZWFkeRISCgpQbGFj",
-            "ZUluZGV4GAEgASgFYgZwcm90bzM="));
+            "ZUluZGV4GAEgASgFInUKDVBCX09ubGluZUdhbWUSEgoKR2FtZVBsYXlJRBgB",
+            "IAEoAxIOCgZHYW1lSUQYAiABKAUSJgoHUGxheWVycxgDIAMoCzIVLkZHVUZX",
+            "LkNvcmUuUEJfUGxheWVyEgoKAklQGAQgASgJEgwKBFBvcnQYBSABKAUiPAoL",
+            "UEJfSm9pbkdhbWUSLQoKUGxheWVySW5mbxgBIAEoCzIZLkZHVUZXLkNvcmUu",
+            "UEJfUGxheWVySW5mb2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
@@ -41,7 +45,9 @@ namespace FGUFW.Core {
             new pbr::GeneratedClrTypeInfo(typeof(global::FGUFW.Core.PB_PlayerInfo), global::FGUFW.Core.PB_PlayerInfo.Parser, new[]{ "Nickname", "ID" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::FGUFW.Core.PB_Player), global::FGUFW.Core.PB_Player.Parser, new[]{ "PlayerInfo", "PlaceIndex" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::FGUFW.Core.PB_GameStart), global::FGUFW.Core.PB_GameStart.Parser, new[]{ "GamePlayID", "GameID", "Players" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::FGUFW.Core.PB_GameReady), global::FGUFW.Core.PB_GameReady.Parser, new[]{ "PlaceIndex" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::FGUFW.Core.PB_GameReady), global::FGUFW.Core.PB_GameReady.Parser, new[]{ "PlaceIndex" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::FGUFW.Core.PB_OnlineGame), global::FGUFW.Core.PB_OnlineGame.Parser, new[]{ "GamePlayID", "GameID", "Players", "IP", "Port" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::FGUFW.Core.PB_JoinGame), global::FGUFW.Core.PB_JoinGame.Parser, new[]{ "PlayerInfo" }, null, null, null)
           }));
     }
     #endregion
@@ -873,6 +879,380 @@ namespace FGUFW.Core {
             break;
           case 8: {
             PlaceIndex = input.ReadInt32();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  public sealed partial class PB_OnlineGame : pb::IMessage<PB_OnlineGame> {
+    private static readonly pb::MessageParser<PB_OnlineGame> _parser = new pb::MessageParser<PB_OnlineGame>(() => new PB_OnlineGame());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<PB_OnlineGame> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::FGUFW.Core.MsgDataReflection.Descriptor.MessageTypes[5]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public PB_OnlineGame() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public PB_OnlineGame(PB_OnlineGame other) : this() {
+      gamePlayID_ = other.gamePlayID_;
+      gameID_ = other.gameID_;
+      players_ = other.players_.Clone();
+      iP_ = other.iP_;
+      port_ = other.port_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public PB_OnlineGame Clone() {
+      return new PB_OnlineGame(this);
+    }
+
+    /// <summary>Field number for the "GamePlayID" field.</summary>
+    public const int GamePlayIDFieldNumber = 1;
+    private long gamePlayID_;
+    /// <summary>
+    ///房间id
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public long GamePlayID {
+      get { return gamePlayID_; }
+      set {
+        gamePlayID_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "GameID" field.</summary>
+    public const int GameIDFieldNumber = 2;
+    private int gameID_;
+    /// <summary>
+    ///游戏id
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int GameID {
+      get { return gameID_; }
+      set {
+        gameID_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "Players" field.</summary>
+    public const int PlayersFieldNumber = 3;
+    private static readonly pb::FieldCodec<global::FGUFW.Core.PB_Player> _repeated_players_codec
+        = pb::FieldCodec.ForMessage(26, global::FGUFW.Core.PB_Player.Parser);
+    private readonly pbc::RepeatedField<global::FGUFW.Core.PB_Player> players_ = new pbc::RepeatedField<global::FGUFW.Core.PB_Player>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<global::FGUFW.Core.PB_Player> Players {
+      get { return players_; }
+    }
+
+    /// <summary>Field number for the "IP" field.</summary>
+    public const int IPFieldNumber = 4;
+    private string iP_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string IP {
+      get { return iP_; }
+      set {
+        iP_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "Port" field.</summary>
+    public const int PortFieldNumber = 5;
+    private int port_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int Port {
+      get { return port_; }
+      set {
+        port_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as PB_OnlineGame);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(PB_OnlineGame other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (GamePlayID != other.GamePlayID) return false;
+      if (GameID != other.GameID) return false;
+      if(!players_.Equals(other.players_)) return false;
+      if (IP != other.IP) return false;
+      if (Port != other.Port) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (GamePlayID != 0L) hash ^= GamePlayID.GetHashCode();
+      if (GameID != 0) hash ^= GameID.GetHashCode();
+      hash ^= players_.GetHashCode();
+      if (IP.Length != 0) hash ^= IP.GetHashCode();
+      if (Port != 0) hash ^= Port.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (GamePlayID != 0L) {
+        output.WriteRawTag(8);
+        output.WriteInt64(GamePlayID);
+      }
+      if (GameID != 0) {
+        output.WriteRawTag(16);
+        output.WriteInt32(GameID);
+      }
+      players_.WriteTo(output, _repeated_players_codec);
+      if (IP.Length != 0) {
+        output.WriteRawTag(34);
+        output.WriteString(IP);
+      }
+      if (Port != 0) {
+        output.WriteRawTag(40);
+        output.WriteInt32(Port);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (GamePlayID != 0L) {
+        size += 1 + pb::CodedOutputStream.ComputeInt64Size(GamePlayID);
+      }
+      if (GameID != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(GameID);
+      }
+      size += players_.CalculateSize(_repeated_players_codec);
+      if (IP.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(IP);
+      }
+      if (Port != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Port);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(PB_OnlineGame other) {
+      if (other == null) {
+        return;
+      }
+      if (other.GamePlayID != 0L) {
+        GamePlayID = other.GamePlayID;
+      }
+      if (other.GameID != 0) {
+        GameID = other.GameID;
+      }
+      players_.Add(other.players_);
+      if (other.IP.Length != 0) {
+        IP = other.IP;
+      }
+      if (other.Port != 0) {
+        Port = other.Port;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 8: {
+            GamePlayID = input.ReadInt64();
+            break;
+          }
+          case 16: {
+            GameID = input.ReadInt32();
+            break;
+          }
+          case 26: {
+            players_.AddEntriesFrom(input, _repeated_players_codec);
+            break;
+          }
+          case 34: {
+            IP = input.ReadString();
+            break;
+          }
+          case 40: {
+            Port = input.ReadInt32();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  public sealed partial class PB_JoinGame : pb::IMessage<PB_JoinGame> {
+    private static readonly pb::MessageParser<PB_JoinGame> _parser = new pb::MessageParser<PB_JoinGame>(() => new PB_JoinGame());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<PB_JoinGame> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::FGUFW.Core.MsgDataReflection.Descriptor.MessageTypes[6]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public PB_JoinGame() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public PB_JoinGame(PB_JoinGame other) : this() {
+      playerInfo_ = other.playerInfo_ != null ? other.playerInfo_.Clone() : null;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public PB_JoinGame Clone() {
+      return new PB_JoinGame(this);
+    }
+
+    /// <summary>Field number for the "PlayerInfo" field.</summary>
+    public const int PlayerInfoFieldNumber = 1;
+    private global::FGUFW.Core.PB_PlayerInfo playerInfo_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::FGUFW.Core.PB_PlayerInfo PlayerInfo {
+      get { return playerInfo_; }
+      set {
+        playerInfo_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as PB_JoinGame);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(PB_JoinGame other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (!object.Equals(PlayerInfo, other.PlayerInfo)) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (playerInfo_ != null) hash ^= PlayerInfo.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (playerInfo_ != null) {
+        output.WriteRawTag(10);
+        output.WriteMessage(PlayerInfo);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (playerInfo_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(PlayerInfo);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(PB_JoinGame other) {
+      if (other == null) {
+        return;
+      }
+      if (other.playerInfo_ != null) {
+        if (playerInfo_ == null) {
+          PlayerInfo = new global::FGUFW.Core.PB_PlayerInfo();
+        }
+        PlayerInfo.MergeFrom(other.PlayerInfo);
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            if (playerInfo_ == null) {
+              PlayerInfo = new global::FGUFW.Core.PB_PlayerInfo();
+            }
+            input.ReadMessage(PlayerInfo);
             break;
           }
         }

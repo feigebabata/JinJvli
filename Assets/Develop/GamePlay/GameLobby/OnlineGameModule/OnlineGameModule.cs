@@ -11,9 +11,8 @@ namespace GamePlay.GameLobby
 {
     public class  OnlineGameModule : PlayModule<GameLobbyPlayManager>
     {
-        public Dictionary<float,PB_OnlineGame> OnlineGameDic = new Dictionary<float, PB_OnlineGame>();
+        public Dictionary<long,PB_OnlineGame> OnlineGameDic = new Dictionary<long, PB_OnlineGame>();
         public object OnlineGameDicLock = new object();
-        public const uint ONLINE_GAME_CMD=3;
         public PB_PlayerInfo SelfInfo;
         
         private  OnlineGameModuleInput _moduleInput;
@@ -34,7 +33,7 @@ namespace GamePlay.GameLobby
             _moduleOutput = new  OnlineGameModuleOutput(_playManager);
             _moduleInput = new  OnlineGameModuleInput(_playManager);
             UdpBroadcastUtility.Init();
-            UdpBroadcastUtility.OnReceive += onReceive;
+            UdpBroadcastUtility.OnReceive += onReceiveBroadcast;
             
         }
 
@@ -42,7 +41,9 @@ namespace GamePlay.GameLobby
         {
             _broadcastGamePlay?.Stop();
             _broadcastGamePlay=null;
-            UdpBroadcastUtility.OnReceive -= onReceive;
+            UdpBroadcastUtility.OnReceive -= onReceiveBroadcast;
+
+            
             UdpBroadcastUtility.Release();
             _moduleInput.Dispose();
             _moduleOutput.Dispose();
@@ -81,7 +82,7 @@ namespace GamePlay.GameLobby
             var gameplay = obj as PB_OnlineGame;
             _selectGamePlayID = gameplay.GamePlayID;
             _broadcastGamePlay?.Stop();
-            _broadcastGamePlay = broadcastOnlineGame(gameplay).Start();
+            // _broadcastGamePlay = broadcastOnlineGame(gameplay).Start();
         }
 
         private void onCreateGame(object obj)
@@ -90,7 +91,7 @@ namespace GamePlay.GameLobby
             var gameplay = gameplayServer.Data as PB_OnlineGame;
             _selectGamePlayID = gameplay.GamePlayID;
             _broadcastGamePlay?.Stop();
-            _broadcastGamePlay = broadcastOnlineGame(gameplay).Start();
+            // _broadcastGamePlay = broadcastOnlineGame(gameplay).Start();
         }
 
         private void onClickBack(object obj)
@@ -99,19 +100,8 @@ namespace GamePlay.GameLobby
             _playManager.Module<LobbyModule>().OnEnable();
         }
 
-        IEnumerator broadcastOnlineGame(PB_OnlineGame data)
+        private void onReceiveBroadcast(byte[] obj)
         {
-            var sendData = NetworkUtility.EncodeU(NetworkUtility.APP_ID,NetworkUtility.GAMELOBBY_GPID,ONLINE_GAME_CMD,data.ToByteArray());
-            while (true)
-            {
-                UdpBroadcastUtility.Send(sendData);
-                yield return new WaitForSeconds(0.5f);
-            }
-        }
-
-        private void onReceive(byte[] obj)
-        {
-            // Debug.Log(obj.Length);
             ushort appID=0,length=0;
             uint cmd=0;
             long gameplayID=0;
@@ -119,24 +109,16 @@ namespace GamePlay.GameLobby
             {
                 if(appID==NetworkUtility.APP_ID && length==obj.Length && gameplayID==NetworkUtility.GAMELOBBY_GPID)
                 {
-                    // Debug.LogWarning("cmd "+cmd);
-                    if(cmd==ONLINE_GAME_CMD)
+                    switch(cmd)
                     {
-                        PB_OnlineGame onlineGame = PB_OnlineGame.Parser.ParseFrom(obj,NetworkUtility.PACK_HEAD_LENGTH,length-NetworkUtility.PACK_HEAD_LENGTH);
-                        lock(OnlineGameDicLock)
-                        {
-                            addOnlineGame(Time.time,onlineGame);
-                        }
-                        if(onlineGame.Player.ID == SelfInfo.ID && _syncClient==null)
-                        {
-                            createSyncClient(onlineGame);
-                        }
+                        case SyncServer.ONLINE_GAME_CMD:
+                            PB_OnlineGame onlineGame = PB_OnlineGame.Parser.ParseFrom(obj,NetworkUtility.PACK_HEAD_LENGTH,length-NetworkUtility.PACK_HEAD_LENGTH);
+                            lock(OnlineGameDicLock)
+                            {
+                                addOnlineGame(onlineGame);
+                            }
+                        break;
                     }
-                    // else if(cmd==NetworkUtility.GAMESTART_CMD)
-                    // {
-                    //     PB_GameStart gameStart = PB_GameStart.Parser.ParseFrom(obj,NetworkUtility.PACK_HEAD_LENGTH,length-NetworkUtility.PACK_HEAD_LENGTH);
-                    //     enterGame(gameStart).Enqueue();
-                    // }
                 }
             }
         }
@@ -217,45 +199,40 @@ namespace GamePlay.GameLobby
             playManager.Create(gameStart,SelfInfo);
         }
 
-        private void addOnlineGame(float time,PB_OnlineGame onlineGame)
+        private void addOnlineGame(PB_OnlineGame onlineGame)
         {
-            float key = -1;
-            foreach (var item in OnlineGameDic)
+            if(OnlineGameDic.ContainsKey(onlineGame.GamePlayID))
             {
-                if(item.Value.Player.ID==onlineGame.Player.ID && item.Value.GamePlayID==onlineGame.GamePlayID )
-                {
-                    key = item.Key;
-                }
+                OnlineGameDic[onlineGame.GamePlayID]=onlineGame;
             }
-            OnlineGameDic.Add(time,onlineGame);
-            if(key!=-1)
+            else
             {
-                OnlineGameDic.Remove(key);
+                OnlineGameDic.Add(onlineGame.GamePlayID,onlineGame);
             }
         }
 
         private void onClickStartBtn(object obj)
         {
             PB_GameStart gameStart = new PB_GameStart();
-            List<PB_OnlineGame> list = new List<PB_OnlineGame>();
-            foreach (var item in OnlineGameDic)
-            {
-                if(item.Value.GamePlayID==_selectGamePlayID)
-                {
-                    list.Add(item.Value);
-                }
-            }
-            list.Sort((l,r)=>{return (int)(l.JoinTime-r.JoinTime);});
-            gameStart.GamePlayID=_selectGamePlayID;
-            gameStart.GameID=list[0].GameID;
-            for (int i = 0; i < list.Count; i++)
-            {
-                gameStart.Players.Add(new PB_Player()
-                {
-                    PlayerInfo = list[i].Player,
-                    PlaceIndex = i,
-                });
-            }
+            // List<PB_OnlineGame> list = new List<PB_OnlineGame>();
+            // foreach (var item in OnlineGameDic)
+            // {
+            //     if(item.Value.GamePlayID==_selectGamePlayID)
+            //     {
+            //         list.Add(item.Value);
+            //     }
+            // }
+            // list.Sort((l,r)=>{return (int)(l.JoinTime-r.JoinTime);});
+            // gameStart.GamePlayID=_selectGamePlayID;
+            // gameStart.GameID=list[0].GameID;
+            // for (int i = 0; i < list.Count; i++)
+            // {
+            //     gameStart.Players.Add(new PB_Player()
+            //     {
+            //         PlayerInfo = list[i].Player,
+            //         PlaceIndex = i,
+            //     });
+            // }
             
             var sendData = NetworkUtility.EncodeU(NetworkUtility.APP_ID,NetworkUtility.GAMELOBBY_GPID,NetworkUtility.GAMESTART_CMD,gameStart.ToByteArray());
             UdpBroadcastUtility.Send(sendData);

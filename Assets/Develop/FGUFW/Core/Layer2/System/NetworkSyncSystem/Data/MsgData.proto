@@ -33,13 +33,36 @@ message PB_Player
 
 message PB_GameStart
 {
-    int64 GamePlayID = 1; //房间id
-    int32 GameID = 2;     //游戏id
-    repeated PB_Player Players = 3;
+    int32 PlaceIndex = 1;
+}
+
+message PB_GameOver
+{
+    int32 PlaceIndex = 1;
 }
 
 //玩家准备 所有玩家准备才会开始
 message PB_GameReady
 {
     int32 PlaceIndex = 1;
+}
+
+
+message PB_OnlineGame
+{
+    int64 GamePlayID = 1; //房间id
+    int32 GameID = 2;     //游戏id
+    repeated PB_Player Players = 3;
+    string IP = 4;
+    int32 Port = 5;
+}
+
+message PB_JoinGame
+{
+    PB_PlayerInfo PlayerInfo = 1;
+}
+
+message PB_LeaveGame
+{
+    PB_PlayerInfo PlayerInfo = 1;
 }
