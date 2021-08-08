@@ -9,7 +9,7 @@ using System.Reflection;
 
 namespace GamePlay.GameLobby
 {
-    public class  OnlineGameModule : PlayModule<GameLobbyPlayManager>
+    public class  OnlineGameModule : Part<GameLobbyPlayManager>
     {
         public Dictionary<long,PB_OnlineGame> OnlineGameDic = new Dictionary<long, PB_OnlineGame>();
         public object OnlineGameDicLock = new object();
@@ -22,7 +22,7 @@ namespace GamePlay.GameLobby
         private SyncClient _syncClient;
 
 
-        public OnlineGameModule(PlayManager playManager) : base(playManager)
+        public OnlineGameModule(WorldBase playManager) : base(playManager)
         {
             SelfInfo = new PB_PlayerInfo()
             {
@@ -100,7 +100,7 @@ namespace GamePlay.GameLobby
         private void onClickBack(object obj)
         {
             OnDisable();
-            _playManager.Module<LobbyModule>().OnEnable();
+            _playManager.Part<LobbyModule>().OnEnable();
         }
 
         private void onReceiveBroadcast(byte[] obj)
@@ -201,7 +201,7 @@ namespace GamePlay.GameLobby
             var gameData = _playManager.GameDatas[onlineGame.GameID];
             
             Assembly assembly = Assembly.GetExecutingAssembly(); // 获取当前程序集 
-            var playManager = assembly.CreateInstance(gameData.TypeName) as PlayManager; 
+            var playManager = assembly.CreateInstance(gameData.TypeName) as WorldBase; 
 
             _playManager.Destroy();
             playManager.Create(onlineGame,SelfInfo);

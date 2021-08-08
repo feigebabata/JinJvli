@@ -8,7 +8,7 @@ using System;
 
 namespace GamePlay.StepGrid
 {
-    public class StepGridPlayManager : PlayManager
+    public class StepGridPlayManager : WorldBase
     {
         public IMessenger<StepGridMsgID,object> Messenger = new Messenger<StepGridMsgID,object>();
         // public INetworkSyncSystem NetworkSyncSystem;
@@ -62,7 +62,7 @@ namespace GamePlay.StepGrid
             StepGridConfig = await Addressables.LoadAssetAsync<StepGridConfig>("GamePlay.StepGrid.StepGridConfig").Task;
             Debug.Log(Screen.orientation);
 
-            Module<DefaultModule>().OnEnable();
+            Part<DefaultModule>().OnEnable();
         }
 
 

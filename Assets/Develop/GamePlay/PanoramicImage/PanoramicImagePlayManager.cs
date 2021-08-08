@@ -8,7 +8,7 @@ using System;
 
 namespace GamePlay.PanoramicImage
 {
-    public class PanoramicImagePlayManager : PlayManager
+    public class PanoramicImagePlayManager : WorldBase
     {
         public override void Create(params object[] datas)
         {
@@ -27,7 +27,7 @@ namespace GamePlay.PanoramicImage
         {
             await Addressables.LoadSceneAsync("GamePlay.PanoramicImage").Task;
             SceneLoading.I.Hide();
-            Module<PanoramicModule>().OnEnable();
+            Part<PanoramicModule>().OnEnable();
         }
 
     }

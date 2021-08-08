@@ -42,7 +42,7 @@ namespace GamePlay.StepGrid
             _playManager.Messenger.Remove(StepGridMsgID.Stop,onPlayStop);
             _playManager.Messenger.Remove(StepGridMsgID.Restart,onPlayRestart);
             _playManager.FrameSyncSystem.OnLogicFrameUpdate-=onLogicFrameUpdate;
-            MonoBehaviourEvent.I.UpdateListener -= gridPosUpdate;
+            GlobalAppEventSystem.I.UpdateListener -= gridPosUpdate;
 
             _startPanel?.GetComponent<Canvas>().ClearSortOrder();
             GameObject.Destroy(_startPanel);
@@ -96,7 +96,7 @@ namespace GamePlay.StepGrid
                 {
                     _playManager.Messenger.Broadcast(StepGridMsgID.GridDestroy,_gridComps[i].Index);
                     _gridComps[i].Index+=_gridComps.Length;
-                    setGridColor(_gridComps[i],_playManager.Module<DefaultModule>().GridListData);
+                    setGridColor(_gridComps[i],_playManager.Part<DefaultModule>().GridListData);
                 }
             }
         }
@@ -112,7 +112,7 @@ namespace GamePlay.StepGrid
             {
                 return;
             }
-            girdComp.GetComponent<MeshRenderer>().material.color = DefaultModule.GridIsTarget(clickGrid.Index,_playManager.Module<DefaultModule>().GridListData,_playManager.StepGridConfig.GridGroupWidth)?_playManager.StepGridConfig.SelectCol:_playManager.StepGridConfig.ErrCol;
+            girdComp.GetComponent<MeshRenderer>().material.color = DefaultModule.GridIsTarget(clickGrid.Index,_playManager.Part<DefaultModule>().GridListData,_playManager.StepGridConfig.GridGroupWidth)?_playManager.StepGridConfig.SelectCol:_playManager.StepGridConfig.ErrCol;
         }
 
         private void setGridColor(GridComp grid,GridListData gridListData)
@@ -132,14 +132,14 @@ namespace GamePlay.StepGrid
             Debug.LogWarning(_playManager.OnlineGame.Players[placeID].PlayerInfo.Nickname+" 输了");
             _playManager.FrameSyncSystem.OnDisable();
             loadStopPanel();
-            MonoBehaviourEvent.I.UpdateListener -= gridPosUpdate;
+            GlobalAppEventSystem.I.UpdateListener -= gridPosUpdate;
         }
 
         private void onPlayStart(object obj)
         {
             for (int i = 0; i < _gridComps.Length; i++)
             {
-                setGridColor(_gridComps[i],_playManager.Module<DefaultModule>().GridListData);
+                setGridColor(_gridComps[i],_playManager.Part<DefaultModule>().GridListData);
             }
 
             _moveStartTime = Time.time;
@@ -147,7 +147,7 @@ namespace GamePlay.StepGrid
             _resetReadyState?.Stop();
             _resetReadyState=null;
             resetPlayPanel().Start();
-            MonoBehaviourEvent.I.UpdateListener += gridPosUpdate;
+            GlobalAppEventSystem.I.UpdateListener += gridPosUpdate;
         }
 
         async void loadStartPanel()
@@ -199,7 +199,7 @@ namespace GamePlay.StepGrid
             StringBuilder sb=new StringBuilder();
             while (true)
             {
-                var readys = _playManager.Module<DefaultModule>().GameReadys;
+                var readys = _playManager.Part<DefaultModule>().GameReadys;
                 for (int i = 0; i < readys.Length; i++)
                 {
                     var player = _playManager.OnlineGame.Players[i];

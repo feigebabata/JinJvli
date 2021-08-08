@@ -8,7 +8,7 @@ using System;
 
 namespace GamePlay.GameLobby
 {
-    public class GameLobbyPlayManager : PlayManager
+    public class GameLobbyPlayManager : WorldBase
     {
         public IMessenger<string,object> Messenger = new Messenger<string,object>();
         public GameItemDatas GameDatas;
@@ -35,8 +35,8 @@ namespace GamePlay.GameLobby
             GameDatas = await Addressables.LoadAssetAsync<GameItemDatas>("GamePlay.GameLobby.GameDatas").Task;
             SceneLoading.I.Hide();
 
-            Module<LobbyModule>().OnEnable();
-            Module<OnlineGameModule>();
+            Part<LobbyModule>().OnEnable();
+            Part<OnlineGameModule>();
         }
     }
 }

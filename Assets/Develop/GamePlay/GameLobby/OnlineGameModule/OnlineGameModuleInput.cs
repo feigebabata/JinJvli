@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace GamePlay.GameLobby
 {
-    public class OnlineGameModuleInput : IModuleInput
+    public class OnlineGameModuleInput : IPartInput
     {
         private GameLobbyPlayManager _playManager;
         private OnlineGameUIComps _uiComps;

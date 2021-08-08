@@ -6,12 +6,12 @@ using FGUFW.Play;
 
 namespace GamePlay.PanoramicImage
 {
-    public class  PanoramicModule : PlayModule<PanoramicImagePlayManager>
+    public class  PanoramicModule : Part<PanoramicImagePlayManager>
     {
         private  PanoramicModuleInput _moduleInput;
         private  PanoramicModuleOutput _moduleOutput;
 
-        public PanoramicModule(PlayManager playManager) : base(playManager)
+        public PanoramicModule(WorldBase playManager) : base(playManager)
         {
             Cursor.lockState = CursorLockMode.Locked;
             _moduleInput = new  PanoramicModuleInput(_playManager);

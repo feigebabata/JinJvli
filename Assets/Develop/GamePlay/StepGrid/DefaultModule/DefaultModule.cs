@@ -8,7 +8,7 @@ using Google.Protobuf;
 
 namespace GamePlay.StepGrid
 {
-    public class  DefaultModule : PlayModule<StepGridPlayManager>
+    public class  DefaultModule : Part<StepGridPlayManager>
     {
         private  DefaultModuleInput _moduleInput;
         private  DefaultModuleOutput _moduleOutput;
@@ -19,7 +19,7 @@ namespace GamePlay.StepGrid
         private int _frameIndex=0;
 
 
-        public DefaultModule(PlayManager playManager) : base(playManager)
+        public DefaultModule(WorldBase playManager) : base(playManager)
         {
             _moduleInput = new  DefaultModuleInput(_playManager);
             _moduleOutput = new  DefaultModuleOutput(_playManager);
@@ -34,12 +34,12 @@ namespace GamePlay.StepGrid
 
             GridListData = createGridListData(666);
             GameReadys = new bool[_playManager.OnlineGame.Players.Count];
-            MonoBehaviourEvent.I.UpdateListener+=Update;
+            GlobalAppEventSystem.I.UpdateListener+=Update;
         }
 
         public override void Dispose()
         {
-            MonoBehaviourEvent.I.UpdateListener-=Update;
+            GlobalAppEventSystem.I.UpdateListener-=Update;
             UdpBroadcastUtility.OnReceive-=onGameReadyReceive;
             GridListData=null;
             GlobalMessenger.M.Remove(GlobalMsgID.OnBackKey,onClickBack);

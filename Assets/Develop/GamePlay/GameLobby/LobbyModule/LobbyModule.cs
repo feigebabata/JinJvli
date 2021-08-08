@@ -9,12 +9,12 @@ using System.Reflection;
 
 namespace GamePlay.GameLobby
 {
-    public class  LobbyModule : PlayModule<GameLobbyPlayManager>
+    public class  LobbyModule : Part<GameLobbyPlayManager>
     {
         private  LobbyModuleInput _moduleInput;
         private  LobbyModuleOutput _moduleOutput;
 
-        public LobbyModule(PlayManager playManager) : base(playManager)
+        public LobbyModule(WorldBase playManager) : base(playManager)
         {
 
             _moduleInput = new  LobbyModuleInput(_playManager);
@@ -54,14 +54,14 @@ namespace GamePlay.GameLobby
         {
             _playManager.Messenger.Add(GameLobbyMsgID.OnEnterSelectGame,onEnterSelectGame);
             GlobalMessenger.M.Add(GlobalMsgID.OnBackKey,onClickBack);
-            RaycastEvent.I.AddListener(RaycastEventType.Click,onRaycastClick);
+            RaycastEventSystem.I.AddListener(RaycastEventType.Click,onRaycastClick);
         }
 
         private void removeListener()
         {
             _playManager.Messenger.Remove(GameLobbyMsgID.OnEnterSelectGame,onEnterSelectGame);
             GlobalMessenger.M.Remove(GlobalMsgID.OnBackKey,onClickBack);
-            RaycastEvent.I.RemoveListener(RaycastEventType.Click,onRaycastClick);
+            RaycastEventSystem.I.RemoveListener(RaycastEventType.Click,onRaycastClick);
         }
 
         private void onClickBack(object obj)
@@ -75,7 +75,7 @@ namespace GamePlay.GameLobby
             var typeName = obj as string;
             
             OnDisable();
-            _playManager.Module<OnlineGameModule>().OnEnable();
+            _playManager.Part<OnlineGameModule>().OnEnable();
             _playManager.Messenger.Broadcast(GameLobbyMsgID.OnEnterOnlineGame,_playManager.GameDatas[typeName]);
         }
 
@@ -90,7 +90,7 @@ namespace GamePlay.GameLobby
             if(obj.transform.name=="UINode")
             {
                 OnDisable();
-                _playManager.Module<OnlineGameModule>().OnEnable();
+                _playManager.Part<OnlineGameModule>().OnEnable();
                 _playManager.Messenger.Broadcast(GameLobbyMsgID.OnEnterOnlineGame,null);
             }
         }

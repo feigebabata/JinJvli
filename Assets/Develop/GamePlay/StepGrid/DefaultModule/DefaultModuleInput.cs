@@ -26,7 +26,7 @@ namespace GamePlay.StepGrid
 
         public void Dispose()
         {
-            MonoBehaviourEvent.I.UpdateListener -= Update;
+            GlobalAppEventSystem.I.UpdateListener -= Update;
             _playManager.Messenger.Remove(StepGridMsgID.Start,onPlayStart);
             _playManager.Messenger.Remove(StepGridMsgID.Stop,onPlayStop);
             _playManager.Messenger.Remove(StepGridMsgID.PanelLoadComplete,onPanelLoadComplete);
@@ -76,13 +76,13 @@ namespace GamePlay.StepGrid
 
         private void onPlayStop(object obj)
         {
-            MonoBehaviourEvent.I.UpdateListener -= Update;
+            GlobalAppEventSystem.I.UpdateListener -= Update;
         }
 
         private void onPlayStart(object obj)
         {
             initGrids();
-            MonoBehaviourEvent.I.UpdateListener += Update;
+            GlobalAppEventSystem.I.UpdateListener += Update;
             _readyMsgBroadcast?.Stop();
             _readyMsgBroadcast=null;
         }

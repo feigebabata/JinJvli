@@ -8,7 +8,7 @@ using FGUFW.Play;
 
 namespace GamePlay.GameLobby
 {
-    public class LobbyModuleOutput : IModuleOutput
+    public class LobbyModuleOutput : IPartOutput
     {
         GameLobbyPlayManager _playManager;
         private Transform _gameItemsParent;

@@ -8,7 +8,7 @@ using FGUFW.Play;
 
 namespace GamePlay.GameLobby
 {
-    public class LobbyModuleInput : IModuleInput
+    public class LobbyModuleInput : IPartInput
     {
         GameLobbyPlayManager _playManager;
         private Camera _mainCamera;
@@ -30,14 +30,14 @@ namespace GamePlay.GameLobby
 
         public void OnEnable()
         {
-            MonoBehaviourEvent.I.UpdateListener += Update;
+            GlobalAppEventSystem.I.UpdateListener += Update;
             _playManager.Messenger.Add(GameLobbyMsgID.OnStartAniStop,onStartAniStop);
             SetCharacterCtrl(true);
         }
 
         public void OnDisable()
         {
-            MonoBehaviourEvent.I.UpdateListener -= Update;
+            GlobalAppEventSystem.I.UpdateListener -= Update;
             _playManager.Messenger.Remove(GameLobbyMsgID.OnStartAniStop,onStartAniStop);
             SetCharacterCtrl(false);
         }

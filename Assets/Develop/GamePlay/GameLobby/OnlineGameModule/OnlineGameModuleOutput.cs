@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace GamePlay.GameLobby
 {
-    public class OnlineGameModuleOutput : IModuleOutput
+    public class OnlineGameModuleOutput : IPartOutput
     {
         GameLobbyPlayManager _playManager;
         private GameItemDatas _gameItemDatas;
@@ -112,7 +112,7 @@ namespace GamePlay.GameLobby
             _uiComps.Create.gameObject.SetActive(true);
             _uiComps.Start.gameObject.SetActive(false);
             _uiComps.Exit.gameObject.SetActive(false);
-            var module = _playManager.Module<OnlineGameModule>();
+            var module = _playManager.Part<OnlineGameModule>();
 
             var dictSort = from kv in module.OnlineGameDic orderby kv.Key  descending select kv;
             _uiComps.ItemList.ResetListItem<KeyValuePair<long, PB_OnlineGame>>(dictSort.GetEnumerator(),resetOnlineGameItem);
@@ -138,7 +138,7 @@ namespace GamePlay.GameLobby
             {
                 _playManager.Messenger.Broadcast(GameLobbyMsgID.OnJoinGame,onlineGame);
 
-                _playManager.Module<OnlineGameModule>().SelectGamePlayID = onlineGame.GamePlayID;
+                _playManager.Part<OnlineGameModule>().SelectGamePlayID = onlineGame.GamePlayID;
                 showOnlineGameInfo();
             });
         }
@@ -165,9 +165,9 @@ namespace GamePlay.GameLobby
         {
             if(string.IsNullOrEmpty(arg0) || string.IsNullOrWhiteSpace(arg0))
             {
-                _uiComps.Nickname.text = _playManager.Module<OnlineGameModule>().SelfInfo.Nickname;
+                _uiComps.Nickname.text = _playManager.Part<OnlineGameModule>().SelfInfo.Nickname;
             }
-            _playManager.Module<OnlineGameModule>().SelfInfo.Nickname = _uiComps.Nickname.text;
+            _playManager.Part<OnlineGameModule>().SelfInfo.Nickname = _uiComps.Nickname.text;
             ConfigDatabase.SetConfig("nickname",_uiComps.Nickname.text);
         }
 
@@ -175,7 +175,7 @@ namespace GamePlay.GameLobby
         {
             _currentList = UIListType.GamePlay;
             _uiComps.NoList.SetActive(true);
-            if(!_playManager.Module<OnlineGameModule>().OnlineGameDic.ContainsKey(_playManager.Module<OnlineGameModule>().SelectGamePlayID))
+            if(!_playManager.Part<OnlineGameModule>().OnlineGameDic.ContainsKey(_playManager.Part<OnlineGameModule>().SelectGamePlayID))
             {
                 return;
             }
@@ -186,7 +186,7 @@ namespace GamePlay.GameLobby
             _uiComps.Start.gameObject.SetActive(true);
             _uiComps.Exit.gameObject.SetActive(true);
             
-            var onlineGame = _playManager.Module<OnlineGameModule>().OnlineGameDic[_playManager.Module<OnlineGameModule>().SelectGamePlayID];
+            var onlineGame = _playManager.Part<OnlineGameModule>().OnlineGameDic[_playManager.Part<OnlineGameModule>().SelectGamePlayID];
             _uiComps.ItemList.ResetListItem<PB_Player>(onlineGame.Players.GetEnumerator(),resetOnlineGameInfoItem);
         }
 
