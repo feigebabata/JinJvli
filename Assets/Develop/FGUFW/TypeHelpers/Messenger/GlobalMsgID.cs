@@ -6,5 +6,6 @@ namespace FGUFW.Core
         public const string OnApplicationQuit = "OnApplicationQuit";
         public const string LoadAsset = "LoadAsset";
         public const string LoadScene = "LoadScene";
+        public const string LoadPrefab = "LoadPrefab";
     }
 }

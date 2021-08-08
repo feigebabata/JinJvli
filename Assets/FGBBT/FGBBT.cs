@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using FGUFW.Core;
 using UnityEngine;
 
 public class FGBBT : MonoBehaviour
@@ -7,20 +9,24 @@ public class FGBBT : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        var s = test();
-        while (s.MoveNext())
-        {
-            Debug.Log(s.Current);
-        }
+        GlobalAssetSystem.I.ToString();
+
+        var loader = new PrefabLoadHandel("GamePlay.StepGrid.DefaultModule.StopPanel");
+        loader.Completed+=Completed;
+        GlobalMessenger.M.Broadcast(GlobalMsgID.LoadPrefab,loader);
     }
 
-    IEnumerator test()
+    private void Completed(UnityEngine.Object obj)
     {
-        yield return 0;
+        Debug.Log(obj.name);
+    }
 
-        yield return 1;
-
-        yield return 2;
+    /// <summary>
+    /// Callback sent to all game objects before the application is quit.
+    /// </summary>
+    void OnApplicationQuit()
+    {
+        GlobalAssetSystem.I.Dispose();
     }
     
 }
