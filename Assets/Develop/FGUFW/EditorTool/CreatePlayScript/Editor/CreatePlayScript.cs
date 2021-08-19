@@ -9,38 +9,21 @@ using System.Text;
 
 static public class CreatePlayScript
 {
-    const string TempScriptFolder = "Assets/Develop/FGUFW/Play/CreatePlayScript/Editor/";
+    const string TempScriptFolder = "Assets/Develop/FGUFW/EditorTool/CreatePlayScript/Editor/";
 
-    [MenuItem("Assets/Create/PlayManager Script",false,80)]
-    static void CreatePlayManager()
+    [MenuItem("Assets/Create/Worlds/World Folder",false,80)]
+    static void CreateWorld()
     {
-        string tempScriptPath = TempScriptFolder + "PlayManager.txt";
-        string createPath = GetSelectPathOrFallback()+"/New PlayManager.cs";
-        ProjectWindowUtil.StartNameEditingIfProjectWindowExists(0,ScriptableObject.CreateInstance<CreatePlayManagerScript>(),createPath,null,tempScriptPath);
+        string tempScriptPath = TempScriptFolder + "World.txt";
+        string createPath = GetSelectPathOrFallback()+"/New World";
+        ProjectWindowUtil.StartNameEditingIfProjectWindowExists(0,ScriptableObject.CreateInstance<CreateWorldScript>(),createPath,null,tempScriptPath);
     }
 
-    [MenuItem("Assets/Create/PlayModule Script",false,80)]
-    static void CreatePlayModule()
+    [MenuItem("Assets/Create/Worlds/Part Folder",false,80)]
+    static void CreatePartFolder()
     {
-        string tempScriptPath = TempScriptFolder + "PlayModule.txt";
-        string createPath = GetSelectPathOrFallback()+"/New PlayModule.cs";
-        ProjectWindowUtil.StartNameEditingIfProjectWindowExists(0,ScriptableObject.CreateInstance<CreatePlayModuleScript>(),createPath,null,tempScriptPath);
-    }
-
-    [MenuItem("Assets/Create/PlayView Script",false,80)]
-    static void CreatePlayView()
-    {
-        string tempScriptPath = TempScriptFolder + "PlayView.txt";
-        string createPath = GetSelectPathOrFallback()+"/New PlayView.cs";
-        ProjectWindowUtil.StartNameEditingIfProjectWindowExists(0,ScriptableObject.CreateInstance<CreatePlayViewScript>(),createPath,null,tempScriptPath);
-    }
-
-    [MenuItem("Assets/Create/PlayModule Folder",false,80)]
-    static void CreatePlayModuleFolder()
-    {
-        // string tempScriptPath = TempScriptFolder + "PlayView.txt";
-        string createPath = GetSelectPathOrFallback()+"/New PlayModule";
-        ProjectWindowUtil.StartNameEditingIfProjectWindowExists(0,ScriptableObject.CreateInstance<CreatePlayModuleFolderAction>(),createPath,null,null);
+        string createPath = GetSelectPathOrFallback()+"/Part";
+        ProjectWindowUtil.StartNameEditingIfProjectWindowExists(0,ScriptableObject.CreateInstance<CreatePartFolderAction>(),createPath,null,null);
     }
     
     //取得要创建文件的路径
@@ -61,7 +44,7 @@ static public class CreatePlayScript
         return path;
     }
 
-    class CreatePlayManagerScript : EndNameEditAction
+    class CreateWorldScript : EndNameEditAction
     {
 
         public override void Action(int instanceId, string pathName, string resourceFile)
@@ -73,74 +56,37 @@ static public class CreatePlayScript
  
         internal static UnityEngine.Object CreateScriptAssetFromTemplate(string pathName, string resourceFile)
         {
-            //获取要创建资源的绝对路径
-            string fullPath = Path.GetFullPath(pathName);
-            //读取本地的模板文件
-            StreamReader streamReader = new StreamReader(resourceFile);
-            string text = streamReader.ReadToEnd();
-            streamReader.Close();
-            //获取文件名，不含扩展名
-            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(pathName);
-            Debug.Log("text==="+text);
-            string nameSpace = Regex.Replace(fileNameWithoutExtension,"PlayManager","");
-            //将模板类中的类名替换成你创建的文件名
-            text = Regex.Replace(text, "#CLASSNAME#", fileNameWithoutExtension);
-            text = Regex.Replace(text, "#NAMESPACE#", "GamePlay."+nameSpace);
-
-
-            bool encoderShouldEmitUTF8Identifier = true; //参数指定是否提供 Unicode 字节顺序标记
-            bool throwOnInvalidBytes = false;//是否在检测到无效的编码时引发异常
-            UTF8Encoding encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier, throwOnInvalidBytes);
-            bool append = false;
-            //写入文件
-            StreamWriter streamWriter = new StreamWriter(fullPath, append, encoding);
-            streamWriter.Write(text);
-            streamWriter.Close();
-            //刷新资源管理器
-            AssetDatabase.ImportAsset(pathName);
-            AssetDatabase.Refresh();
-            return AssetDatabase.LoadAssetAtPath(pathName, typeof(UnityEngine.Object));
-        }
-    }
-
-    
-
-    class CreatePlayModuleScript : EndNameEditAction
-    {
-
-        public override void Action(int instanceId, string pathName, string resourceFile)
-        {
-            //创建资源
-            UnityEngine.Object obj = CreateScriptAssetFromTemplate(pathName, resourceFile);
-            ProjectWindowUtil.ShowCreatedAsset(obj);//高亮显示资源
-        }
- 
-        internal static UnityEngine.Object CreateScriptAssetFromTemplate(string pathName, string resourceFile)
-        {
-            //获取要创建资源的绝对路径
-            string fullPath = Path.GetFullPath(pathName);
-            //读取本地的模板文件
-            StreamReader streamReader = new StreamReader(resourceFile);
-            string text = streamReader.ReadToEnd();
-            streamReader.Close();
-            //获取文件名，不含扩展名
-            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(pathName);
-            Debug.Log("pathName : "+pathName);
-
-            string[] folderNodes = pathName.Split('/');
+            
+            #region 创建文件夹
+            string direPath = Application.dataPath.Replace("Assets",pathName);
+            var folders = direPath.Split('/');
             string nameSpace = "";
-            for (int i = 0; i < folderNodes.Length; i++)
+            for (int i = 0; i < folders.Length; i++)
             {
-                Debug.LogWarning(folderNodes[i]);
-                if(folderNodes[i]=="GamePlay")
+                if(folders[i]=="Worlds")
                 {
-                    nameSpace = nameSpace+folderNodes[i+1];
+                    nameSpace = folders[i+1];
                     break;
                 }
             }
-            
+            string className = nameSpace+"World";
+            // Debug.Log("创建文件夹 "+direPath);
+            string moduleName = folders[folders.Length-1];
+            if(!Directory.Exists(direPath))
+            {
+                Directory.CreateDirectory(direPath);
+            }
+            #endregion
+
+            //获取要创建资源的绝对路径
+            string fullPath = Path.GetFullPath($"{direPath}/{className}.cs");
+            //读取本地的模板文件
+            StreamReader streamReader = new StreamReader(resourceFile);
+            string text = streamReader.ReadToEnd();
+            streamReader.Close();
+
             //将模板类中的类名替换成你创建的文件名
-            text = Regex.Replace(text, "#CLASSNAME#", fileNameWithoutExtension);
+            text = Regex.Replace(text, "#CLASSNAME#", className);
             text = Regex.Replace(text, "#NAMESPACE#", nameSpace);
 
 
@@ -153,69 +99,16 @@ static public class CreatePlayScript
             streamWriter.Write(text);
             streamWriter.Close();
             //刷新资源管理器
-            AssetDatabase.ImportAsset(pathName);
+            string localPath = $"{pathName}/{className}.cs";
+            AssetDatabase.ImportAsset(localPath);
             AssetDatabase.Refresh();
-            return AssetDatabase.LoadAssetAtPath(pathName, typeof(UnityEngine.Object));
+            return AssetDatabase.LoadAssetAtPath(localPath, typeof(UnityEngine.Object));
         }
     }
 
     
 
-    class CreatePlayViewScript : EndNameEditAction
-    {
-
-        public override void Action(int instanceId, string pathName, string resourceFile)
-        {
-            //创建资源
-            UnityEngine.Object obj = CreateScriptAssetFromTemplate(pathName, resourceFile);
-            ProjectWindowUtil.ShowCreatedAsset(obj);//高亮显示资源
-        }
- 
-        internal static UnityEngine.Object CreateScriptAssetFromTemplate(string pathName, string resourceFile)
-        {
-            //获取要创建资源的绝对路径
-            string fullPath = Path.GetFullPath(pathName);
-            //读取本地的模板文件
-            StreamReader streamReader = new StreamReader(resourceFile);
-            string text = streamReader.ReadToEnd();
-            streamReader.Close();
-            //获取文件名，不含扩展名
-            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(pathName);
-            Debug.Log("pathName : "+pathName);
-
-            string[] folderNodes = pathName.Split('/');
-            string nameSpace = "";
-            for (int i = 0; i < folderNodes.Length; i++)
-            {
-                // Debug.LogWarning(folderNodes[i]);
-                if(folderNodes[i]=="GamePlay")
-                {
-                    nameSpace = nameSpace+folderNodes[i+1];
-                    break;
-                }
-            }
-            
-            //将模板类中的类名替换成你创建的文件名
-            text = Regex.Replace(text, "#CLASSNAME#", fileNameWithoutExtension);
-            text = Regex.Replace(text, "#NAMESPACE#", nameSpace);
-
-
-            bool encoderShouldEmitUTF8Identifier = true; //参数指定是否提供 Unicode 字节顺序标记
-            bool throwOnInvalidBytes = false;//是否在检测到无效的编码时引发异常
-            UTF8Encoding encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier, throwOnInvalidBytes);
-            bool append = false;
-            //写入文件
-            StreamWriter streamWriter = new StreamWriter(fullPath, append, encoding);
-            streamWriter.Write(text);
-            streamWriter.Close();
-            //刷新资源管理器
-            AssetDatabase.ImportAsset(pathName);
-            AssetDatabase.Refresh();
-            return AssetDatabase.LoadAssetAtPath(pathName, typeof(UnityEngine.Object));
-        }
-    }
-
-    class CreatePlayModuleFolderAction : EndNameEditAction
+    class CreatePartFolderAction : EndNameEditAction
     {
         public override void Action(int instanceId, string pathName, string resourceFile)
         {
@@ -234,15 +127,15 @@ static public class CreatePlayScript
             string nameSpace = "";
             for (int i = 0; i < folders.Length; i++)
             {
-                if(folders[i]=="GamePlay")
+                if(folders[i]=="Worlds")
                 {
                     nameSpace = folders[i+1];
                     break;
                 }
             }
 
-            #region 创建ModuleScript
-            cloneScriptPath = TempScriptFolder + "PlayModule.txt";
+            #region 创建PartScript
+            cloneScriptPath = TempScriptFolder + "Part.txt";
             newScriptPath = $"{direPath}/{moduleName}.cs";
             scriptText = File.ReadAllText(cloneScriptPath);
             scriptText = Regex.Replace(scriptText, "#CLASSNAME#", moduleName);
@@ -250,8 +143,8 @@ static public class CreatePlayScript
             File.WriteAllText(newScriptPath,scriptText);
             #endregion
 
-            #region 创建ModuleInputScript
-            cloneScriptPath = TempScriptFolder + "PlayModuleInput.txt";
+            #region 创建PartInputScript
+            cloneScriptPath = TempScriptFolder + "PartInput.txt";
             newScriptPath = $"{direPath}/{moduleName}Input.cs";
             scriptText = File.ReadAllText(cloneScriptPath);
             scriptText = Regex.Replace(scriptText, "#CLASSNAME#", moduleName+"Input");
@@ -259,8 +152,8 @@ static public class CreatePlayScript
             File.WriteAllText(newScriptPath,scriptText);
             #endregion
 
-            #region 创建ModuleOutputScript
-            cloneScriptPath = TempScriptFolder + "PlayModuleOutput.txt";
+            #region 创建PartOutputScript
+            cloneScriptPath = TempScriptFolder + "PartOutput.txt";
             newScriptPath = $"{direPath}/{moduleName}Output.cs";
             scriptText = File.ReadAllText(cloneScriptPath);
             scriptText = Regex.Replace(scriptText, "#CLASSNAME#", moduleName+"Output");

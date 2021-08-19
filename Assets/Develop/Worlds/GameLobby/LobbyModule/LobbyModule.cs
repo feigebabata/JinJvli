@@ -17,8 +17,8 @@ namespace GamePlay.GameLobby
         public LobbyModule(WorldBase playManager) : base(playManager)
         {
 
-            _moduleInput = new  LobbyModuleInput(_playManager);
-            _moduleOutput = new  LobbyModuleOutput(_playManager);
+            _moduleInput = new  LobbyModuleInput(_world);
+            _moduleOutput = new  LobbyModuleOutput(_world);
             //code
 
 
@@ -52,14 +52,14 @@ namespace GamePlay.GameLobby
 
         private void addListener()
         {
-            _playManager.Messenger.Add(GameLobbyMsgID.OnEnterSelectGame,onEnterSelectGame);
+            _world.Messenger.Add(GameLobbyMsgID.OnEnterSelectGame,onEnterSelectGame);
             GlobalMessenger.M.Add(GlobalMsgID.OnBackKey,onClickBack);
             RaycastEventSystem.I.AddListener(RaycastEventType.Click,onRaycastClick);
         }
 
         private void removeListener()
         {
-            _playManager.Messenger.Remove(GameLobbyMsgID.OnEnterSelectGame,onEnterSelectGame);
+            _world.Messenger.Remove(GameLobbyMsgID.OnEnterSelectGame,onEnterSelectGame);
             GlobalMessenger.M.Remove(GlobalMsgID.OnBackKey,onClickBack);
             RaycastEventSystem.I.RemoveListener(RaycastEventType.Click,onRaycastClick);
         }
@@ -75,13 +75,13 @@ namespace GamePlay.GameLobby
             var typeName = obj as string;
             
             OnDisable();
-            _playManager.Part<OnlineGameModule>().OnEnable();
-            _playManager.Messenger.Broadcast(GameLobbyMsgID.OnEnterOnlineGame,_playManager.GameDatas[typeName]);
+            _world.Part<OnlineGameModule>().OnEnable();
+            _world.Messenger.Broadcast(GameLobbyMsgID.OnEnterOnlineGame,_world.GameDatas[typeName]);
         }
 
         private void onStartAniStop(PlayableDirector obj)
         {
-            _playManager.Messenger.Broadcast(GameLobbyMsgID.OnStartAniStop,null);
+            _world.Messenger.Broadcast(GameLobbyMsgID.OnStartAniStop,null);
         }
 
         private void onRaycastClick(RaycastHit obj)
@@ -90,8 +90,8 @@ namespace GamePlay.GameLobby
             if(obj.transform.name=="UINode")
             {
                 OnDisable();
-                _playManager.Part<OnlineGameModule>().OnEnable();
-                _playManager.Messenger.Broadcast(GameLobbyMsgID.OnEnterOnlineGame,null);
+                _world.Part<OnlineGameModule>().OnEnable();
+                _world.Messenger.Broadcast(GameLobbyMsgID.OnEnterOnlineGame,null);
             }
         }
 

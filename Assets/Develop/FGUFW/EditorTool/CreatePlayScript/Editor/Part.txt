@@ -1,0 +1,56 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using FGUFW.Core;
+using FGUFW.Play;
+
+namespace Worlds.#NAMESPACE#
+{
+    public class  #CLASSNAME# : Part<#NAMESPACE#World>
+    {
+        private  #CLASSNAME#Input _partInput;
+        private  #CLASSNAME#Output _partOutput;
+
+        public #CLASSNAME#(WorldBase worldBase) : base(worldBase)
+        {
+            _partOutput = new  #CLASSNAME#Output(_world);
+            _partInput = new  #CLASSNAME#Input(_world);
+            //code
+            
+        }
+
+        public override void Dispose()
+        {
+            _partInput.Dispose();
+            _partOutput.Dispose();
+            //code
+
+        }
+
+        public override void OnEnable()
+        {
+            _partInput.OnEnable();
+            _partOutput.OnEnable();
+            addListener();
+            //code
+
+        }
+
+        public override void OnDisable()
+        {
+            _partInput.OnEnable();
+            _partOutput.OnEnable();
+            removeListener();
+            //code
+            
+        }
+
+        private void addListener()
+        {
+        }
+
+        private void removeListener()
+        {
+        }
+    }
+}

@@ -29,8 +29,8 @@ namespace GamePlay.GameLobby
                 ID = SystemInfo.deviceUniqueIdentifier,
                 Nickname = ConfigDatabase.GetConfig("nickname",SystemInfo.deviceName),
             };
-            _moduleOutput = new  OnlineGameModuleOutput(_playManager);
-            _moduleInput = new  OnlineGameModuleInput(_playManager);
+            _moduleOutput = new  OnlineGameModuleOutput(_world);
+            _moduleInput = new  OnlineGameModuleInput(_world);
             UdpBroadcastUtility.Init();
             UdpBroadcastUtility.OnReceive += onReceiveBroadcast;
             
@@ -51,10 +51,10 @@ namespace GamePlay.GameLobby
             _moduleInput.OnEnable();
             _moduleOutput.OnEnable();
             GlobalMessenger.M.Add(GlobalMsgID.OnBackKey,onClickBack);
-            _playManager.Messenger.Add(GameLobbyMsgID.OnCreateGame,onCreateGame);
-            _playManager.Messenger.Add(GameLobbyMsgID.OnJoinGame,onJoinGame);
-            _playManager.Messenger.Add(GameLobbyMsgID.OnExitGame,onExitGame);
-            _playManager.Messenger.Add(GameLobbyMsgID.OnClickStartBtn,onClickStartBtn);
+            _world.Messenger.Add(GameLobbyMsgID.OnCreateGame,onCreateGame);
+            _world.Messenger.Add(GameLobbyMsgID.OnJoinGame,onJoinGame);
+            _world.Messenger.Add(GameLobbyMsgID.OnExitGame,onExitGame);
+            _world.Messenger.Add(GameLobbyMsgID.OnClickStartBtn,onClickStartBtn);
         }
 
         public override void OnDisable()
@@ -62,10 +62,10 @@ namespace GamePlay.GameLobby
             _moduleInput.OnDisable();
             _moduleOutput.OnDisable();
             GlobalMessenger.M.Remove(GlobalMsgID.OnBackKey,onClickBack);
-            _playManager.Messenger.Remove(GameLobbyMsgID.OnCreateGame,onCreateGame);
-            _playManager.Messenger.Remove(GameLobbyMsgID.OnJoinGame,onJoinGame);
-            _playManager.Messenger.Remove(GameLobbyMsgID.OnExitGame,onExitGame);
-            _playManager.Messenger.Remove(GameLobbyMsgID.OnClickStartBtn,onClickStartBtn);
+            _world.Messenger.Remove(GameLobbyMsgID.OnCreateGame,onCreateGame);
+            _world.Messenger.Remove(GameLobbyMsgID.OnJoinGame,onJoinGame);
+            _world.Messenger.Remove(GameLobbyMsgID.OnExitGame,onExitGame);
+            _world.Messenger.Remove(GameLobbyMsgID.OnClickStartBtn,onClickStartBtn);
         }
 
         private void onExitGame(object obj)
@@ -100,7 +100,7 @@ namespace GamePlay.GameLobby
         private void onClickBack(object obj)
         {
             OnDisable();
-            _playManager.Part<LobbyModule>().OnEnable();
+            _world.Part<LobbyModule>().OnEnable();
         }
 
         private void onReceiveBroadcast(byte[] obj)
@@ -198,12 +198,12 @@ namespace GamePlay.GameLobby
                 yield break;
             }
             _isEnterGame=true;
-            var gameData = _playManager.GameDatas[onlineGame.GameID];
+            var gameData = _world.GameDatas[onlineGame.GameID];
             
             Assembly assembly = Assembly.GetExecutingAssembly(); // 获取当前程序集 
             var playManager = assembly.CreateInstance(gameData.TypeName) as WorldBase; 
 
-            _playManager.Destroy();
+            _world.Destroy();
             playManager.Create(onlineGame,SelfInfo);
         }
 

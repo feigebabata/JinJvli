@@ -4,12 +4,12 @@ namespace FGUFW.Play
 {
     public abstract class Part<T> : PartBase where T : WorldBase
     {
-        protected T _playManager;
+        protected T _world;
         private bool _isInit;
 
-        protected Part(WorldBase playManager) : base(playManager)
+        protected Part(WorldBase world) : base(world)
         {
-            _playManager = playManager as T;
+            _world = world as T;
         }
     }
 

@@ -14,8 +14,8 @@ namespace GamePlay.PanoramicImage
         public PanoramicModule(WorldBase playManager) : base(playManager)
         {
             Cursor.lockState = CursorLockMode.Locked;
-            _moduleInput = new  PanoramicModuleInput(_playManager);
-            _moduleOutput = new  PanoramicModuleOutput(_playManager);
+            _moduleInput = new  PanoramicModuleInput(_world);
+            _moduleOutput = new  PanoramicModuleOutput(_world);
             GlobalMessenger.M.Add(GlobalMsgID.OnBackKey,onClickBack);
         }
 
@@ -30,7 +30,7 @@ namespace GamePlay.PanoramicImage
 
         private void onClickBack(object data)
         {
-            _playManager.Destroy();
+            _world.Destroy();
             new GameLobby.GameLobbyPlayManager().Create();
         }
 

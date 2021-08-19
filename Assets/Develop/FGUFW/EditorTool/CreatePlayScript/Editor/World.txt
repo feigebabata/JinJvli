@@ -4,15 +4,15 @@ using UnityEngine;
 using FGUFW.Core;
 using FGUFW.Play;
 
-namespace #NAMESPACE#
+namespace Worlds.#NAMESPACE#
 {
-    public class #CLASSNAME# : PlayManager
+    public class #CLASSNAME# : WorldBase
     {
         public IMessenger<string,object> Messenger = new Messenger<string,object>();
         
-        public override void Create()
+        public override void Create(params object[] datas)
         {
-            base.Create();
+            base.Create(datas);
             //code
 
         }
