@@ -71,7 +71,7 @@ static public class CreatePlayScript
             }
             string className = nameSpace+"World";
             // Debug.Log("创建文件夹 "+direPath);
-            string moduleName = folders[folders.Length-1];
+            
             if(!Directory.Exists(direPath))
             {
                 Directory.CreateDirectory(direPath);
@@ -80,8 +80,28 @@ static public class CreatePlayScript
 
             //获取要创建资源的绝对路径
             string fullPath = Path.GetFullPath($"{direPath}/{className}.cs");
-            //读取本地的模板文件
-            StreamReader streamReader = new StreamReader(resourceFile);
+            
+            createScript(resourceFile,fullPath,nameSpace,className);
+
+            resourceFile = $"{TempScriptFolder}/MsgID.txt";
+            fullPath = Path.GetFullPath($"{direPath}/{className}MsgID.cs");
+            createScript(resourceFile,fullPath,nameSpace,className);
+
+            //创建scene
+            resourceFile = $"{TempScriptFolder}/Scene.txt";
+            fullPath = Path.GetFullPath($"{direPath}/{nameSpace}.unity");
+            File.Copy(resourceFile,fullPath);
+            
+            //刷新资源管理器
+            string localPath = $"{pathName}/{className}.cs";
+            AssetDatabase.ImportAsset(localPath);
+            AssetDatabase.Refresh();
+            return AssetDatabase.LoadAssetAtPath(localPath, typeof(UnityEngine.Object));
+        }
+
+        static void createScript(string orignPath,string targetPath,string nameSpace,string className)
+        {
+            StreamReader streamReader = new StreamReader(orignPath);
             string text = streamReader.ReadToEnd();
             streamReader.Close();
 
@@ -89,20 +109,14 @@ static public class CreatePlayScript
             text = Regex.Replace(text, "#CLASSNAME#", className);
             text = Regex.Replace(text, "#NAMESPACE#", nameSpace);
 
-
             bool encoderShouldEmitUTF8Identifier = true; //参数指定是否提供 Unicode 字节顺序标记
             bool throwOnInvalidBytes = false;//是否在检测到无效的编码时引发异常
             UTF8Encoding encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier, throwOnInvalidBytes);
             bool append = false;
             //写入文件
-            StreamWriter streamWriter = new StreamWriter(fullPath, append, encoding);
+            StreamWriter streamWriter = new StreamWriter(targetPath, append, encoding);
             streamWriter.Write(text);
             streamWriter.Close();
-            //刷新资源管理器
-            string localPath = $"{pathName}/{className}.cs";
-            AssetDatabase.ImportAsset(localPath);
-            AssetDatabase.Refresh();
-            return AssetDatabase.LoadAssetAtPath(localPath, typeof(UnityEngine.Object));
         }
     }
 
@@ -160,10 +174,12 @@ static public class CreatePlayScript
             scriptText = Regex.Replace(scriptText, "#NAMESPACE#", nameSpace);
             File.WriteAllText(newScriptPath,scriptText);
             #endregion
-
-
-            
+            string localPath = $"{direPath}/{moduleName}.cs";
+            localPath = localPath.Replace(Application.dataPath,"Assets");
+            AssetDatabase.ImportAsset(localPath);
             AssetDatabase.Refresh();
+            var obj = AssetDatabase.LoadAssetAtPath(localPath, typeof(UnityEngine.Object));
+            ProjectWindowUtil.ShowCreatedAsset(obj);//高亮显示资源
         }
 
     }

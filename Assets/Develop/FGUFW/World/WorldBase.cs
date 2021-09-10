@@ -1,14 +1,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using FGUFW.Core;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace FGUFW.Play
 {
     public abstract class WorldBase
     {
-
+        public static WorldBase Current{get;private set;}
         private Dictionary<Type,IPart> _partDic = new Dictionary<Type, IPart>();
 
         public U Part<U>() where U : PartBase
@@ -31,12 +33,14 @@ namespace FGUFW.Play
             }
             _partDic.Clear();
             GlobalMessenger.M.Remove(GlobalMsgID.OnApplicationQuit,onApplicationQuit);
+            Current=null;
         }
 
         public virtual void Create(params object[] datas)
         {
             SceneLoading.I.Show();
             GlobalMessenger.M.Add(GlobalMsgID.OnApplicationQuit,onApplicationQuit);
+            Current = this;
         }
 
         public long GamePlayID{get;protected set;}
@@ -44,6 +48,11 @@ namespace FGUFW.Play
         private void onApplicationQuit(object obj)
         {
             Destroy();
+        }
+
+        protected Task LoadScene(string path)
+        {
+            return Addressables.LoadSceneAsync(path).Task;
         }
 
     }

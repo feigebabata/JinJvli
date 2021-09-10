@@ -5,7 +5,6 @@ namespace FGUFW.Play
     public abstract class Part<T> : PartBase where T : WorldBase
     {
         protected T _world;
-        private bool _isInit;
 
         protected Part(WorldBase world) : base(world)
         {
@@ -15,6 +14,7 @@ namespace FGUFW.Play
 
     public abstract class PartBase : IPart
     {
+        public bool Enabled{get;private set;}
         public PartBase(WorldBase playManager)
         {
 
@@ -27,12 +27,12 @@ namespace FGUFW.Play
 
         public virtual void OnDisable()
         {
-            
+            Enabled=false;
         }
 
         public virtual void OnEnable()
         {
-            
+            Enabled=true;
         }
     }
 }

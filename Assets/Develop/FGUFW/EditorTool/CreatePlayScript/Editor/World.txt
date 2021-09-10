@@ -8,7 +8,7 @@ namespace Worlds.#NAMESPACE#
 {
     public class #CLASSNAME# : WorldBase
     {
-        public IMessenger<string,object> Messenger = new Messenger<string,object>();
+        public IMessenger<#CLASSNAME#MsgID,object> Messenger = new Messenger<#CLASSNAME#MsgID,object>();
         
         public override void Create(params object[] datas)
         {

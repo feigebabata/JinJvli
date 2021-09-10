@@ -1,10 +1,17 @@
 using System;
+using UnityEngine;
 using UnityEngine.AddressableAssets;
 
 namespace FGUFW.Core
 {
     public class GlobalAssetSystem : Singleton<GlobalAssetSystem>
     {
+        [RuntimeInitializeOnLoadMethod]
+        static void runtimeInit()
+        {
+            I.ToString();
+        }
+
         public override void Init()
         {
             GlobalMessenger.M.Add(GlobalMsgID.LoadAsset,LoadAsset);
@@ -39,6 +46,7 @@ namespace FGUFW.Core
             var result = await Addressables.InstantiateAsync(loader.Location,loader.Parent).Task;
             loader.Completed?.Invoke(result);
         }
+
 
     }
 }

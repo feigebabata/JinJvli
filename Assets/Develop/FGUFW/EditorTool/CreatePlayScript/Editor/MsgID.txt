@@ -1,0 +1,6 @@
+namespace Worlds.#NAMESPACE#
+{
+    public enum #CLASSNAME#MsgID
+    {
+    }
+}

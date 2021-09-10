@@ -14,12 +14,18 @@ namespace FGUFW.Play
         {
             return true;
         }
+
+        protected override void Init()
+        {
+            gameObject.SetActive(false);
+        }
         
         public void Show()
         {
             gameObject.SetActive(true);
             showTime = Time.time;
         }
+
         public void Hide()
         {
             StopAllCoroutines();

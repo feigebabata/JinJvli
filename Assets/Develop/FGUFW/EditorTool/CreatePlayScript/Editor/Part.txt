@@ -13,8 +13,8 @@ namespace Worlds.#NAMESPACE#
 
         public #CLASSNAME#(WorldBase worldBase) : base(worldBase)
         {
-            _partOutput = new  #CLASSNAME#Output(_world);
             _partInput = new  #CLASSNAME#Input(_world);
+            _partOutput = new  #CLASSNAME#Output(_world);
             //code
             
         }
@@ -29,6 +29,7 @@ namespace Worlds.#NAMESPACE#
 
         public override void OnEnable()
         {
+            base.OnEnable();
             _partInput.OnEnable();
             _partOutput.OnEnable();
             addListener();
@@ -38,8 +39,9 @@ namespace Worlds.#NAMESPACE#
 
         public override void OnDisable()
         {
-            _partInput.OnEnable();
-            _partOutput.OnEnable();
+            base.OnDisable();
+            _partInput.OnDisable();
+            _partOutput.OnDisable();
             removeListener();
             //code
             
