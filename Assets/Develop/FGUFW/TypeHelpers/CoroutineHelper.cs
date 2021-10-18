@@ -21,6 +21,11 @@ namespace FGUFW.Core
 			GlobalCoroutineSystem.I.StopCoroutine(self);
 		}
 
+		static public void StopAll()
+		{
+			GlobalCoroutineSystem.I.StopAllCoroutines();
+		}
+
 		/// <summary>
 		/// 文件读写或网络请求用这个 CoroutineCore内部做了并行数量的限制
 		/// </summary>

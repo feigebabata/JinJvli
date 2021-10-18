@@ -30,8 +30,8 @@ namespace Worlds.#NAMESPACE#
         public override void OnEnable()
         {
             base.OnEnable();
-            _partInput.OnEnable();
-            _partOutput.OnEnable();
+            _partInput?.OnEnable();
+            _partOutput?.OnEnable();
             addListener();
             //code
 

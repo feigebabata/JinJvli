@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using UnityEngine;
 
@@ -29,6 +30,19 @@ namespace FGUFW.Core
         public static T FromJson<T>(this string text)
         {
             return JsonUtility.FromJson<T>(text);
+        }
+
+        public static IReadOnlyDictionary<string,IReadOnlyList<string>> ToCsvDict(this string csvText,int startLine=1)
+        {
+            Dictionary<string,IReadOnlyList<string>> dict = new Dictionary<string,IReadOnlyList<string>>();
+            csvText = csvText.Trim();
+            string[] lines = csvText.Split('\n');
+            for (int i = startLine; i < lines.Length; i++)
+            {
+                string[] nodes = lines[i].Split(',');
+                dict.Add(nodes[0],nodes);
+            }
+            return dict;
         }
     }
 }

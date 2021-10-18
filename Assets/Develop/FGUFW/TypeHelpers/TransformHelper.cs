@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 namespace FGUFW.Core
@@ -110,6 +111,17 @@ namespace FGUFW.Core
             {
                 transform.GetChild(i).gameObject.SetActive(false);
             }
+        }
+        static public string FullPath(this Transform t)
+        {
+            StringBuilder s = new StringBuilder();
+            do
+            {
+                s.Insert(0,$"\\{t.name}");
+                t = t.parent;
+            } 
+            while (t!=null);
+            return s.ToString();
         }
     }
 }

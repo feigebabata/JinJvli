@@ -10,7 +10,7 @@ public class RunScene:Editor
     [MenuItem("RunScene/Launcher")]
     static void runLauncherScene()
     {
-        EditorSceneManager.OpenScene("Assets/Develop/GamePlay/Launcher/Launcher.unity");
+        EditorSceneManager.OpenScene("Assets/Develop/Worlds/Launcher/Launcher.unity");
         EditorApplication.EnterPlaymode();
     }
 }
