@@ -86,5 +86,138 @@ namespace FGUFW.Core
             return (distance-acceleration*time*time/2)/time;
         }
 
+        // /// <summary>
+        // /// 点是否在椭圆内 水平方向 无旋转
+        // /// </summary>
+        // /// <param name="ep0">椭圆左上</param>
+        // /// <param name="ep1">椭圆右下</param>
+        // /// <param name="point"></param>
+        // /// <returns></returns>
+        // static public bool PointInEllipse(Vector2 ep0,Vector2 ep1,Vector2 point)
+        // {
+        //     float x0 = ep0.x;
+        //     float y0 = ep0.y;
+        //     float x1 = ep1.x;
+        //     float y1 = ep1.y;
+        //     float a=(x1-x0)/2 , b=(y0-y1)/2, X=(x1-x0)/2+x0, Y=(y0-y1)/2+y1;
+        //     float x = point.x , y=point.y; 
+            
+        //     float cc = ((x - X) * (x - X)) / (a*a) + ((y - Y)*(y - Y)) / b*b;
+        //     return cc<=1;
+        // }
+
+        /// <summary>
+        /// 椭圆形2D
+        /// </summary>
+        /// <param name="center"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="rotation"></param>
+        /// <param name="pointCount"></param>
+        /// <returns></returns>
+        static public Vector2[] Ellipse(Vector2 center, float width, float height, float rotation,int pointCount)
+        {
+            Vector2[] points = new Vector2[pointCount];
+            for (float i = 0; i < pointCount; i++)
+            {
+                float rate = i/pointCount;
+                float angle = 2*Mathf.PI*rate;
+                points[(int)i] = getPointOnEllipse(center,width,height,angle,rotation);
+            }
+            return points;
+        }
+
+        /// <summary>
+        /// 椭圆边上的点
+        /// </summary>
+        /// <param name="center"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="angle"></param>
+        /// <param name="rotation"></param>
+        /// <returns></returns>
+        static private Vector2 getPointOnEllipse(Vector2 center, float width, float height, float angle, float rotation)
+        {
+            float dLiXin = Mathf.Atan2(width*Mathf.Sin(angle), height*Mathf.Cos(angle));//离心角
+            float x = width*Mathf.Cos(dLiXin)*Mathf.Cos(rotation) - height*Mathf.Sin(dLiXin)*Mathf.Sin(rotation) + center.x;
+            float y = width*Mathf.Cos(dLiXin)*Mathf.Sin(rotation) + height*Mathf.Sin(dLiXin)*Mathf.Cos(rotation) + center.y;
+            return new Vector2(x, y);
+        }
+
+        /// <summary>
+        /// 点乘
+        /// </summary>
+        /// <param name="v1"></param>
+        /// <param name="v2"></param>
+        /// <returns></returns>
+        static public float Dot(Vector3 v1,Vector3 v2)
+        {
+            return (v1.x*v2.x+v1.y*v2.y+v1.z+v2.z)/(Mathf.Pow((v1.x*v1.x+v1.y*v1.y+v1.z+v1.z),0.5f)*Mathf.Pow((v2.x*v2.x+v2.y*v2.y+v2.z+v2.z),0.5f));
+        }
+
+        /// <summary>
+        /// 向量求模
+        /// </summary>
+        /// <param name="v"></param>
+        /// <returns></returns>
+        static public float Magnitude(Vector3 v)
+        {
+            return Mathf.Pow(v.x*v.x+v.y*v.y+v.z+v.z,0.5f);
+        }
+
+        /// <summary>
+        /// 计算AB与CD两条线段的交点.
+        /// </summary>
+        /// <param name="a">A点</param>
+        /// <param name="b">B点</param>
+        /// <param name="c">C点</param>
+        /// <param name="d">D点</param>
+        /// <param name="intersectPos">AB与CD的交点</param>
+        /// <returns>是否相交 true:相交 false:未相交</returns>
+        static public bool TryGetIntersectPoint(Vector3 a, Vector3 b, Vector3 c, Vector3 d, out Vector3 intersectPos)
+        {
+            intersectPos = Vector3.zero;
+
+            Vector3 ab = b - a;
+            Vector3 ca = a - c;
+            Vector3 cd = d - c;
+
+            Vector3 v1 = Vector3.Cross(ca, cd);
+
+            if (Mathf.Abs(Vector3.Dot(v1, ab)) > 1e-6)
+            {
+                // 不共面
+                return false;
+            }
+
+            if (Vector3.Cross(ab, cd).sqrMagnitude <= 1e-6)
+            {
+                // 平行
+                return false;
+            }
+
+            Vector3 ad = d - a;
+            Vector3 cb = b - c;
+            // 快速排斥
+            if (Mathf.Min(a.x, b.x) > Mathf.Max(c.x, d.x) || Mathf.Max(a.x, b.x) < Mathf.Min(c.x, d.x)
+            || Mathf.Min(a.y, b.y) > Mathf.Max(c.y, d.y) || Mathf.Max(a.y, b.y) < Mathf.Min(c.y, d.y)
+            || Mathf.Min(a.z, b.z) > Mathf.Max(c.z, d.z) || Mathf.Max(a.z, b.z) < Mathf.Min(c.z, d.z)
+            )
+                return false;
+
+            // 跨立试验
+            if (Vector3.Dot(Vector3.Cross(-ca, ab), Vector3.Cross(ab, ad)) > 0
+                && Vector3.Dot(Vector3.Cross(ca, cd), Vector3.Cross(cd, cb)) > 0)
+            {
+                Vector3 v2 = Vector3.Cross(cd, ab);
+                float ratio = Vector3.Dot(v1, v2) / v2.sqrMagnitude;
+                intersectPos = a + ab * ratio;
+                return true;
+            }
+
+            return false;
+        }
+
+
     }
 }

@@ -67,20 +67,52 @@ namespace FGUFW.Core
             transform.rotation = rotation;
         }
 
-        static public void ResetListItem(this Transform transform,int count,Action<int,Transform> callback)
+        static public void Foreach<V>(this Transform transform,IEnumerable list,Action<Transform,V> callback)
+        {
+            int idx = 0;
+            if(list!=null)
+            {
+                var enumerator = list.GetEnumerator();
+                while (enumerator.MoveNext())
+                {
+                    Transform item_t = transform.GetOrCreateChild(idx);
+                    callback?.Invoke(item_t,(V)enumerator.Current);
+                    item_t.gameObject.SetActive(true);
+                    idx++;
+                }
+            }
+            for (int i = idx; i < transform.childCount; i++)
+            {
+                transform.GetChild(i).gameObject.SetActive(false);
+            }
+        }
+
+        static public void Foreach<T,V>(this Transform transform,IEnumerable list,Action<T,V> callback)
+        {
+            int idx = 0;
+            if(list!=null)
+            {
+                var enumerator = list.GetEnumerator();
+                while (enumerator.MoveNext())
+                {
+                    Transform item_t = transform.GetOrCreateChild(idx);
+                    callback?.Invoke(item_t.GetComponent<T>(),(V)enumerator.Current);
+                    item_t.gameObject.SetActive(true);
+                    idx++;
+                }
+            }
+            for (int i = idx; i < transform.childCount; i++)
+            {
+                transform.GetChild(i).gameObject.SetActive(false);
+            }
+        }
+
+        static public void Foreach(this Transform transform,int count,Action<int,Transform> callback)
         {
             for (int i = 0; i < count; i++)
             {
-                Transform item_t = null;
-                if(i<transform.childCount)
-                {
-                    item_t = transform.GetChild(i);
-                }
-                else
-                {
-                    item_t = GameObject.Instantiate(transform.GetChild(0).gameObject,transform).transform;
-                }
-                callback(i,item_t);
+                Transform item_t = transform.GetOrCreateChild(i);
+                callback?.Invoke(i,item_t);
                 item_t.gameObject.SetActive(true);
             }
             for (int i = count; i < transform.childCount; i++)
@@ -89,29 +121,20 @@ namespace FGUFW.Core
             }
         }
 
-        static public void ResetListItem<T>(this Transform transform,IEnumerator<T> list,Action<T,Transform> callback)
+        static public void Foreach<T>(this Transform transform,int count,Action<int,T> callback)
         {
-            int idx = 0;
-            while (list.MoveNext())
+            for (int i = 0; i < count; i++)
             {
-                Transform item_t = null;
-                if(idx<transform.childCount)
-                {
-                    item_t = transform.GetChild(idx);
-                }
-                else
-                {
-                    item_t = GameObject.Instantiate(transform.GetChild(0).gameObject,transform).transform;
-                }
-                callback(list.Current,item_t);
+                Transform item_t = transform.GetOrCreateChild(i);
+                callback(i,item_t.GetComponent<T>());
                 item_t.gameObject.SetActive(true);
-                idx++;
             }
-            for (int i = idx; i < transform.childCount; i++)
+            for (int i = count; i < transform.childCount; i++)
             {
                 transform.GetChild(i).gameObject.SetActive(false);
             }
         }
+
         static public string FullPath(this Transform t)
         {
             StringBuilder s = new StringBuilder();
@@ -122,6 +145,66 @@ namespace FGUFW.Core
             } 
             while (t!=null);
             return s.ToString();
+        }
+
+        static public void Sort<T>(this Transform t,Comparison<T> comparison) where T:MonoBehaviour
+        {
+            List<T> childs = new List<T>(t.childCount);
+            foreach (Transform item in t)
+            {
+                childs.Add(item.GetComponent<T>());
+            }
+            childs.Sort(comparison);
+            for (int i = 0; i < childs.Count; i++)
+            {
+                childs[i].transform.SetSiblingIndex(i);
+            }
+        }
+
+        static public void Sort(this Transform t,Comparison<Transform> comparison)
+        {
+            List<Transform> childs = new List<Transform>(t.childCount);
+            foreach (Transform item in t)
+            {
+                childs.Add(item);
+            }
+            childs.Sort(comparison);
+            for (int i = 0; i < childs.Count; i++)
+            {
+                childs[i].SetSiblingIndex(i);
+            }
+        }
+
+        static public Transform RandomChild(this Transform t)
+        {
+            int idx = UnityEngine.Random.Range(0,t.childCount);
+            return t.GetChild(idx);
+        }
+
+        static public T RandomChild<T>(this Transform t)
+        {
+            int idx = UnityEngine.Random.Range(0,t.childCount);
+            return t.GetChild(idx).GetComponent<T>();
+        }
+
+        static public Transform GetOrCreateChild(this Transform t,int index,string createName=null)
+        {
+            while (index >= t.childCount)
+            {
+                var child = GameObject.Instantiate(t.GetChild(0).gameObject,t);
+                if(createName!=null)child.name=createName;
+            }
+            return t.GetChild(index);
+        }
+
+        static public T GetOrCreateChild<T>(this Transform t,int index,string createName=null)
+        {
+            while (index >= t.childCount)
+            {
+                var child = GameObject.Instantiate(t.GetChild(0).gameObject,t);
+                if(createName!=null)child.name=createName;
+            }
+            return t.GetChild(index).GetComponent<T>();
         }
     }
 }

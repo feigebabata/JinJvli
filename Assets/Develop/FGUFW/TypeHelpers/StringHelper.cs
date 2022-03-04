@@ -44,5 +44,12 @@ namespace FGUFW.Core
             }
             return dict;
         }
+
+        static public Color ToColor(this string self)
+        {
+            Color color;
+            ColorUtility.TryParseHtmlString(self,out color);
+            return color;
+        }
     }
 }

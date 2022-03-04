@@ -10,5 +10,6 @@ namespace FGUFW.Core
         {
             return $"<color=#{ColorUtility.ToHtmlStringRGB(color)}>{text}</color>";
         }
+
     }
 }
