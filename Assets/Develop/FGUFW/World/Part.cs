@@ -34,5 +34,9 @@ namespace FGUFW.Play
         {
             Enabled=true;
         }
+
+        public virtual void LogicUpdate()
+        {
+        }
     }
 }

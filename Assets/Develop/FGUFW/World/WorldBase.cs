@@ -32,14 +32,11 @@ namespace FGUFW.Play
                 item.Value.Dispose();
             }
             _partDic.Clear();
-            GlobalMessenger.M.Remove(GlobalMsgID.OnApplicationQuit,onApplicationQuit);
             Current=null;
         }
 
         public virtual void Create(params object[] datas)
         {
-            SceneLoading.I.Show();
-            GlobalMessenger.M.Add(GlobalMsgID.OnApplicationQuit,onApplicationQuit);
             Current = this;
         }
 
@@ -53,6 +50,14 @@ namespace FGUFW.Play
         protected Task LoadScene(string path)
         {
             return Addressables.LoadSceneAsync(path).Task;
+        }
+
+        protected void logicUpdate()
+        {
+            foreach (var item in _partDic)
+            {
+                item.Value.LogicUpdate();
+            }
         }
 
     }

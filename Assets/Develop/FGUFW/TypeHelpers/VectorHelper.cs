@@ -1,3 +1,4 @@
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace FGUFW.Core
@@ -86,32 +87,36 @@ namespace FGUFW.Core
             return (distance-acceleration*time*time/2)/time;
         }
 
-        // /// <summary>
-        // /// 点是否在椭圆内 水平方向 无旋转
-        // /// </summary>
-        // /// <param name="ep0">椭圆左上</param>
-        // /// <param name="ep1">椭圆右下</param>
-        // /// <param name="point"></param>
-        // /// <returns></returns>
-        // static public bool PointInEllipse(Vector2 ep0,Vector2 ep1,Vector2 point)
-        // {
-        //     float x0 = ep0.x;
-        //     float y0 = ep0.y;
-        //     float x1 = ep1.x;
-        //     float y1 = ep1.y;
-        //     float a=(x1-x0)/2 , b=(y0-y1)/2, X=(x1-x0)/2+x0, Y=(y0-y1)/2+y1;
-        //     float x = point.x , y=point.y; 
-            
-        //     float cc = ((x - X) * (x - X)) / (a*a) + ((y - Y)*(y - Y)) / b*b;
-        //     return cc<=1;
-        // }
+        /// <summary>
+        /// 点是否在椭圆内 水平方向 无旋转
+        /// </summary>
+        /// <param name="point"></param>
+        /// <param name="center">中心点</param>
+        /// <param name="width">椭圆宽</param>
+        /// <param name="height">椭圆高</param>
+        /// <returns></returns>
+        static public bool PointInEllipse(float3 point,float3 center,float width,float height)
+        {
+            float a = width/2;
+            float b = height/2;
+
+            float X = center.x;
+            float Y = center.y;
+            float x = point.x;
+            float y = point.y;
+
+            float cc = ((x-X)*(x-X)) / (a*a) + ((y-Y)*(y-Y)) / (b*b);
+
+            return cc<=1f;
+        }
+        
 
         /// <summary>
         /// 椭圆形2D
         /// </summary>
         /// <param name="center"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
+        /// <param name="width">长半轴</param>
+        /// <param name="height">短半轴</param>
         /// <param name="rotation"></param>
         /// <param name="pointCount"></param>
         /// <returns></returns>

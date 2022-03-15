@@ -1,0 +1,16 @@
+using FGUFW.ECS;
+using Unity.Mathematics;
+using Unity.Collections;
+using UnityEngine.Jobs;
+
+namespace #NAMESPACE#
+{
+    public struct #CLASSNAME# : IComponent
+    {
+        public int Type => #TYPE#;
+
+        public int EntityUID { get; set;}
+
+        
+    }
+}

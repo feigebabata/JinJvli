@@ -5,14 +5,21 @@ using UnityEngine;
 
 namespace FGUFW.ECS
 {
-    public sealed class World
+    public sealed partial class World
     {
+        public const int ENTITY_NONE = 0;
+        public const int ENTITY_SINGLE = -1;
 
+        private int _createEntityIndex=0;
         private List<ISystem> _systems = new List<ISystem>();
         private Dictionary<int,List<IComponent>> _compsDict = new Dictionary<int, List<IComponent>>();
         private Dictionary<int,List<IComponent>> _filterCacheDict = new Dictionary<int, List<IComponent>>();
+        public float Time{get;private set;}
+        public int FrameIndex{get;private set;}
+        public float DeltaTime{get;private set;}
+        public float TimeScale=1;
         public bool Pause=false;
-        private int _createEntityIndex=0;
+
 
         public void AddSystem(ISystem system)
         {
@@ -78,12 +85,45 @@ namespace FGUFW.ECS
             _comps.RemoveAt(lastIndex);           
         }
 
-        public bool FindComponent<T>(Predicate<T> match,out T comp) where T:struct,IComponent
+        public bool GetComponent(int entityUID,int compType,out IComponent comp)
+        {
+            comp = null;
+            if(!_compsDict.ContainsKey(compType))return false;
+            var comps = _compsDict[compType];
+            for (int i = 0; i < _compsDict[compType].Count; i++)
+            {
+                if(comps[i].EntityUID==entityUID)
+                {
+                    comp = comps[i];
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public bool GetComponent<T>(int entityUID,out T comp) where T:struct,IComponent
+        {
+            comp = default(T);
+            var compType = ComponentHelper.GetType<T>();
+            if(!_compsDict.ContainsKey(compType))return false;
+            var comps = _compsDict[compType];
+            for (int i = 0; i < _compsDict[compType].Count; i++)
+            {
+                if(comps[i].EntityUID==entityUID)
+                {
+                    comp = (T)comps[i];
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public bool GetComponent<T>(Predicate<T> match,out T comp) where T:struct,IComponent
         {
             var compType = ComponentHelper.GetType<T>();
             if(_compsDict.ContainsKey(compType))
             {
-                comp = new T();
+                comp = default(T);
                 return false;
             }
             foreach (var c in _compsDict[compType])
@@ -95,17 +135,44 @@ namespace FGUFW.ECS
                     return true;
                 }
             }
-            comp = new T();
+            comp = default(T);
             return false;
         }
 
-        public void OnUpdate()
+        public NativeArray<T> GetComponents<T,V>(NativeArray<V> targetEntitys) where V:struct,ITargetEntity,IComponent where T:struct,IComponent
         {
-            if(Pause)return;
+            var targetType = ComponentHelper.GetType<V>();
+            if(!_compsDict.ContainsKey(targetType))return default(NativeArray<T>);
+
+            int length = targetEntitys.Length;
+            var compType = ComponentHelper.GetType<T>();
+            NativeArray<T> result = new NativeArray<T>(length,Allocator.TempJob);
+            for (int i = 0; i < length; i++)
+            {
+                var entityUID = targetEntitys[i].EntityUID;
+                var comps = _compsDict[compType];
+                for (int j = 0; j < comps.Count; j++)
+                {
+                    if(comps[j].EntityUID==entityUID)
+                    {
+                        result[i] = (T)comps[j];
+                        break;
+                    }
+                }
+            }
+            return result;
+        }
+
+        public void OnUpdate(float deltaTime)
+        {
+            if(Pause || TimeScale==0f)return;
+            DeltaTime = TimeScale * deltaTime;
+            Time += deltaTime;
             foreach (var sys in _systems)
             {
                 if(sys.Enabled)sys.OnUpdate();
             }
+            FrameIndex++;
         }
 
 
@@ -126,22 +193,6 @@ namespace FGUFW.ECS
             if(!_filterCacheDict.ContainsKey(compType))_filterCacheDict.Add(compType,new List<IComponent>());
             _filterCacheDict[compType].Clear();
             return _filterCacheDict[compType];
-        }
-
-        public bool GetComponent(int entityUID,int compType,out IComponent comp)
-        {
-            comp = null;
-            if(!_compsDict.ContainsKey(compType))return false;
-            var comps = _compsDict[compType];
-            for (int i = 0; i < _compsDict[compType].Count; i++)
-            {
-                if(comps[i].EntityUID==entityUID)
-                {
-                    comp = comps[i];
-                    return true;
-                }
-            }
-            return false;
         }
 
         public Archetype GetArchetype(int entityUID)
@@ -167,6 +218,10 @@ namespace FGUFW.ECS
             }
         }
 
+        /// <summary>
+        /// 实体唯一索引 0:未知 -1:单例
+        /// </summary>
+        /// <returns>EntityUID</returns>
         public int CreateEntity()
         {
             _createEntityIndex++;
@@ -183,158 +238,6 @@ namespace FGUFW.ECS
         }
 
 
-        public void Filter(Archetype archetype,Action<List<IComponent>[]> callback)
-        {
-
-            int minCountType = -1,minCount = int.MaxValue;
-            int compTypeCount = 0;
-            foreach (var kv in _compsDict)
-            {
-                if(archetype.Contains(kv.Key))
-                {
-                    if(kv.Value.Count<minCount)
-                    {
-                        minCount = kv.Value.Count;
-                        minCountType = kv.Key;
-                    }
-                    compTypeCount++;
-                }
-            }
-            // Debug.Log($"filter {minCountType} {compTypeCount}");
-            if(minCountType == -1 || compTypeCount!=archetype.Length || minCount==0)return;
-
-            var result = new List<IComponent>[archetype.Length];
-            for (int i = 0; i < result.Length; i++)
-            {
-                var compType = archetype.ComponentTypes[i];
-                result[i] = getFilterCache(compType);
-            }
-
-            var minComps = _compsDict[minCountType];
-            int resultIndex = 0;
-            foreach (var item in minComps)
-            {
-                var entityUID = item.EntityUID;
-                for (int i = 0; i < result.Length; i++)
-                {
-                    var compType = archetype.ComponentTypes[i];
-                    if(compType==item.Type)
-                    {
-                        addOrSetResultCache(result[i],item,resultIndex);
-                    }
-                    else
-                    {
-                        IComponent comp;
-                        if(GetComponent(entityUID,compType,out comp))
-                        {
-                            addOrSetResultCache(result[i],comp,resultIndex);
-                        }
-                        else
-                        {
-                            resultIndex--;
-                            continue;
-                        }
-                    }
-                }
-                resultIndex++;
-            }
-
-            for (int i = 0; i < result.Length; i++)
-            {
-                int resultCount = result[i].Count;
-                if(resultCount!=resultIndex)
-                {
-                    result[i].RemoveAt(resultIndex);
-                }
-            }
-
-            callback(result);
-        }
-
-        public void FilterJob<T0>(Action<NativeArray<T0>> callback) where T0:struct,IComponent
-        {
-            var t0_Type = ComponentHelper.GetType<T0>();
-
-            if(!_compsDict.ContainsKey(t0_Type) || _compsDict[t0_Type].Count==0)return;
-
-            int entityCount = _compsDict[t0_Type].Count;
-            var nt0 = new NativeArray<T0>(entityCount,Allocator.TempJob);
-
-            for (int i = 0; i < entityCount; i++)
-            {
-                nt0[i]=(T0)_compsDict[t0_Type][i];    
-            }
-
-            callback(nt0);
-
-        }
-
-        public void FilterJob<T0,T1>(Action<NativeArray<T0>,NativeArray<T1>> callback) 
-        where T0:struct,IComponent
-        where T1:struct,IComponent
-        {
-            var t0_Type = ComponentHelper.GetType<T0>();
-            var t1_Type = ComponentHelper.GetType<T1>();
-
-            if( !_compsDict.ContainsKey(t0_Type) || _compsDict[t0_Type].Count==0
-             || !_compsDict.ContainsKey(t1_Type) || _compsDict[t1_Type].Count==0
-            )return;
-
-            int minCount = int.MaxValue;
-            int minCountType = -1;
-            if(_compsDict[t0_Type].Count<minCount)
-            {
-                minCount = _compsDict[t0_Type].Count;
-                minCountType = _compsDict[t0_Type][0].Type;
-            }
-            if(_compsDict[t1_Type].Count<minCount)
-            {
-                minCount = _compsDict[t1_Type].Count;
-                minCountType = _compsDict[t1_Type][0].Type;
-            }
-
-            var t0_cache = getFilterCache(t0_Type);
-            
-            var t1_cache = getFilterCache(t1_Type);
-
-            var minComps = _compsDict[minCountType];
-            int resultIndex = 0;
-            foreach (var item in minComps)
-            {
-                var entityUID = item.EntityUID;
-                IComponent comp;
-                
-                if(GetComponent(entityUID,t0_Type,out comp))
-                {
-                    addOrSetResultCache(t0_cache,comp,resultIndex);
-                }
-                else
-                {
-                    continue;
-                }
-                
-                if(GetComponent(entityUID,t1_Type,out comp))
-                {
-                    addOrSetResultCache(t1_cache,comp,resultIndex);
-                }
-                else
-                {
-                    continue;
-                }
-
-                resultIndex++;
-            }
-            
-            var nt0 = new NativeArray<T0>(resultIndex,Allocator.TempJob);
-            var nt1 = new NativeArray<T1>(resultIndex,Allocator.TempJob);
-
-            for (int i = 0; i < resultIndex; i++)
-            {
-                nt0[i] = (T0)t0_cache[i];
-                nt1[i] = (T1)t1_cache[i];
-            }
-            callback(nt0,nt1);
-        }
 
     }
 }

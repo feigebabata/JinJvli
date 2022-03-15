@@ -11,6 +11,12 @@ namespace FGUFW.Core
     {
 
         const string Extension = ".csv";
+        
+        [MenuItem("Assets/PrintAssetPath")]
+        static private void printAssetPath()
+        {
+            Debug.Log(AssetDatabase.GetAssetPath(Selection.activeObject));
+        }
 
         [MenuItem("Assets/Csv2Csharp")]
         private static void Build()
@@ -35,16 +41,32 @@ namespace FGUFW.Core
             
             foreach (var path in paths)
             {
-                createScript(path);
+                var line = File.ReadAllLines(Application.dataPath+path)[0];
+                var fullclassname = line.Split(',')[0].Split('.');
+                var csharptype = line.Split(',')[1];
+                switch (csharptype)
+                {
+                    case "class":
+                        createClassScript(path);
+                    break;
+                    case "enum":
+                        createEnumScript(path);
+                    break;
+                    default:
+                        Debug.LogError($"未标注类型 {csharptype}");
+                    break;
+                }
             }
             
             AssetDatabase.Refresh();
         }
 
-        private static void createScript(string path)
+        private static void createClassScript(string path)
         {
             var lines = File.ReadAllLines(Application.dataPath+path);
             var fullclassname = lines[0].Split(',')[0].Split('.');
+            var classSummary = "";
+            if(lines[0].Split(',').Length>2)classSummary=lines[0].Split(',')[2];
             var memberNames = lines[1].Split(',');
             var memberTypes = lines[2].Split(',');
             var memberInfos = lines[3].Split(',');
@@ -53,7 +75,7 @@ namespace FGUFW.Core
 
             string class_name = fullclassname[fullclassname.Length-1];
             string namespace_name = String.Join(".",fullclassname,0,fullclassname.Length-1);
-            string scriptText = SCRIPT_TEXT;
+            string scriptText = CLASS_SCRIPT_TEXT;
 
             StringBuilder text_members = new StringBuilder();
             StringBuilder text_memberSets = new StringBuilder();
@@ -79,6 +101,10 @@ namespace FGUFW.Core
                 else if(memberType=="string")
                 {
                     text_memberSets.AppendLine($"            {memberName} = members[{i}];");
+                }
+                else if(memberType=="bool")
+                {
+                    text_memberSets.AppendLine($"            if(!string.IsNullOrEmpty(members[{i}])) {memberName} = int.Parse(members[{i}])!=0;");
                 }
                 else if(memberType=="Vector2")
                 {
@@ -116,6 +142,10 @@ namespace FGUFW.Core
                     {
                         tempSetText = $"{memberName}[j] = float.Parse(temp_arr_{i}[j]);";
                     }
+                    else if(array_type=="bool")
+                    {
+                        tempSetText = $"{memberName}[j] = int.Parse(temp_arr_{i}[j])!=0;";
+                    }
                     else if(array_type=="string")
                     {
                         tempSetText = $"{memberName}[j] = temp_arr_{i}[j];";
@@ -130,7 +160,8 @@ namespace FGUFW.Core
                     }
                     else
                     {
-                        Debug.LogError($"未标注类型 {memberType} 索引={i}");
+                        // Debug.LogError($"未标注类型 {memberType} 索引={i}");
+                        tempSetText = $"{memberName}[j] = ({array_type})int.Parse(temp_arr_{i}[j]);";
                     }
                     string array_text=
 @$"
@@ -146,11 +177,14 @@ namespace FGUFW.Core
                 }
                 else
                 {
-                    Debug.LogError($"未标注类型 {memberType} 索引={i}");
+                    // Debug.LogError($"未标注类型 {memberType} 索引={i}");
+                    
+                    text_memberSets.AppendLine($"            if(!string.IsNullOrEmpty(members[{i}])) {memberName} = ({memberType})int.Parse(members[{i}]);");
                 }
             }
 
             scriptText = scriptText.Replace("#NAMESPACE#",namespace_name);
+            scriptText = scriptText.Replace("#CLASSSUMMARY#",classSummary);
             scriptText = scriptText.Replace("#CLASSNAME#",class_name);
             scriptText = scriptText.Replace("#MEMBERS#",text_members.ToString());
             scriptText = scriptText.Replace("#MEMBER_SETS#",text_memberSets.ToString());
@@ -162,13 +196,54 @@ namespace FGUFW.Core
             
         }
 
-        const string SCRIPT_TEXT = 
+        private static void createEnumScript(string path)
+        {
+            var lines = File.ReadAllLines(Application.dataPath+path);
+            var fullclassname = lines[0].Split(',')[0].Split('.');
+            var classSummary = lines[0].Split(',')[2];
+            var memberInfos = lines[1].Split(',');
+
+            string class_name = fullclassname[fullclassname.Length-1];
+            string namespace_name = String.Join(".",fullclassname,0,fullclassname.Length-1);
+            string scriptText = ENUM_SCRIPT_TEXT;
+
+            StringBuilder text_members = new StringBuilder();
+            for (int i = 2; i < lines.Length; i++)
+            {
+                var vals = lines[i].Split(',');
+                string memberVal = vals[1];
+                string memberName = vals[0];
+                string summary = vals[2];
+                text_members.AppendLine
+(
+@$"
+        /// <summary>
+        /// {summary}
+        /// </summary>
+        {memberName} = {memberVal},");
+            }
+
+            scriptText = scriptText.Replace("#NAMESPACE#",namespace_name);
+            scriptText = scriptText.Replace("#CLASSSUMMARY#",classSummary);
+            scriptText = scriptText.Replace("#CLASSNAME#",class_name);
+            scriptText = scriptText.Replace("#MEMBERS#",text_members.ToString());
+
+            string scriptFilePath = $"{Path.GetDirectoryName(Application.dataPath+path)}/{class_name}.cs";
+            File.WriteAllText(scriptFilePath,scriptText,Encoding.UTF8);
+            
+        }
+
+        const string CLASS_SCRIPT_TEXT = 
 @"
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace #NAMESPACE#
 {
+    /// <summary>
+    /// #CLASSSUMMARY#
+    /// </summary>
+    [System.Serializable]
     public class #CLASSNAME#
     {
 #MEMBERS#
@@ -209,5 +284,19 @@ namespace #NAMESPACE#
 }
 ";
 
+
+        const string ENUM_SCRIPT_TEXT = 
+@"
+namespace #NAMESPACE#
+{
+    /// <summary>
+    /// #CLASSSUMMARY#
+    /// </summary>
+    public enum #CLASSNAME#
+    {
+#MEMBERS#
+    }
+}
+";
     }
 }

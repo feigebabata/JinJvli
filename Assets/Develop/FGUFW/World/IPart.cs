@@ -3,7 +3,7 @@ using FGUFW.Core;
 
 namespace FGUFW.Play
 {
-    public interface IPart:IDisposable,IEnabled
+    public interface IPart:IDisposable,IEnabled,ILogicUpdate
     {
     }
 }

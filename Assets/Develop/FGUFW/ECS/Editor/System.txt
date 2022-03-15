@@ -1,0 +1,33 @@
+using FGUFW.ECS;
+using Unity.Mathematics;
+using Unity.Collections;
+using UnityEngine;
+using Unity.Jobs;
+using FGUFW.Core;
+using UnityEngine.Jobs;
+
+namespace #NAMESPACE#
+{
+    public class #CLASSNAME# : FGUFW.ECS.ISystem
+    {
+        public int Type => #TYPE#;
+
+        public int Order => 0;
+
+        public bool Enabled { get; set; }=true;
+
+        private World _world;
+
+        public void OnInit(World world)
+        {
+            _world = world;
+        }
+
+        public void OnUpdate()
+        {
+            
+        }
+
+
+    }
+}
