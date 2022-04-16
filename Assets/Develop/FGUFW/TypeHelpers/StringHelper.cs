@@ -51,5 +51,24 @@ namespace FGUFW.Core
             ColorUtility.TryParseHtmlString(self,out color);
             return color;
         }
+
+        static public Dictionary<string,string> ToCsvLines(this string csvText)
+        {
+            var dict = new Dictionary<string,string>();
+            csvText = csvText.Trim();
+            string[] lines = csvText.Split('\n');
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string[] nodes = lines[i].Split(',');
+                dict.Add(nodes[0],lines[i]);
+            }
+            return dict;
+        }
+
+        static public T ToEnum<T>(this string self) where T:Enum
+        {
+            return (T)Enum.Parse(typeof(T),self);
+        }
+
     }
 }

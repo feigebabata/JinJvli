@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace FGUFW.Core
@@ -23,6 +24,34 @@ namespace FGUFW.Core
             }
             int idx = UnityEngine.Random.Range(0,self.Length);
             return (T)self.GetValue(idx);
+        }
+
+        
+        /// <summary>
+        /// 按权重随机
+        /// </summary>
+        /// <param name="collection"></param>
+        /// <param name="getWeight"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        static public T RandomByWeight<T>(this IEnumerable collection,Func<T,float> getWeight)
+        {
+            float maxValue = 0;
+            foreach (T item in collection)
+            {
+                maxValue += getWeight(item);
+            }
+            float val = UnityEngine.Random.Range(0,maxValue);
+            float weight = 0;
+            foreach (T item in collection)
+            {
+                weight += getWeight(item);
+                if(val<weight)
+                {
+                    return item;
+                }
+            }
+            return default(T);
         }
     }
 }

@@ -10,10 +10,12 @@ namespace FGUFW.Core
     {
         private const int MAX_NEW_EXPAND = 32;
         public const int DEF_CAPACITY = 8;
+        public bool IsCreated{get;private set;}
 
         private NativeArray<int> _keys;
         private TransformAccessArray _vals;
         private int _capacity;
+        private Allocator _allocator;
 
         public int Length{get;private set;}
 
@@ -58,12 +60,14 @@ namespace FGUFW.Core
         /// </summary>
         /// <param name="capacity">容量</param>
         /// <param name="desiredJobCount">期望的Job数量</param>
-        public NativeTransformTable(int capacity, int desiredJobCount = -1)
+        public NativeTransformTable(int capacity,Allocator allocator, int desiredJobCount = -1)
         {
-            _keys = new NativeArray<int>(capacity,Allocator.Persistent);
+            _keys = new NativeArray<int>(capacity,allocator);
             _vals = new TransformAccessArray(capacity);
             _capacity = capacity;
+            _allocator = allocator;
             Length = 0;
+            IsCreated = true;
         }
 
 
@@ -84,7 +88,7 @@ namespace FGUFW.Core
             int capacity = _capacity*2;
             if(capacity>MAX_NEW_EXPAND)capacity=MAX_NEW_EXPAND+_capacity;
             
-            var keys = new NativeArray<int>(capacity,Allocator.Persistent);
+            var keys = new NativeArray<int>(capacity,_allocator);
 
             NativeArray<int>.Copy(_keys,keys,_capacity);
             
@@ -137,6 +141,7 @@ namespace FGUFW.Core
             Length=0;
             _keys.Dispose();
             _vals.Dispose();
+            IsCreated=false;
         }
 
     }

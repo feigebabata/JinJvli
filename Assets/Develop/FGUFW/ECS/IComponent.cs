@@ -8,10 +8,15 @@ using UnityEngine;
 
 namespace FGUFW.ECS
 {
-    public interface IComponent
+    public interface IComponent:IDisposable
     {
         int Type{get;}
         int EntityUID{get;set;}
+    }
+
+    public interface IEnumComponent:IComponent
+    {
+        int Enum{get;}
     }
 
     static public class ComponentHelper
@@ -21,12 +26,29 @@ namespace FGUFW.ECS
         static public int GetType<T>() where T:IComponent,new()
         {
             var t = typeof(T);
+            return GetType(t);
+        }
+
+        static public int GetType(Type t)
+        {
             if(!CompTypeDict.ContainsKey(t))
             {
-                var t_obj = new T();
+                var t_obj = (IComponent)Activator.CreateInstance(t);;
                 CompTypeDict.Add(t,t_obj.Type);
             }
             return CompTypeDict[t];
+        }
+
+        static public Type GetType(int t)
+        {
+            foreach (var kv in CompTypeDict)
+            {
+                if(kv.Value==t)
+                {
+                    return kv.Key;
+                }
+            }
+            return null;
         }
 
         static public void CheckCompType()
@@ -44,6 +66,8 @@ namespace FGUFW.ECS
                     if(!record.ContainsKey(compType))
                     {
                         record.Add(compType,type);
+
+                        CompTypeDict.Add(type,compType);
                     }
                     else
                     {
@@ -53,6 +77,32 @@ namespace FGUFW.ECS
                 }
             }
             record.Clear();
+        }
+
+        static public IComponent CreateEnumComponent<T>(T enum_item) where T:Enum
+        {
+            var type = GetEnumComponentType(enum_item);
+            IComponent comp = (IComponent)Activator.CreateInstance(type);
+            return comp;
+        }
+
+        static public Type GetEnumComponentType<T>(T enum_item) where T:Enum
+        {
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            var fullName = GetEnumComponentFullName(enum_item);
+            // Debug.Log(fullName);
+            var type = assembly.GetType(fullName);
+            return type;
+        }
+
+        static public string GetEnumComponentName<T>(T enum_item) where T:Enum
+        {
+            return $"{typeof(T).Name}_{enum_item}Comp";
+        }
+
+        static public string GetEnumComponentFullName<T>(T enum_item) where T:Enum
+        {
+            return $"{typeof(T).FullName}_{enum_item}Comp";
         }
 
         static public void CopyToNative<T>(this List<IComponent> self,NativeArray<T> nativeArray) where T:struct,IComponent

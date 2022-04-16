@@ -5,15 +5,30 @@ using UnityEngine;
 
 namespace FGUFW.ECS
 {
-    public sealed partial class World
+    public sealed partial class World:IDisposable
     {
+        /// <summary>
+        /// 无效实体UID
+        /// </summary>
         public const int ENTITY_NONE = 0;
+
+        /// <summary>
+        /// 存单例组件的实体
+        /// </summary>
         public const int ENTITY_SINGLE = -1;
 
+        /// <summary>
+        /// 实体索引 依次加一
+        /// </summary>
         private int _createEntityIndex=0;
         private List<ISystem> _systems = new List<ISystem>();
+
+        /// <summary>
+        /// 按组件类型存储的组件集
+        /// </summary>
+        /// <returns></returns>
         private Dictionary<int,List<IComponent>> _compsDict = new Dictionary<int, List<IComponent>>();
-        private Dictionary<int,List<IComponent>> _filterCacheDict = new Dictionary<int, List<IComponent>>();
+        
         public float Time{get;private set;}
         public int FrameIndex{get;private set;}
         public float DeltaTime{get;private set;}
@@ -50,6 +65,34 @@ namespace FGUFW.ECS
             }
         }
 
+        public void Dispose()
+        {
+            foreach (var kv in _compsDict)
+            {
+                foreach (var item in kv.Value)
+                {
+                    item.Dispose();
+                }
+            }
+        }
+
+        public void OnUpdate(float deltaTime)
+        {
+            if(Pause || TimeScale==0f)return;
+            DeltaTime = TimeScale * deltaTime;
+            Time += deltaTime;
+            foreach (var sys in _systems)
+            {
+                if(sys.Enabled)sys.OnUpdate();
+            }
+            FrameIndex++;
+        }
+
+        /// <summary>
+        /// 添加和修改单个实体的组件 枚举组件别用这个
+        /// </summary>
+        /// <param name="entityUID"></param>
+        /// <param name="component"></param>
         public void AddOrSetComponent(int entityUID,IComponent component)
         {
             component.EntityUID = entityUID;
@@ -72,6 +115,11 @@ namespace FGUFW.ECS
             _comps.Add(component);
         }
 
+        /// <summary>
+        /// 移除实体的组件
+        /// </summary>
+        /// <param name="entityUID"></param>
+        /// <param name="componentType"></param>
         public void RemoveComponent(int entityUID,int componentType)
         {
             if(!_compsDict.ContainsKey(componentType))return;
@@ -81,10 +129,18 @@ namespace FGUFW.ECS
 
             if(index==-1)return;
             int lastIndex = _comps.Count-1;
+            _comps[index].Dispose();
             _comps[index]=_comps[lastIndex];
             _comps.RemoveAt(lastIndex);           
         }
 
+        /// <summary>
+        /// 获取单个实体的组件
+        /// </summary>
+        /// <param name="entityUID"></param>
+        /// <param name="compType"></param>
+        /// <param name="comp"></param>
+        /// <returns>存在返回true</returns>
         public bool GetComponent(int entityUID,int compType,out IComponent comp)
         {
             comp = null;
@@ -118,6 +174,27 @@ namespace FGUFW.ECS
             return false;
         }
 
+        /// <summary>
+        /// 获取实体的组件 在实体必包含这个组建的条件下使用
+        /// </summary>
+        public T GetComponent<T>(int entityUID) where T:struct,IComponent
+        {
+            var compType = ComponentHelper.GetType<T>();
+            if(!_compsDict.ContainsKey(compType))return default(T);
+            var comps = _compsDict[compType];
+            for (int i = 0; i < _compsDict[compType].Count; i++)
+            {
+                if(comps[i].EntityUID==entityUID)
+                {
+                    return (T)comps[i];
+                }
+            }
+            return default(T);
+        }
+
+        /// <summary>
+        /// 获取实体满足匹配条件的组件
+        /// </summary>
         public bool GetComponent<T>(Predicate<T> match,out T comp) where T:struct,IComponent
         {
             var compType = ComponentHelper.GetType<T>();
@@ -139,6 +216,9 @@ namespace FGUFW.ECS
             return false;
         }
 
+        /// <summary>
+        /// 获取ITargetEntity集合中指定实体的T类型组件集合
+        /// </summary>
         public NativeArray<T> GetComponents<T,V>(NativeArray<V> targetEntitys) where V:struct,ITargetEntity,IComponent where T:struct,IComponent
         {
             var targetType = ComponentHelper.GetType<V>();
@@ -163,16 +243,25 @@ namespace FGUFW.ECS
             return result;
         }
 
-        public void OnUpdate(float deltaTime)
+
+        /// <summary>
+        /// 获取同个类型的所有组件 非拷贝 不要在遍历时删除
+        /// </summary>
+        public List<IComponent> GetAllComponent<T>() where T:struct,IComponent
         {
-            if(Pause || TimeScale==0f)return;
-            DeltaTime = TimeScale * deltaTime;
-            Time += deltaTime;
-            foreach (var sys in _systems)
-            {
-                if(sys.Enabled)sys.OnUpdate();
-            }
-            FrameIndex++;
+            var compType = ComponentHelper.GetType<T>();
+            return GetAllComponent(compType);
+        }
+
+        /// <summary>
+        /// 获取同个类型的所有组件 非拷贝 不要在遍历时删除
+        /// </summary>
+        /// <param name="compType"></param>
+        /// <returns></returns>
+        public List<IComponent> GetAllComponent(int compType)
+        {
+            if(!_compsDict.ContainsKey(compType))return null;
+            return _compsDict[compType];
         }
 
 
@@ -188,13 +277,11 @@ namespace FGUFW.ECS
             }
         }
 
-        private List<IComponent> getFilterCache(int compType)
-        {
-            if(!_filterCacheDict.ContainsKey(compType))_filterCacheDict.Add(compType,new List<IComponent>());
-            _filterCacheDict[compType].Clear();
-            return _filterCacheDict[compType];
-        }
-
+        /// <summary>
+        /// 获取实体的原型
+        /// </summary>
+        /// <param name="entityUID"></param>
+        /// <returns></returns>
         public Archetype GetArchetype(int entityUID)
         {
             var archetype = new Archetype();
@@ -208,6 +295,9 @@ namespace FGUFW.ECS
             return archetype;
         }
 
+        /// <summary>
+        /// 批量同步Job中计算的数据 在Job外使用
+        /// </summary>
         public void SetComponents<T>(NativeArray<T> nativeArray) where T:struct,IComponent
         {
             int length = nativeArray.Length;
@@ -215,6 +305,43 @@ namespace FGUFW.ECS
             {
                 var comp = nativeArray[i];
                 AddOrSetComponent(comp.EntityUID,comp);
+            }
+        }
+
+        /// <summary>
+        /// 设置枚举组件 会把同枚举的其他组件挤下去 非枚举组件别用
+        /// </summary>
+        /// <param name="enum_item"></param>
+        /// <param name="comp"></param>
+        /// <typeparam name="E"></typeparam>
+        public void SetEnumComponent<E>(IComponent comp) where E:Enum
+        {
+            var compType = comp.Type;
+            var entityUID = comp.EntityUID;
+            foreach (E enum_item in Enum.GetValues(typeof(E)))
+            {
+                var t = ComponentHelper.GetEnumComponentType(enum_item);
+                var ct = ComponentHelper.GetType(t);
+                if(ct!=compType)
+                {
+                    RemoveComponent(entityUID,ct);
+                }
+            }
+            AddOrSetComponent(entityUID,comp);
+        }
+
+        /// <summary>
+        /// 移除同枚举的所有组件
+        /// </summary>
+        /// <param name="entityUID"></param>
+        /// <typeparam name="E"></typeparam>
+        public void RemoveEnumComponent<E>(int entityUID) where E:Enum
+        {
+            foreach (E enum_item in Enum.GetValues(typeof(E)))
+            {
+                var t = ComponentHelper.GetEnumComponentType(enum_item);
+                var ct = ComponentHelper.GetType(t);
+                RemoveComponent(entityUID,ct);
             }
         }
 
@@ -236,8 +363,5 @@ namespace FGUFW.ECS
                 RemoveComponent(entityUID,compType);
             }
         }
-
-
-
     }
 }

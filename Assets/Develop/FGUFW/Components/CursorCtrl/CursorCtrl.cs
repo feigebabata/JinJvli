@@ -21,6 +21,7 @@ namespace FGUFW.Core
         private Queue<CursorCtrlMode> _queue = new Queue<CursorCtrlMode>();
         private float _ui_playTime;
         private Vector2Int _currentTexIndex = Vector2Int.down;
+        private CursorMode Mode = CursorMode.Auto;
 
         protected override bool IsDontDestroyOnLoad()
         {
@@ -32,7 +33,7 @@ namespace FGUFW.Core
             base.Init();
             // Cursor.visible=false;
             _viewSize = transform.AsRT().sizeDelta;
-            Cursor.SetCursor(Def_Up_Tex,Hotspot,CursorMode.ForceSoftware);
+            Cursor.SetCursor(Def_Up_Tex,Hotspot,Mode);
         }
 
         /// <summary>
@@ -82,7 +83,7 @@ namespace FGUFW.Core
             {
                 if(_def_Index != -1)
                 {
-                    Cursor.SetCursor(Def_Up_Tex,Hotspot,CursorMode.ForceSoftware);
+                    Cursor.SetCursor(Def_Up_Tex,Hotspot,Mode);
                     _def_Index = -1;
                 }
             }
@@ -91,7 +92,7 @@ namespace FGUFW.Core
                 int idx = MathfHelper.IndexOf(Def_Down_Texs.Length,Def_Down_Time,_def_DownTime);
                 if(idx!=_def_Index)
                 {
-                    Cursor.SetCursor(Def_Down_Texs[idx],Hotspot,CursorMode.ForceSoftware);
+                    Cursor.SetCursor(Def_Down_Texs[idx],Hotspot,Mode);
                     _def_Index = idx;
                 }
             }
@@ -152,6 +153,7 @@ namespace FGUFW.Core
         Skill_2,
         DrumUp,
         DrumDown,
+        TowerSkill,
     }
 
 }

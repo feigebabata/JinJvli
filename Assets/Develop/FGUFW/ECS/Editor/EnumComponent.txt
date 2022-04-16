@@ -1,0 +1,19 @@
+using FGUFW.ECS;
+using Unity.Mathematics;
+using Unity.Collections;
+using UnityEngine.Jobs;
+using FGUFW.Core;
+
+namespace #NAMESPACE#
+{
+    public struct #CLASSNAME# : IEnumComponent
+    {
+        public int Type => #TYPE#;
+
+        public int Enum => #Enum#;
+
+        public int EntityUID { get; set;}
+
+        
+    }
+}

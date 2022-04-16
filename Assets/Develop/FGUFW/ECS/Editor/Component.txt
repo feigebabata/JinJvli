@@ -1,7 +1,9 @@
 using FGUFW.ECS;
 using Unity.Mathematics;
-using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine.Jobs;
+using FGUFW.Core;
+using Unity.Collections;
 
 namespace #NAMESPACE#
 {
@@ -10,6 +12,8 @@ namespace #NAMESPACE#
         public int Type => #TYPE#;
 
         public int EntityUID { get; set;}
+
+        public void Dispose(){}
 
         
     }

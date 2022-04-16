@@ -223,6 +223,86 @@ namespace FGUFW.Core
             return false;
         }
 
+        /// <summary>
+        /// 取y轴夹角 12点方向顺时针
+        /// </summary>
+        /// <param name="dir"></param>
+        /// <returns></returns>
+        static public float Angle_Y(Vector3 dir)
+        {
+            dir = dir.normalized;
+            float angle = 0;
+            if(dir.x>=0)
+            {
+                angle = Vector3.Angle(Vector3.up,dir);
+            }
+            else
+            {
+                angle = 360 - Vector3.Angle(Vector3.up,dir);
+            }
+            return angle%360;
+        }
+
+        /// <summary>
+        /// 点到线的距离
+        /// </summary>
+        /// <param name="point"></param>
+        /// <param name="l_p1"></param>
+        /// <param name="l_p2"></param>
+        /// <returns></returns>
+        static public float PointLineSpace(Vector3 point, Vector3 l_p1,Vector3 l_p2)
+        {
+            if(l_p1==l_p2)return Vector3.Distance(l_p1,point);
+            
+            Vector3 v1 = l_p1 - l_p2;
+            Vector3 v2 = point - l_p2;
+
+            //平行四边形面积
+            float area = Vector3.Cross(v1,v2).magnitude;
+
+            //高等于面积除底
+            float space = area/v1.magnitude;
+            return space;
+        }
+
+        /// <summary>
+        /// 点到线段的距离 点到显得距离不能越过线段的两点
+        /// </summary>
+        /// <param name="point"></param>
+        /// <param name="l_p1"></param>
+        /// <param name="l_p2"></param>
+        /// <returns></returns>
+        static public float PointInLineSpace(Vector3 point, Vector3 l_p1,Vector3 l_p2)
+        {
+            if(l_p1==l_p2)return Vector3.Distance(l_p1,point);
+
+            Vector3 v1 = l_p1 - l_p2;
+            Vector3 v2 = point - l_p2;
+
+            //投影
+            Vector3 f = Vector3.Project(v2,v1);
+            float space = 0;
+            if(f.normalized==v1.normalized)
+            {
+                if(f.magnitude>v1.magnitude)
+                {
+                    //点在l_p1侧
+                    space = Vector3.Distance(point,l_p1);
+                }
+                else
+                {
+                    space = Vector3.Distance(point,l_p2+f);
+                }
+            }
+            else
+            {
+                //点在l_p2侧
+                space = Vector3.Distance(point,l_p2);
+            }
+            
+            return space;
+        }
+
 
     }
 }

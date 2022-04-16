@@ -7,7 +7,94 @@ namespace FGUFW.ECS
 {
     public sealed partial class World
     {
+
+        /// <summary>
+        /// 存储过滤函数Filter的缓存 减少GC
+        /// </summary>
+        /// <returns></returns>
+        private Dictionary<int,List<IComponent>> _filterCacheDict = new Dictionary<int, List<IComponent>>();
+
+        private List<IComponent> getFilterCache(int compType)
+        {
+            if(!_filterCacheDict.ContainsKey(compType))_filterCacheDict.Add(compType,new List<IComponent>());
+            _filterCacheDict[compType].Clear();
+            return _filterCacheDict[compType];
+        }
+
         public void Filter(Archetype archetype,Action<List<IComponent>[]> callback)
+        {
+            //找到组件数最少的组件类型 提高匹配效率
+            int minCountType = -1,minCount = int.MaxValue;
+
+            //若凑不齐原型中的组件类型集合则直接退出
+            int compTypeCount = 0;
+            foreach (var kv in _compsDict)
+            {
+                if(archetype.Contains(kv.Key))
+                {
+                    if(kv.Value.Count<minCount)
+                    {
+                        minCount = kv.Value.Count;
+                        minCountType = kv.Key;
+                    }
+                    compTypeCount++;
+                }
+            }
+            if(minCountType == -1 || compTypeCount!=archetype.Length || minCount==0)return;
+
+            //筛选出的结果 从缓存池获取筛选列表 减少GC
+            var result = new List<IComponent>[archetype.Length];
+            for (int i = 0; i < result.Length; i++)
+            {
+                var compType = archetype.ComponentTypes[i];
+                result[i] = getFilterCache(compType);
+            }
+
+            var minComps = _compsDict[minCountType];
+            //筛选出的实体数量
+            int resultIndex = 0;
+            foreach (var item in minComps)
+            {
+                //用数量少的组件类型的每一个实体 匹配是否满足实体原型 并添加进筛选结果
+                var entityUID = item.EntityUID;
+                for (int i = 0; i < result.Length; i++)
+                {
+                    var compType = archetype.ComponentTypes[i];
+                    if(compType==item.Type)
+                    {
+                        addOrSetResultCache(result[i],item,resultIndex);
+                    }
+                    else
+                    {
+                        IComponent comp;
+                        if(GetComponent(entityUID,compType,out comp))
+                        {
+                            addOrSetResultCache(result[i],comp,resultIndex);
+                        }
+                        else
+                        {
+                            resultIndex--;
+                            continue;
+                        }
+                    }
+                }
+                resultIndex++;
+            }
+
+            //去除筛选结果中多添加的组件
+            for (int i = 0; i < result.Length; i++)
+            {
+                int resultCount = result[i].Count;
+                if(resultCount!=resultIndex)
+                {
+                    result[i].RemoveAt(resultIndex);
+                }
+            }
+
+            callback(result);
+        }
+
+        public void FilterMatch(Archetype archetype,Func<IComponent[],bool> match,Action<List<IComponent>[]> callback)
         {
 
             int minCountType = -1,minCount = int.MaxValue;
@@ -89,7 +176,7 @@ namespace FGUFW.ECS
             }
 
             callback(nt0);
-
+            nt0.Dispose();
         }
 
         public void FilterJob<T0,T1>(Action<NativeArray<T0>,NativeArray<T1>> callback) 
@@ -157,6 +244,8 @@ namespace FGUFW.ECS
                 nt1[i] = (T1)t1_cache[i];
             }
             callback(nt0,nt1);
+            nt0.Dispose();
+            nt1.Dispose();
         }
 
         public void FilterJob<T0,T1,T2>(Action<NativeArray<T0>,NativeArray<T1>,NativeArray<T2> > callback) 
@@ -243,6 +332,9 @@ namespace FGUFW.ECS
                 nt2[i] = (T2)t2_cache[i];
             }
             callback(nt0,nt1,nt2);
+            nt0.Dispose();
+            nt1.Dispose();
+            nt2.Dispose();
         }
 
         public void FilterJob<T0,T1,T2,T3>(Action<NativeArray<T0>,NativeArray<T1>,NativeArray<T2>,NativeArray<T3> > callback) 
@@ -349,6 +441,10 @@ namespace FGUFW.ECS
                 nt3[i] = (T3)t3_cache[i];
             }
             callback(nt0,nt1,nt2,nt3);
+            nt0.Dispose();
+            nt1.Dispose();
+            nt2.Dispose();
+            nt3.Dispose();
         }
 
 
@@ -476,6 +572,11 @@ namespace FGUFW.ECS
                 nt4[i] = (T4)t4_cache[i];
             }
             callback(nt0,nt1,nt2,nt3,nt4);
+            nt0.Dispose();
+            nt1.Dispose();
+            nt2.Dispose();
+            nt3.Dispose();
+            nt4.Dispose();
         }
 
         public void FilterJob<T0,T1,T2,T3,T4,T5>(Action<NativeArray<T0>,NativeArray<T1>,NativeArray<T2>,NativeArray<T3>,NativeArray<T4>,NativeArray<T5> > callback) 
@@ -622,6 +723,12 @@ namespace FGUFW.ECS
                 nt5[i] = (T5)t5_cache[i];
             }
             callback(nt0,nt1,nt2,nt3,nt4,nt5);
+            nt0.Dispose();
+            nt1.Dispose();
+            nt2.Dispose();
+            nt3.Dispose();
+            nt4.Dispose();
+            nt5.Dispose();
         }
 
         public void FilterJob<T0,T1,T2,T3,T4,T5,T6>(Action<NativeArray<T0>,NativeArray<T1>,NativeArray<T2>,NativeArray<T3>,NativeArray<T4>,NativeArray<T5>,NativeArray<T6> > callback) 
@@ -788,6 +895,13 @@ namespace FGUFW.ECS
                 nt6[i] = (T6)t6_cache[i];
             }
             callback(nt0,nt1,nt2,nt3,nt4,nt5,nt6);
+            nt0.Dispose();
+            nt1.Dispose();
+            nt2.Dispose();
+            nt3.Dispose();
+            nt4.Dispose();
+            nt5.Dispose();
+            nt6.Dispose();
         }
 
         public void FilterJob<T0,T1,T2,T3,T4,T5,T6,T7>(Action<NativeArray<T0>,NativeArray<T1>,NativeArray<T2>,NativeArray<T3>,NativeArray<T4>,NativeArray<T5>,NativeArray<T6>,NativeArray<T7> > callback) 
@@ -974,6 +1088,86 @@ namespace FGUFW.ECS
                 nt7[i] = (T7)t6_cache[i];
             }
             callback(nt0,nt1,nt2,nt3,nt4,nt5,nt6,nt7);
+            nt0.Dispose();
+            nt1.Dispose();
+            nt2.Dispose();
+            nt3.Dispose();
+            nt4.Dispose();
+            nt5.Dispose();
+            nt6.Dispose();
+            nt7.Dispose();
+        }
+
+        public void FilterMatchJob<T0,T1>(Func<T0,T1,bool> match, Action<NativeArray<T0>,NativeArray<T1>> callback) 
+        where T0:struct,IComponent
+        where T1:struct,IComponent
+        {
+            var t0_Type = ComponentHelper.GetType<T0>();
+            var t1_Type = ComponentHelper.GetType<T1>();
+
+            if( !_compsDict.ContainsKey(t0_Type) || _compsDict[t0_Type].Count==0
+             || !_compsDict.ContainsKey(t1_Type) || _compsDict[t1_Type].Count==0
+            )return;
+
+            int minCount = int.MaxValue;
+            int minCountType = -1;
+            if(_compsDict[t0_Type].Count<minCount)
+            {
+                minCount = _compsDict[t0_Type].Count;
+                minCountType = _compsDict[t0_Type][0].Type;
+            }
+            if(_compsDict[t1_Type].Count<minCount)
+            {
+                minCount = _compsDict[t1_Type].Count;
+                minCountType = _compsDict[t1_Type][0].Type;
+            }
+
+            var t0_cache = getFilterCache(t0_Type);
+            
+            var t1_cache = getFilterCache(t1_Type);
+
+            var minComps = _compsDict[minCountType];
+            int resultIndex = 0;
+            foreach (var item in minComps)
+            {
+                var entityUID = item.EntityUID;
+
+                IComponent t0;
+                if(GetComponent(entityUID,t0_Type,out t0))
+                {
+                    addOrSetResultCache(t0_cache,t0,resultIndex);
+                }
+                else
+                {
+                    continue;
+                }
+                
+                IComponent t1;
+                if(GetComponent(entityUID,t1_Type,out t1))
+                {
+                    addOrSetResultCache(t1_cache,t1,resultIndex);
+                }
+                else
+                {
+                    continue;
+                }
+
+                if(!match((T0)t0,(T1)t1))continue;
+
+                resultIndex++;
+            }
+            
+            var nt0 = new NativeArray<T0>(resultIndex,Allocator.TempJob);
+            var nt1 = new NativeArray<T1>(resultIndex,Allocator.TempJob);
+
+            for (int i = 0; i < resultIndex; i++)
+            {
+                nt0[i] = (T0)t0_cache[i];
+                nt1[i] = (T1)t1_cache[i];
+            }
+            callback(nt0,nt1);
+            nt0.Dispose();
+            nt1.Dispose();
         }
 
 

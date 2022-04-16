@@ -31,6 +31,11 @@ namespace FGUFW.Core
 
         static public string GetLanguageText(string id)
         {
+            if (string.IsNullOrEmpty(id))
+            {
+                Debug.LogError($"[GetLanguageText]出错.id:{id}");
+                return "";
+            }
             string text = null;
             if(languageConfig.ContainsKey(id))
             {

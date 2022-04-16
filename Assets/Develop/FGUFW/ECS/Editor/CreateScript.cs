@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEditor.ProjectWindowCallback;
 using UnityEngine;
 using FGUFW.Core;
+using System;
 
 namespace FGUFW.ECS
 {
@@ -15,7 +16,21 @@ namespace FGUFW.ECS
         [UnityEditor.MenuItem("FGUFW.ECS/CheckCompType")]
         static public void CheckCompType()
         {
-            FGUFW.ECS.ComponentHelper.CheckCompType();
+            ComponentHelper.CheckCompType();
+        }
+
+        [UnityEditor.MenuItem("FGUFW.ECS/CreateEnumComps")]
+        static public void CreateEnumComps()
+        {
+            var enumType = typeof(Worlds.BattleECS.Faction);
+            var direPath = GetSelectPathOrFallback();
+            Debug.Log($"创建枚举组件集合 {direPath}");
+            foreach (Worlds.BattleECS.Faction item in Enum.GetValues(enumType))
+            {
+                var moduleName = ComponentHelper.GetEnumComponentName(item);
+                createCompScript(moduleName,direPath);
+            }
+
         }
         
         //取得要创建文件的路径
@@ -36,7 +51,7 @@ namespace FGUFW.ECS
             return path;
         }
 
-        [MenuItem("Assets/Create/FGUFW/ECS/Component",false,80)]
+        [MenuItem("Assets/Create/ECS/Component",false,80)]
         static void CreateComponent()
         {
             string tempScriptPath = GetSelectPathOrFallback();
@@ -52,41 +67,50 @@ namespace FGUFW.ECS
                 string direPath = resourceFile;
                 var folders = pathName.Split('/');
                 string moduleName = folders[folders.Length-1];
-                var configPath = $"{TempScriptFolder}Config.txt";
-                var config = File.ReadAllLines(configPath);
-                var typeIndex = config[0].ToInt32();
-                string nameSpace = config[1]; 
 
-                string cloneScriptPath = null,newScriptPath=null,scriptText=null;
-                
+                createCompScript(moduleName,direPath);
 
-                #region 创建Script
-                cloneScriptPath = TempScriptFolder + "Component.txt";
-                // Debug.Log($"{direPath}\n{moduleName}");
-                newScriptPath = $"{direPath}/{moduleName}.cs";
-                scriptText = File.ReadAllText(cloneScriptPath);
-                scriptText = Regex.Replace(scriptText, "#CLASSNAME#", moduleName);
-                scriptText = Regex.Replace(scriptText, "#NAMESPACE#", nameSpace);
-                scriptText = Regex.Replace(scriptText, "#TYPE#", typeIndex.ToString());
-                File.WriteAllText(newScriptPath,scriptText);
-                #endregion
-
-                typeIndex++;
-                config[0] = typeIndex.ToString();
-                File.WriteAllLines(configPath,config);
-                
                 string localPath = $"{direPath}/{moduleName}.cs";
-                localPath = localPath.Replace(Application.dataPath,"Assets");
-                AssetDatabase.ImportAsset(localPath);
+                
                 AssetDatabase.Refresh();
                 var obj = AssetDatabase.LoadAssetAtPath(localPath, typeof(UnityEngine.Object));
                 ProjectWindowUtil.ShowCreatedAsset(obj);//高亮显示资源
             }
         }
 
+        static void createCompScript(string moduleName,string direPath)
+        {
+            var configPath = $"{TempScriptFolder}Config.txt";
+            var config = File.ReadAllLines(configPath);
+            var typeIndex = config[0].ToInt32();
+            string nameSpace = config[1]; 
+
+            string cloneScriptPath = null,newScriptPath=null,scriptText=null;
+            
+
+            #region 创建Script
+            cloneScriptPath = TempScriptFolder + "Component.txt";
+            // Debug.Log($"{direPath}\n{moduleName}");
+            newScriptPath = $"{direPath}/{moduleName}.cs";
+            scriptText = File.ReadAllText(cloneScriptPath);
+            scriptText = Regex.Replace(scriptText, "#CLASSNAME#", moduleName);
+            scriptText = Regex.Replace(scriptText, "#NAMESPACE#", nameSpace);
+            scriptText = Regex.Replace(scriptText, "#TYPE#", typeIndex.ToString());
+            File.WriteAllText(newScriptPath,scriptText);
+            #endregion
+
+            typeIndex++;
+            config[0] = typeIndex.ToString();
+            File.WriteAllLines(configPath,config);
+            
+            string localPath = $"{direPath}/{moduleName}.cs";
+            localPath = localPath.Replace(Application.dataPath,"Assets");
+            AssetDatabase.ImportAsset(localPath);
+        }
+
         
 
-        [MenuItem("Assets/Create/FGUFW/ECS/System",false,80)]
+        [MenuItem("Assets/Create/ECS/System",false,80)]
         static void CreateSystem()
         {
             string tempScriptPath = GetSelectPathOrFallback();
