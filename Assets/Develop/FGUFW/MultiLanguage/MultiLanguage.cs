@@ -51,9 +51,9 @@ namespace FGUFW.Core
 
         static public void SetLanguage(int index)
         {
-            LanguageIndex = index;
-            Worlds.GameMap.GameRecordDatas.RecordDatas.LanguageIndex = index;
-            Worlds.GameMap.GameRecordDatas.Save();
+            // LanguageIndex = index;
+            // Worlds.GameMap.GameRecordDatas.RecordDatas.LanguageIndex = index;
+            // Worlds.GameMap.GameRecordDatas.Save();
             OnLanguageChanged?.Invoke();
         }
     }

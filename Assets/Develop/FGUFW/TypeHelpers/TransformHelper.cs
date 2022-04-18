@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
-using Worlds.Battle;
 
 namespace FGUFW.Core
 {
@@ -166,37 +165,14 @@ namespace FGUFW.Core
         static public void Sort(this Transform t,Comparison<Transform> comparison)
         {
             List<Transform> childs = new List<Transform>(t.childCount);
-            //foreach (Transform item in t)
-            //{
-            //    childs.Add(item);
-            //}
-            //childs.Sort(comparison);
-            //for (int i = 0; i < childs.Count; i++)
-            //{
-            //    childs[i].SetSiblingIndex(i);
-            //}
-
             foreach (Transform item in t)
             {
-                childs.Add(item);
-                if (item.GetComponent<Canvas>() == null && item.GetComponent<BattleRenderHeight>() != null)
-                {
-                    item.gameObject.AddComponent<Canvas>();
-                    item.gameObject.AddComponent<GraphicRaycaster>();
-                    item.GetComponent<Canvas>().overrideSorting = true;
-                }
+               childs.Add(item);
             }
             childs.Sort(comparison);
             for (int i = 0; i < childs.Count; i++)
             {
-                //childs[i].SetSiblingIndex(i);
-                if (childs[i].GetComponent<Canvas>() != null)
-                {
-                    if (childs[i].GetComponent<TowerBase>() != null && childs[i].GetComponent<TowerBase>().TowerType == TowerType.Base)
-                        childs[i].GetComponent<Canvas>().sortingOrder = 1;//塔基层级单独处理
-                    else
-                        childs[i].GetComponent<Canvas>().sortingOrder = i;
-                }
+               childs[i].SetSiblingIndex(i);
             }
         }
 

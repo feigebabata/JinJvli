@@ -22,14 +22,14 @@ namespace FGUFW.ECS
         [UnityEditor.MenuItem("FGUFW.ECS/CreateEnumComps")]
         static public void CreateEnumComps()
         {
-            var enumType = typeof(Worlds.BattleECS.Faction);
-            var direPath = GetSelectPathOrFallback();
-            Debug.Log($"创建枚举组件集合 {direPath}");
-            foreach (Worlds.BattleECS.Faction item in Enum.GetValues(enumType))
-            {
-                var moduleName = ComponentHelper.GetEnumComponentName(item);
-                createCompScript(moduleName,direPath);
-            }
+            // var enumType = typeof(Worlds.BattleECS.Faction);
+            // var direPath = GetSelectPathOrFallback();
+            // Debug.Log($"创建枚举组件集合 {direPath}");
+            // foreach (Worlds.BattleECS.Faction item in Enum.GetValues(enumType))
+            // {
+            //     var moduleName = ComponentHelper.GetEnumComponentName(item);
+            //     createCompScript(moduleName,direPath);
+            // }
 
         }
         

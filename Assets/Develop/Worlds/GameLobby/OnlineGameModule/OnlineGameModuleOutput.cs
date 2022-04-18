@@ -83,11 +83,11 @@ namespace GamePlay.GameLobby
             _uiComps.Create.gameObject.SetActive(true);
             _uiComps.Start.gameObject.SetActive(false);
             _uiComps.Exit.gameObject.SetActive(false);
-            var datas = _playManager.GameDatas.GetEnumerator();
-            _uiComps.ItemList.ResetListItem<GameItemData>(datas,resetGameDataItem);
+            var datas = _playManager.GameDatas;
+            _uiComps.ItemList.Foreach<GameItemData>(datas,resetGameDataItem);
         }
 
-        private void resetGameDataItem(GameItemData data,Transform item_t)
+        private void resetGameDataItem(Transform item_t,GameItemData data)
         {
             item_t.GetChild(0).GetComponent<Image>().sprite = data.Icon;
             item_t.GetChild(1).GetComponent<Text>().text = data.Name;
@@ -115,11 +115,11 @@ namespace GamePlay.GameLobby
             var module = _playManager.Part<OnlineGameModule>();
 
             var dictSort = from kv in module.OnlineGameDic orderby kv.Key  descending select kv;
-            _uiComps.ItemList.ResetListItem<KeyValuePair<long, PB_OnlineGame>>(dictSort.GetEnumerator(),resetOnlineGameItem);
+            _uiComps.ItemList.Foreach<KeyValuePair<long, PB_OnlineGame>>(dictSort,resetOnlineGameItem);
 
         }
 
-        private void resetOnlineGameItem(KeyValuePair<long, PB_OnlineGame> kv,Transform item_t)
+        private void resetOnlineGameItem(Transform item_t,KeyValuePair<long, PB_OnlineGame> kv)
         {
             _uiComps.NoList.SetActive(false);
             var onlineGame = kv.Value;
@@ -187,10 +187,10 @@ namespace GamePlay.GameLobby
             _uiComps.Exit.gameObject.SetActive(true);
             
             var onlineGame = _playManager.Part<OnlineGameModule>().OnlineGameDic[_playManager.Part<OnlineGameModule>().SelectGamePlayID];
-            _uiComps.ItemList.ResetListItem<PB_Player>(onlineGame.Players.GetEnumerator(),resetOnlineGameInfoItem);
+            _uiComps.ItemList.Foreach<PB_Player>(onlineGame.Players,resetOnlineGameInfoItem);
         }
 
-        private void resetOnlineGameInfoItem(PB_Player player,Transform item_t)
+        private void resetOnlineGameInfoItem(Transform item_t,PB_Player player)
         {
             item_t.GetChild(0).GetComponent<Image>().sprite = null;
             item_t.GetChild(1).GetComponent<Text>().text = player.PlayerInfo.Nickname;
