@@ -1,3 +1,4 @@
+using System;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -303,6 +304,65 @@ namespace FGUFW.Core
             return space;
         }
 
+        /// <summary>
+        /// 判断两个点是否接近
+        /// </summary>
+        /// <param name="p1"></param>
+        /// <param name="p2"></param>
+        /// <param name="distance"></param>
+        /// <param name="d">最大允许间距</param>
+        /// <returns></returns>
+        public static bool IsPointNear(Vector3 p1, Vector3 p2, out float distance, float d = 1f)
+        {
+            distance = (p1 - p2).magnitude;
+            return distance <= d;
+        }
 
+        /// <summary>
+        /// 在圆内随机位置
+        /// </summary>
+        /// <param name="centerPoint"></param>
+        /// <param name="radius"></param>
+        /// <returns></returns>
+        static public Vector3 RandomInCircle(Vector3 centerPoint,float radius)
+        {
+            Vector3 dir = Vector3.zero;
+            dir.x = UnityEngine.Random.Range(-radius,radius);
+            dir.y = UnityEngine.Random.Range(-radius,radius);
+            dir = dir.normalized;
+            dir *= UnityEngine.Random.Range(0,radius);
+            return centerPoint + dir;
+        }
+
+        /// <summary>
+        /// Transform转Rect
+        /// </summary>
+        /// <param name="rectTransform"></param>
+        /// <returns></returns>
+        public static Rect GetWorldRect(RectTransform rectTransform)
+        {
+            Vector3[] corners = new Vector3[4];
+            rectTransform.GetWorldCorners(corners);
+            float width = Math.Abs(Vector2.Distance(corners[0], corners[3]));
+            float height = Math.Abs(Vector2.Distance(corners[0], corners[1]));
+            return new Rect(corners[0], new Vector2(width, height));
+        }
+
+        /// <summary>
+        /// 判断坐标点是否在Transform内
+        /// </summary>
+        /// <param name="trs"></param>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        public static bool IsPointInTransform(Transform trs, Vector2 position)
+        {
+            RectTransform rect = trs as RectTransform;
+            if (rect != null)
+            {
+                Rect worldRect = GetWorldRect(rect);
+                return worldRect.Contains(position);
+            }
+            return false;
+        }
     }
 }

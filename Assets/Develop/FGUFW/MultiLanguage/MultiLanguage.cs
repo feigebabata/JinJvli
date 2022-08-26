@@ -15,13 +15,25 @@ namespace FGUFW.Core
         
         static public int LanguageIndex{get; private set;}
         static public Action OnLanguageChanged;
+        static public MultiLanguangeFont MultiLanguangeFonts;
 
-        static public async Task<TextAsset> InitConfig()
+        static public void InitConfig()
         {
-            var task = Addressables.LoadAssetAsync<TextAsset>("FGUFW/MultiLanguageConfig").Task;
-            var textAsset = await task;
+            var loader = Addressables.LoadAssetAsync<TextAsset>("FGUFW/MultiLanguageConfig");
+            var textAsset = loader.WaitForCompletion();
             languageConfig = textAsset.text.ToCsvDict();
-            return await task;
+            MultiLanguangeFonts = Addressables.LoadAssetAsync<MultiLanguangeFont>("Assets/Develop/FGUFW/MultiLanguage/MultiLanguangeFonts.asset").WaitForCompletion();
+        }
+
+        static public Font GetMultiLanguangeFont()
+        {
+            if(MultiLanguangeFonts==null)
+            {
+                #if UNITY_EDITOR
+                    MultiLanguangeFonts = UnityEditor.AssetDatabase.LoadAssetAtPath<MultiLanguangeFont>("Assets/Develop/FGUFW/MultiLanguage/MultiLanguangeFonts.asset");
+                #endif
+            }
+            return MultiLanguangeFonts.Fonts[LanguageIndex];
         }
 
         static public IReadOnlyList<string> GetLanguageNames()
@@ -33,11 +45,11 @@ namespace FGUFW.Core
         {
             if (string.IsNullOrEmpty(id))
             {
-                Debug.LogError($"[GetLanguageText]出错.id:{id}");
-                return "";
+                // Debug.LogError($"[GetLanguageText]出错.id:{id}");
+                return string.Empty;
             }
             string text = null;
-            if(languageConfig.ContainsKey(id))
+            if(languageConfig.ContainsKey(id) && languageConfig[id].Count>LanguageIndex+1)
             {
                 text = languageConfig[id][LanguageIndex+1];
             }
@@ -51,10 +63,29 @@ namespace FGUFW.Core
 
         static public void SetLanguage(int index)
         {
-            // LanguageIndex = index;
-            // Worlds.GameMap.GameRecordDatas.RecordDatas.LanguageIndex = index;
-            // Worlds.GameMap.GameRecordDatas.Save();
+            // Debug.Log($"语言切换:{index}:{GetLanguageNames()[index+1]}");
+            LanguageIndex = index;
+            #if UNITY_EDITOR
+            if(UnityEditor.EditorApplication.isPlaying)
+            {
+                Worlds.GameMap.GameRecordDatas.RecordDatas.LanguageIndex = index;
+                Worlds.GameMap.GameRecordDatas.Save();
+                OnLanguageChanged?.Invoke();
+            }
+            #else
+            Worlds.GameMap.GameRecordDatas.RecordDatas.LanguageIndex = index;
+            Worlds.GameMap.GameRecordDatas.Save();
             OnLanguageChanged?.Invoke();
+            #endif
+        }
+
+        /// <summary>
+        /// 转当前语言
+        /// </summary>
+        /// <returns></returns>
+        static public string ToCL(this string text)
+        {
+            return GetLanguageText(text);
         }
     }
 }

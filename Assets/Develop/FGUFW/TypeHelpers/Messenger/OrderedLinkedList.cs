@@ -5,12 +5,15 @@ using System.Net.Sockets;
 
 namespace FGUFW.Core
 {
-    public class OrderedLinkedList<T>:IEnumerable<OrderedLinkedNode<T>>
+    public class OrderedLinkedList<T>:IEnumerable<OrderedLinkedNode<T>>,ICloneable
     {
         private OrderedLinkedNode<T> first;
 
+        public int Length{get;private set;}
+
         public void Add(int weight,T val)
         {
+            Length++;
             var newNode = new OrderedLinkedNode<T>(){Weight=weight,Value=val};
             if(first==null)
             {
@@ -55,7 +58,7 @@ namespace FGUFW.Core
                         previous.Next = node.Next;
                     }
                     node.Next = null;
-                    
+                    Length--;
                     return;
                 }
                 previous = node;
@@ -81,7 +84,7 @@ namespace FGUFW.Core
 
         public IEnumerator<OrderedLinkedNode<T>> GetEnumerator()
         {
-            for (var node = first; node!=null; node=node.Next)
+            for (var node = (OrderedLinkedNode<T>)this.Clone(); node!=null; node=node.Next)
             {
                 yield return node;
             }
@@ -89,10 +92,30 @@ namespace FGUFW.Core
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            for (var node = first; node!=null; node=node.Next)
+            for (var node = (OrderedLinkedNode<T>)this.Clone(); node!=null; node=node.Next)
             {
                 yield return node;
             }
+        }
+
+        public object Clone()
+        {
+            if(first==null)return null;
+            var f = new OrderedLinkedNode<T>();
+            f.Weight = first.Weight;
+            f.Value = first.Value;
+            var n = f;
+            var node = first;
+            while (node.Next!=null)
+            {
+                n.Next = new OrderedLinkedNode<T>();
+                n.Next.Weight = node.Next.Weight;
+                n.Next.Value = node.Next.Value;
+                
+                node = node.Next;
+                n = n.Next;
+            }
+            return f;
         }
 
         #region IEnumerable

@@ -1,0 +1,16 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <ui:VisualElement style="height: auto; max-width: none; max-height: none; min-width: auto; min-height: auto; width: auto; padding-left: 10px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px;">
+        <uie:ColorField label="Color" value="RGBA(0.000, 1.000, 1.000, 1.000)" name="ColorField" />
+        <ui:VisualElement name="space" style="height: 10px;" />
+        <ui:VisualElement name="ColorShow" style="background-color: rgb(255, 255, 255); height: 64px; padding-top: 0; padding-bottom: 0; width: 64px; left: 153px; border-left-color: rgba(255, 255, 255, 255); border-right-color: rgba(255, 255, 255, 255); border-top-color: rgba(255, 255, 255, 255); border-bottom-color: rgba(255, 255, 255, 255); border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px;" />
+        <ui:VisualElement name="space" style="height: 10px;" />
+        <ui:VisualElement name="HueColor" style="height: 10px; left: 153px; width: 269px; background-color: rgb(255, 255, 255); background-image: none;" />
+        <ui:SliderInt picking-mode="Ignore" label="Hue : 色调" value="42" high-value="360" name="Hue" show-input-field="true" />
+        <ui:SliderInt picking-mode="Ignore" label="Chroma : 色度" value="42" high-value="150" name="Chroma" show-input-field="true" />
+        <ui:SliderInt picking-mode="Ignore" label="Tone : 亮度" value="42" high-value="100" name="Tone" show-input-field="true" />
+        <ui:VisualElement name="space" style="height: 20px;" />
+        <ui:SliderInt picking-mode="Ignore" label="R" value="42" high-value="255" name="R" show-input-field="true" />
+        <ui:SliderInt picking-mode="Ignore" label="G" value="42" high-value="255" name="G" show-input-field="true" />
+        <ui:SliderInt picking-mode="Ignore" label="B" value="42" high-value="255" name="B" show-input-field="true" focusable="false" usage-hints="None" />
+    </ui:VisualElement>
+</ui:UXML>

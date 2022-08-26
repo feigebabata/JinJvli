@@ -36,10 +36,20 @@ namespace FGUFW.Core
         {
             Dictionary<string,IReadOnlyList<string>> dict = new Dictionary<string,IReadOnlyList<string>>();
             csvText = csvText.Trim();
-            string[] lines = csvText.Split('\n');
+            string[] lines = csvText.ToCsvLines();
             for (int i = startLine; i < lines.Length; i++)
             {
-                string[] nodes = lines[i].Split(',');
+                string[] nodes = lines[i].Trim().Split(',');
+                var length = nodes.Length;
+                for (int j = 0; j < length; j++)
+                {
+                    var node = nodes[j];
+                    if(node.Contains("\n"))
+                    {
+                        node = node.Substring(1,node.Length-2);
+                        nodes[j] = node;
+                    }
+                }
                 dict.Add(nodes[0],nodes);
             }
             return dict;
@@ -52,17 +62,29 @@ namespace FGUFW.Core
             return color;
         }
 
-        static public Dictionary<string,string> ToCsvLines(this string csvText)
+        static public string[,] ToCsvTable(this string csvText)
         {
-            var dict = new Dictionary<string,string>();
             csvText = csvText.Trim();
-            string[] lines = csvText.Split('\n');
-            for (int i = 0; i < lines.Length; i++)
+            string[] arr = csvText.ToCsvLines();
+            int y = arr.Length;
+            string[,] lines = null;
+            for (int i = 0; i < y; i++)
             {
-                string[] nodes = lines[i].Split(',');
-                dict.Add(nodes[0],lines[i]);
+                var items = arr[i].Split(',');
+                int x = items.Length;
+                if(lines==null)lines = new string[x,y];
+                for (int j = 0; j < x; j++)
+                {
+                    lines[j,i]=items[j];
+                }
             }
-            return dict;
+            return lines;
+        }
+
+        static public string[] ToCsvLines(this string csvText)
+        {
+            csvText = csvText.Trim();
+            return csvText.Split(new string[]{"\r\n"},StringSplitOptions.None);
         }
 
         static public T ToEnum<T>(this string self) where T:Enum

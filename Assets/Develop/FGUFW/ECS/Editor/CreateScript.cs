@@ -16,7 +16,7 @@ namespace FGUFW.ECS
         [UnityEditor.MenuItem("FGUFW.ECS/CheckCompType")]
         static public void CheckCompType()
         {
-            ComponentHelper.CheckCompType();
+            // ComponentHelper.CheckCompType();
         }
 
         [UnityEditor.MenuItem("FGUFW.ECS/CreateEnumComps")]

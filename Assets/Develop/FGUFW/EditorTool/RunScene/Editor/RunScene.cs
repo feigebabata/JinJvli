@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using System;
+using FGUFW.Core;
 
 public class RunScene:Editor
 {
@@ -12,5 +13,11 @@ public class RunScene:Editor
     {
         EditorSceneManager.OpenScene("Assets/Develop/Worlds/Launcher/Launcher.unity");
         EditorApplication.EnterPlaymode();
+    }
+
+    [MenuItem("文件夹/程序持续存储文件夹")]
+    static void openDir()
+    {
+        WinPlatform.OpenExplorer(Application.persistentDataPath);
     }
 }

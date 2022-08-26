@@ -9,7 +9,6 @@ namespace FGUFW.Core
 {
     static public class Csv2Csharp
     {
-
         const string Extension = ".csv";
         
         [MenuItem("Assets/PrintAssetPath")]
@@ -41,7 +40,7 @@ namespace FGUFW.Core
             
             foreach (var path in paths)
             {
-                var line = File.ReadAllLines(Application.dataPath+path)[0];
+                var line = splitCsv(Application.dataPath+path)[0];
                 var fullclassname = line.Split(',')[0].Split('.');
                 var csharptype = line.Split(',')[1];
                 switch (csharptype)
@@ -61,9 +60,15 @@ namespace FGUFW.Core
             AssetDatabase.Refresh();
         }
 
+        private static string[] splitCsv(string path)
+        {
+            var fileText = File.ReadAllText(path).Trim();
+            return fileText.Split(new string[]{"\r\n"},StringSplitOptions.RemoveEmptyEntries);
+        }
+
         private static void createClassScript(string path)
         {
-            var lines = File.ReadAllLines(Application.dataPath+path);
+            var lines = splitCsv(Application.dataPath+path);
             var fullclassname = lines[0].Split(',')[0].Split('.');
             var classSummary = "";
             if(lines[0].Split(',').Length>2)classSummary=lines[0].Split(',')[2];
@@ -198,7 +203,7 @@ namespace FGUFW.Core
 
         private static void createEnumScript(string path)
         {
-            var lines = File.ReadAllLines(Application.dataPath+path);
+            var lines = splitCsv(Application.dataPath+path);
             var fullclassname = lines[0].Split(',')[0].Split('.');
             var classSummary = lines[0].Split(',')[2];
             var memberInfos = lines[1].Split(',');
@@ -237,6 +242,7 @@ namespace FGUFW.Core
 @"
 using System.Collections.Generic;
 using UnityEngine;
+using FGUFW.Core;
 
 namespace #NAMESPACE#
 {
@@ -257,8 +263,7 @@ namespace #NAMESPACE#
 
         static public #CLASSNAME#[] ToArray(string csvText)
         {
-            csvText = csvText.Trim();
-            string[] lines = csvText.Split('\n');
+            string[] lines = csvText.ToCsvLines();
             #CLASSNAME#[] list = new #CLASSNAME#[lines.Length-4];
             for (int i = 0; i < list.Length; i++)
             {
@@ -269,8 +274,7 @@ namespace #NAMESPACE#
 
         static public Dictionary<#FRIST_TYPE#,#CLASSNAME#> ToDict(string csvText)
         {
-            csvText = csvText.Trim();
-            string[] lines = csvText.Split('\n');
+            string[] lines = csvText.ToCsvLines();
             Dictionary<#FRIST_TYPE#,#CLASSNAME#> dict = new Dictionary<#FRIST_TYPE#,#CLASSNAME#>();
             for (int i = 4; i < lines.Length; i++)
             {

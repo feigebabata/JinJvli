@@ -12,8 +12,8 @@ namespace FGUFW.Core
         HashSet<K> _aborts = new HashSet<K>();
         public void Abort(K msgID)
         {
+            // Debug.LogWarning("Abort "+msgID);
             _aborts.Add(msgID);
-            LinkedList<object> linked = new LinkedList<object>();
         }
 
         public void Add(K msgID, Action<V> callback,int weight)
@@ -41,8 +41,10 @@ namespace FGUFW.Core
             {
                 _aborts.Remove(msgID);
                 var linked = _eventDict[msgID];
+                // Debug.Log(linked.Length+"------------------"+msgID);
                 foreach (var kv in linked)
                 {
+                    // Debug.Log(msgID);
                     kv.Value(msg);
                     if(_aborts.Contains(msgID))
                     {

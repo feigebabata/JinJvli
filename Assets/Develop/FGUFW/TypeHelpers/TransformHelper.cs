@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace FGUFW.Core
 {
@@ -159,20 +158,6 @@ namespace FGUFW.Core
             for (int i = 0; i < childs.Count; i++)
             {
                 childs[i].transform.SetSiblingIndex(i);
-            }
-        }
-
-        static public void Sort(this Transform t,Comparison<Transform> comparison)
-        {
-            List<Transform> childs = new List<Transform>(t.childCount);
-            foreach (Transform item in t)
-            {
-               childs.Add(item);
-            }
-            childs.Sort(comparison);
-            for (int i = 0; i < childs.Count; i++)
-            {
-               childs[i].SetSiblingIndex(i);
             }
         }
 

@@ -26,6 +26,43 @@ namespace FGUFW.Core
             return (T)self.GetValue(idx);
         }
 
+        static public int IndexOf(this Array self,object val,int startIndex=0)
+        {
+            if(self!=null)
+            {
+                return Array.IndexOf(self,val,startIndex);
+            }
+            return -1;
+        }
+
+        static public int IndexOf<T>(this Array self,Predicate<T> match,int startIndex=0)
+        {
+            if(self!=null)
+            {
+                int length = self.Length;
+                for (int i = 0; i < length; i++)
+                {
+                    var t_obj = (T)self.GetValue(i);
+                    if(match(t_obj))return i;
+                }
+            }
+            return -1;
+        }
+
+        static public T Find<T>(this Array self,Predicate<T> match)
+        {
+            if(self!=null)
+            {
+                int length = self.Length;
+                for (int i = 0; i < length; i++)
+                {
+                    var t_obj = (T)self.GetValue(i);
+                    if(match(t_obj))return t_obj;
+                }
+            }
+            return default(T);
+        }
+
         
         /// <summary>
         /// 按权重随机
@@ -53,5 +90,21 @@ namespace FGUFW.Core
             }
             return default(T);
         }
+
+        static public T[] Copy<T>(this Array self)
+        {
+            if(self==null || self.Length==0)
+            {
+                return null;
+            }
+            T[] newArray = new T[self.Length];
+            // for (int i = 0; i < self.Length; i++)
+            // {
+            //     newArray[i]=(T)self.GetValue(i);
+            // }
+            Array.Copy(self,newArray,self.Length);
+            return newArray;
+        }
+
     }
 }

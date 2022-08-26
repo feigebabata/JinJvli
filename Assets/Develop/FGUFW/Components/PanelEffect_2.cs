@@ -15,6 +15,8 @@ namespace FGUFW.Core
         public float StartAlpha = 0.7f;
         public float AnimTime = 0.1f;
         public float StartScale = 0.8f;
+        private float ShowTime;
+        // private const float DeltaTime = 0.015f;
 
         public void Show()
         {
@@ -25,6 +27,7 @@ namespace FGUFW.Core
 
         public void Hide()
         {
+            if(!Panel.gameObject.activeSelf)return;
             // Debug.LogWarning("Hide");
             StopAllCoroutines();
             StartCoroutine(hideAnim());
@@ -32,7 +35,8 @@ namespace FGUFW.Core
 
         private IEnumerator showAnim()
         {
-            var endTime = Time.time+AnimTime;
+            ShowTime = 0;
+            var endTime = AnimTime;
             var speed = (1-StartScale)/AnimTime;
             var scale = Vector3.one*StartScale;
             var alpha_w = (1-StartAlpha)/AnimTime;
@@ -40,13 +44,14 @@ namespace FGUFW.Core
             Panel.gameObject.SetActive(true);
             CanvasRaycaster.enabled=false;
             this.CanvasGroup.alpha = StartAlpha;
-            while (Time.time<endTime)
+            while (ShowTime<endTime)
             {
                 yield return null;
-                scale += speed*Time.deltaTime*Vector3.one;
+                ShowTime+=Time.unscaledDeltaTime;
+                scale += speed*Time.unscaledDeltaTime*Vector3.one;
                 // Debug.Log(scale);
                 Panel.localScale = scale;
-                this.CanvasGroup.alpha += alpha_w*Time.deltaTime;
+                this.CanvasGroup.alpha += alpha_w*Time.unscaledDeltaTime;
             }
             CanvasRaycaster.enabled=true;
             Panel.localScale = Vector3.one;
@@ -54,19 +59,23 @@ namespace FGUFW.Core
 
         private IEnumerator hideAnim()
         {
-            var endTime = Time.time+AnimTime;
+            // Debug.Log("hideAnim");
+            ShowTime = 0;
+            var endTime = AnimTime;
             var speed = -(1-StartScale)/AnimTime;
             var scale = Vector3.one;
             var alpha_w = -(1-StartAlpha)/AnimTime;
             Panel.localScale = scale;
             CanvasRaycaster.enabled=false;
             this.CanvasGroup.alpha = 1;
-            while (Time.time<endTime)
+            while (ShowTime<endTime)
             {
+            // Debug.Log("wait update");
                 yield return null;
-                scale += speed*Time.deltaTime*Vector3.one;
+                ShowTime+=Time.unscaledDeltaTime;
+                scale += speed*Time.unscaledDeltaTime*Vector3.one;
                 Panel.localScale = scale;
-                this.CanvasGroup.alpha += alpha_w*Time.deltaTime;
+                this.CanvasGroup.alpha += alpha_w*Time.unscaledDeltaTime;
             }
             Panel.gameObject.SetActive(false);
             this.CanvasGroup.alpha=StartAlpha;

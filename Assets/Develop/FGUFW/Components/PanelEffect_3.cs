@@ -13,6 +13,8 @@ namespace FGUFW.Core
         public Vector3 MoveOffset;
         public float AnimTime = 0.25f;
         private Vector3 _old_pos;
+        private float ShowTime;
+        // private const float DeltaTime = 0.015f;
 
         /// <summary>
         /// Start is called on the frame when a script is enabled just before
@@ -31,22 +33,25 @@ namespace FGUFW.Core
 
         public void Hide()
         {
+            if(!Panel.gameObject.activeSelf)return;
             StopAllCoroutines();
             StartCoroutine(hideAnim());
         }
 
         private IEnumerator showAnim()
         {
+            ShowTime = 0;
             var pos = _old_pos - MoveOffset;
-            var endTime = Time.time+AnimTime;
+            var endTime = ShowTime + AnimTime;
             var speed = MoveOffset/AnimTime;
             Panel.position = pos;
             Panel.gameObject.SetActive(true);
             CanvasRaycaster.enabled=false;
-            while (Time.time<endTime)
+            while (ShowTime< endTime)
             {
                 yield return null;
-                pos += speed*Time.deltaTime;
+                ShowTime += Time.unscaledDeltaTime;
+                pos += speed* Time.unscaledDeltaTime;
                 Panel.position = pos;
             }
             CanvasRaycaster.enabled=true;
@@ -55,15 +60,17 @@ namespace FGUFW.Core
 
         private IEnumerator hideAnim()
         {
+            ShowTime = 0;
             var pos = _old_pos;
-            var endTime = Time.time+AnimTime;
+            var endTime = ShowTime + AnimTime;
             var speed = -MoveOffset/AnimTime;
             Panel.position = pos;
             CanvasRaycaster.enabled=false;
-            while (Time.time<endTime)
+            while (ShowTime < endTime)
             {
                 yield return null;
-                pos += speed*Time.deltaTime;
+                ShowTime += Time.unscaledDeltaTime;
+                pos += speed* Time.unscaledDeltaTime;
                 Panel.position = pos;
             }
             Panel.gameObject.SetActive(false);
